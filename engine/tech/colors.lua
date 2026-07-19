@@ -7,7 +7,7 @@ colors.red = Vector.hex("99152c")
 colors.red_high = Vector.hex("e7573e")
 colors.green_high = Vector.hex("c3e06c")
 colors.green_dim = Vector.hex("5d863f")
-colors.black = Vector.hex("191919")
+colors.black = Vector.hex("000000")
 colors.blue_high = Vector.hex("799890")
 
 Ldump.mark(colors, {}, ...)
