@@ -34,6 +34,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 --- @class player: player_base
+--- @field incapacitated boolean
 
 solids.player = function()
   local result = {
@@ -41,6 +42,7 @@ solids.player = function()
     base_abilities = abilities.new(8, 8, 8, 8, 8, 8),
     level = 0,
     faction = "player",
+    incapacitated = false,
   }
   player_base.mix_in(result)
   humanoid.mix_in(result)

@@ -639,7 +639,8 @@ draw_dialogue = function()
   local BOTTOM_GAP = is_compact and 0 or 50
   local FONT_SIZE = is_compact and 26 or 32
 
-  tk.start_window("center", love.graphics.getHeight() - H - BOTTOM_GAP, "read_max", H)
+  local bg = State.player.incapacitated and "none" or nil
+  tk.start_window("center", love.graphics.getHeight() - H - BOTTOM_GAP, "read_max", H, bg)
   ui.start_font(FONT_SIZE)
     if this_line.type == "plain_line" then
       draw_line(this_line)
@@ -710,10 +711,9 @@ draw_line = function(this_line)
         table.insert(split, msg)
         offset = j + 1
       end
-      if offset < #text then
+      if offset <= #text then
         table.insert(split, text:sub(offset))
       end
-      Log.tracel(split)
     end
 
     local dt = love.timer.getTime() - start_time

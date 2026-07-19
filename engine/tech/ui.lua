@@ -274,11 +274,31 @@ ui.finish = function()
   love.graphics.draw(cursor.image, unpack(V(love.mouse.getPosition()):sub_mut(cursor.offset)))
 end
 
---- @param x? integer?
---- @param y? integer?
---- @param w? integer?
+local MAX_READABLE_W = 800
+
+--- @param x? integer|"center"|"right"
+--- @param y? integer|"center"
+--- @param w? integer|"read_max"
 --- @param h? integer?
-ui.start_frame = function(x, y, w, h)
+--- @return integer
+--- @return integer
+--- @return integer
+--- @return integer
+ui.frame_coords = function(x, y, w, h)
+  if w == "read_max" then
+    w = math.min(love.graphics.getWidth(), MAX_READABLE_W)
+  end --- @cast w integer
+
+  if x == "center" then
+    x = (love.graphics.getWidth() - w) / 2
+  elseif x == "right" then
+    x = love.graphics.getWidth() - w
+  end --- @cast x integer
+
+  if y == "center" then
+    y = (love.graphics.getHeight() - h) / 2
+  end --- @cast y integer
+
   local prev = context.frame
   if not x then
     x = 0
@@ -296,6 +316,16 @@ ui.start_frame = function(x, y, w, h)
   elseif h < 0 then
     h = prev.h + h
   end
+
+  return x, y, w, h
+end
+
+--- @param x? integer|"center"|"right"
+--- @param y? integer|"center"
+--- @param w? integer|"read_max"
+--- @param h? integer?
+ui.start_frame = function(x, y, w, h)
+  x, y, w, h = ui.frame_coords(x, y, w, h)
 
   local frame = {
     x = context.cursor_x + x,

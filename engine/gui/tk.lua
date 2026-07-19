@@ -21,36 +21,28 @@ tk.delegate = function(methods, ...)
 end
 
 tk.WINDOW_PADDING = 40
-local MAX_READABLE_W = 800
 
 --- @param x integer|"center"|"right"
 --- @param y integer|"center"
 --- @param w integer|"max"|"read_max"
 --- @param h integer|"max"
-tk.start_window = function(x, y, w, h)
+--- @param bg? "none"|string
+tk.start_window = function(x, y, w, h, bg)
   if w == "max" then
     w = love.graphics.getWidth() - 2 * tk.WINDOW_PADDING
-  elseif w == "read_max" then
-    w = math.min(love.graphics.getWidth(), MAX_READABLE_W)
   end --- @cast w integer
 
   if h == "max" then
     h = love.graphics.getHeight() - 2 * tk.WINDOW_PADDING
   end --- @cast h integer
 
-  if x == "center" then
-    x = (love.graphics.getWidth() - w) / 2
-  elseif x == "right" then
-    x = love.graphics.getWidth() - w
-  end --- @cast x integer
+  x, y, w, h = ui.frame_coords(x, y, w, h)
 
-  if y == "center" then
-    y = (love.graphics.getHeight() - h) / 2
-  end --- @cast y integer
-
-  ui.start_frame(x, y, w, h)
-    ui.tile(gui_elements.window_bg)
-  ui.finish_frame()
+  if bg ~= "none" then
+    ui.start_frame(x, y, w, h)
+      ui.tile(bg or gui_elements.window_bg)
+    ui.finish_frame()
+  end
 
   ui.start_frame(
     x + tk.WINDOW_PADDING,

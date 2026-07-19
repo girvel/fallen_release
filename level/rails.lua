@@ -27,6 +27,10 @@ init_debug = function()
       _run = function(self, ch, ps, sp)
         ch.player:rotate(Vector.up)
         ch.player.fov_r = 0
+        ch.player.incapacitated = true
+        sp:lines()
+
+        ch.player.incapacitated = false
         sp:lines()
       end,
     }
