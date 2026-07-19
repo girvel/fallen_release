@@ -657,8 +657,17 @@ local SKIP_SOUNDS = sound.multiple("engine/assets/sounds/skip_line", .05)
 local FAILURE = colors.red_high
 local SUCCESS = colors.green_high
 
+local hate = Vector.hex("e64e4b")
+local last_text
+local split
+local start_time
+
+local T_DELAY = .1
+local T_DURATION = .4
+
 draw_line = function(this_line)
   local text = this_line.text
+
   ui.start_frame()
   ui.start_line()
     if this_line.source then
@@ -688,7 +697,38 @@ draw_line = function(this_line)
         text = text:sub(j + 1)
       end
     end
-    ui.text(text)
+
+    if text ~= last_text then
+      last_text = text
+      start_time = love.timer.getTime()
+      split = {}
+      local offset = 1
+      while true do
+        local i, j, msg = text:find("=([^=]+)=", offset)
+        if not i then break end
+        table.insert(split, text:sub(offset, i - 1))
+        table.insert(split, msg)
+        offset = j + 1
+      end
+      if offset < #text then
+        table.insert(split, text:sub(offset))
+      end
+      Log.tracel(split)
+    end
+
+    local dt = love.timer.getTime() - start_time
+    local color = hate:copy()
+    color.a = math.min(1, (dt - T_DELAY) / T_DURATION)
+
+    for i, part in ipairs(split) do
+      if i % 2 == 0 then
+        ui.start_color(color)
+          ui.text(part)
+        ui.finish_color()
+      else
+        ui.text(part)
+      end
+    end
   ui.finish_line()
   ui.finish_frame()
 
