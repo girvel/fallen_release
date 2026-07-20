@@ -31,6 +31,7 @@ init_debug = function()
       },
 
       _run = function(self, ch, ps, sp)
+        do return end
         State.player:rotate(Vector.up)
         local prev_fov = State.player.fov_r
         State.player.fov_r = 0

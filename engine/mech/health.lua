@@ -138,7 +138,10 @@ health.attack_precog = function(source, target, attack_roll, damage_roll)
   local is_nat_20 = attack == attack_roll:max()
   local is_nat_1 = attack == attack_roll:min()
   local ac = target.get_armor and target:get_armor() or target.armor or 0
-  local is_critical = target:modify("incoming_is_critical", is_nat_20 and attack >= ac, source)
+  local is_critical = is_nat_20 and attack >= ac
+  if target.modify then
+    is_critical = target:modify("incoming_is_critical", is_critical, source)
+  end
   if is_critical then
     damage_roll = damage_roll + D.new(damage_roll.dice, 0)
   end
