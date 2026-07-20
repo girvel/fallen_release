@@ -1,6 +1,6 @@
 local black_and_white = {
   love_shader = love.graphics.newShader(
-    love.filesystem.read("engine/tech/shaders/black_and_white.frag"),
+    love.filesystem.read("level/shaders/black_and_white.frag"),
     nil  --- @diagnostic disable-line
   )
 }

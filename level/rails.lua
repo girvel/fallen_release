@@ -1,6 +1,6 @@
-local black_and_white_and_red = require("engine.tech.shaders.black_and_white_and_red")
+local black_and_white_and_red = require("level.shaders.black_and_white_and_red")
+local black_and_white = require("level.shaders.black_and_white")
 local async = require("engine.tech.async")
-local black_and_white = require("engine.tech.shaders.black_and_white")
 local api = require("engine.tech.api")
 local cutscene = require("engine.tech.cutscene")
 
@@ -31,7 +31,6 @@ init_debug = function()
       },
 
       _run = function(self, ch, ps, sp)
-        do return end
         State.player:rotate(Vector.up)
         local prev_fov = State.player.fov_r
         State.player.fov_r = 0

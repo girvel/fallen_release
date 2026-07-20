@@ -1,4 +1,4 @@
-local memory = require("engine.tech.shaders.memory")
+local memory_shader = require("engine.tech.memory_shader")
 
 
 --- @param self gui_game
@@ -16,7 +16,7 @@ local postprocess = function(self, dt)
 
   love.graphics.setCanvas(Kernel.screenshot)
   if State.player.is_memory_enabled then
-    love.graphics.setShader(memory.love_shader)
+    love.graphics.setShader(memory_shader.love_shader)
     love.graphics.draw(State.player.memory, unpack(-State.camera.offset))
   end
   love.graphics.setShader()

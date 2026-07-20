@@ -18,7 +18,7 @@ local preprocess = function(self, dt)
   end
 
   love.graphics.setCanvas(self._main_canvas)
-  love.graphics.clear(Vector.black)
+  love.graphics.clear(0, 0, 0, 0)
 
   local shader = State.shader
   if shader then
