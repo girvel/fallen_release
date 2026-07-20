@@ -26,6 +26,7 @@ local input_state = {
 }
 
 local cost, hint, mouse_task, mouse_task_path, is_compact
+local dialogue_y = 0
 
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Helper functions
@@ -166,8 +167,8 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local draw_gui, draw_sidebar, draw_top_bars, draw_action_grid, draw_resources, draw_move_order,
-  draw_bag, draw_dialogue, draw_notification, draw_suggestion, draw_keyboard_action_grid,
-  draw_cancel_action_grid, draw_upcast_action_grid,
+  draw_bag, draw_dialogue, draw_notification, draw_order, draw_suggestion,
+  draw_keyboard_action_grid, draw_cancel_action_grid, draw_upcast_action_grid,
   use_mouse, draw_curtain
 
 --- @param self gui_game
@@ -181,6 +182,7 @@ draw_gui = function(self, dt)
   draw_sidebar(self)
   draw_dialogue()
   draw_notification()
+  draw_order()
   draw_suggestion()
 
   if ui.keyboard("escape") then
@@ -633,14 +635,18 @@ local draw_line, draw_options
 
 draw_dialogue = function()
   local this_line = State.player.hears
-  if not this_line then return end
+  if not this_line then
+    dialogue_y = love.graphics.getHeight()
+    return
+  end
 
   local H = is_compact and 190 or 280
   local BOTTOM_GAP = is_compact and 0 or 50
   local FONT_SIZE = is_compact and 26 or 32
+  dialogue_y = love.graphics.getHeight() - H - BOTTOM_GAP
 
   local bg = State.player.incapacitated and "none" or nil
-  tk.start_window("center", love.graphics.getHeight() - H - BOTTOM_GAP, "read_max", H, bg)
+  tk.start_window("center", dialogue_y, "read_max", H, bg)
   ui.start_font(FONT_SIZE)
     if this_line.type == "plain_line" then
       draw_line(this_line)
@@ -800,6 +806,43 @@ draw_notification = function()
   ui.finish_frame()
 
   prev = text
+end
+
+local prev_order
+local order_animation = {
+  boring_flag = true,
+  codename = "order_animation",
+}
+animated.mix_in(order_animation, "assets/animations/notification_fx", "no_atlas")
+
+draw_order = function()
+  local text = State.player.order
+  if not text then
+    prev_order = text
+    return
+  end
+
+  if not State:exists(order_animation) then
+    State:add(order_animation)
+  end
+
+  if prev_order ~= text then
+    prev_order = text
+    order_animation:animate("order")
+  end
+
+  local H = 100
+  ui.start_frame("center", dialogue_y - H - 20, 800, H)
+    ui.start_color(colors.golden)
+    ui.start_frame(10, 32)
+    ui.start_font(36)
+      ui.text(text)
+    ui.finish_font()
+    ui.finish_frame()
+    ui.finish_color()
+
+    ui.image(order_animation.sprite.image)
+  ui.finish_frame()
 end
 
 local get_suggestion = function()

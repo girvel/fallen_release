@@ -14,6 +14,7 @@ local base = {}
 --- @field hears? dialogue_line
 --- @field speaks? integer
 --- @field notification? string
+--- @field order? string
 --- @field curtain_color vector
 --- @field memory love.Canvas
 --- @field is_memory_enabled boolean

@@ -1,4 +1,7 @@
+local api = require("engine.tech.api")
 local cutscene = require("engine.tech.cutscene")
+
+
 local rails = {}
 
 --- @class rails
@@ -25,13 +28,15 @@ init_debug = function()
       },
 
       _run = function(self, ch, ps, sp)
-        ch.player:rotate(Vector.up)
-        ch.player.fov_r = 0
-        ch.player.incapacitated = true
+        State.player:rotate(Vector.up)
+        State.player.fov_r = 0
+        State.player.incapacitated = true
         sp:lines()
 
-        ch.player.incapacitated = false
+        State.player.incapacitated = false
         sp:lines()
+
+        api.order(sp:literal()):wait()
       end,
     }
   }

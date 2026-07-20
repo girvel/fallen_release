@@ -452,8 +452,31 @@ api.rotate = function(entity, target)
   entity:rotate(d:normalized2())
 end
 
+local ORDER_SOUND = sound.multiple("engine/assets/sounds/electricity", .08)
+
+-- TODO queue
+--- @param text string
+--- @return promise
+api.order = function(text)
+  ORDER_SOUND:play()
+  local promise, scene = State.runner:run_task(function()
+    State.player.order = text
+    async.sleep(4)
+    State.player.order = nil
+  end)
+
+  scene.on_cancel = function()
+    if State.player.order == text then
+      State.player.order = nil
+    end
+  end
+
+  return promise
+end
+
 local NOTIFICATION_SOUND = sound.multiple("engine/assets/sounds/notification", .01)
 
+-- TODO queue
 --- @param text string
 api.notification = function(text)
   NOTIFICATION_SOUND:play()
