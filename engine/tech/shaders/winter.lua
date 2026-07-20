@@ -32,8 +32,8 @@ local build_love_shader = function(tint, intensity, brightness, brightness_insid
     love.graphics.setColor(Vector.red)
       love.graphics.clear(0, 0, 0)
 
-      local starts = State.runner:position_sequence("house")
-      local ends = State.runner:position_sequence("house_end")
+      local starts = State.level:position_sequence("house")
+      local ends = State.level:position_sequence("house_end")
 
       for _, start, finish in Fun.zip(starts, ends) do
         local size = finish:copy()
@@ -46,7 +46,7 @@ local build_love_shader = function(tint, intensity, brightness, brightness_insid
         love.graphics.rectangle("fill", start.x, start.y, size.x, size.y)
       end
 
-      local no_winter_shader = State.runner:position_sequence("no_winter_shader")
+      local no_winter_shader = State.level:position_sequence("no_winter_shader")
       for _, p in ipairs(no_winter_shader) do
         local x, y = unpack(p * K)
         love.graphics.rectangle("fill", x, y, K, K)

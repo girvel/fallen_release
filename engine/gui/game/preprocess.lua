@@ -1,24 +1,24 @@
 --- @param self gui_game
 --- @param dt number
 local preprocess = function(self, dt)
-  local resolution = V(love.graphics.getDimensions())
+  local screen_w, screen_h = love.graphics.getDimensions()
 
   do
-    local canvas_resolution = V(self._temp_canvas:getDimensions())
-    if resolution ~= canvas_resolution then
-      self._temp_canvas = love.graphics.newCanvas(unpack(resolution))
+    local w, h = self._temp_canvas:getDimensions()
+    if screen_w ~= w or screen_h ~= h then
+      self._temp_canvas = love.graphics.newCanvas(screen_w, screen_h)
     end
   end
 
   do
-    local canvas_resolution = V(self._main_canvas:getDimensions())
-    if resolution ~= canvas_resolution then
-      self._main_canvas = love.graphics.newCanvas(unpack(resolution))
+    local w, h = self._temp_canvas:getDimensions()
+    if screen_w ~= w or screen_h ~= h then
+      self._main_canvas = love.graphics.newCanvas(screen_w, screen_h)
     end
   end
 
   love.graphics.setCanvas(self._main_canvas)
-  love.graphics.clear(0, 0, 0, 0)
+  love.graphics.clear(Vector.black)
 
   local shader = State.shader
   if shader then

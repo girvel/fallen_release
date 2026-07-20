@@ -5,6 +5,10 @@ local memory = require("engine.tech.shaders.memory")
 --- @param dt number
 local postprocess = function(self, dt)
   love.graphics.setShader()
+  if State.shader and State.shader.deactivate then
+    State.shader:deactivate()
+  end
+
   if State.player.is_memory_enabled then
     love.graphics.setCanvas(State.player.memory)
     love.graphics.draw(self._main_canvas, unpack(State.camera.offset))

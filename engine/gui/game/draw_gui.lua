@@ -634,16 +634,15 @@ end
 local draw_line, draw_options
 
 draw_dialogue = function()
-  local this_line = State.player.hears
-  if not this_line then
-    dialogue_y = love.graphics.getHeight()
-    return
-  end
-
   local H = is_compact and 190 or 280
   local BOTTOM_GAP = is_compact and 0 or 50
   local FONT_SIZE = is_compact and 26 or 32
   dialogue_y = love.graphics.getHeight() - H - BOTTOM_GAP
+
+  local this_line = State.player.hears
+  if not this_line then
+    return
+  end
 
   local bg = State.player.incapacitated and "none" or nil
   tk.start_window("center", dialogue_y, "read_max", H, bg)

@@ -2,6 +2,7 @@
 --- @field love_shader love.Shader
 --- @field preprocess? fun(self: shader, entity: entity, dt: number)
 --- @field update? fun(self: shader, dt: number)
+--- @field deactivate? fun(self: shader)
 
 
 local shaders = {}
