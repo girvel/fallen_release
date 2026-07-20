@@ -846,6 +846,11 @@ draw_order = function()
 end
 
 local get_suggestion = function()
+  local override = State.player.suggestion
+  if override then return override end
+
+  if State.level.locked_entities[State.player] then return end
+
   local target = interactive.get_for(State.player)  --[[@as item]]
   if target
     and actions.interact:is_available(State.player)
@@ -868,7 +873,6 @@ local get_suggestion = function()
 end
 
 draw_suggestion = function()
-  if State.level.locked_entities[State.player] then return end
   local text = get_suggestion()
   if not text then return end
 

@@ -31,12 +31,18 @@ init_debug = function()
         State.player:rotate(Vector.up)
         State.player.fov_r = 0
         State.player.incapacitated = true
+        State.player.suggestion = sp:literal()
+        sp:lines()
+
+        State.player.suggestion = nil
         sp:lines()
 
         State.player.incapacitated = false
         sp:lines()
 
         api.order(sp:literal()):wait()
+
+        sp:lines()
       end,
     }
   }
