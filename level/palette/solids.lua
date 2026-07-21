@@ -132,6 +132,37 @@ do
   end
 end
 
+do
+  local i_broken, sprite_broken = packer:get(8, 3)
+  solids[i_broken] = function()
+    return {
+      boring_flag = true,
+      transparent_flag = true,
+      codename = "bucket",
+      name = "ведро",
+      sprite = sprite_broken,
+    }
+  end
+
+  local breaking_sound = sound.multiple("assets/sounds/bucket")
+  local i_intact, sprite_intact = packer:get(7, 3)
+  solids[i_intact] = function()
+    return {
+      boring_flag = true,
+      transparent_flag = true,
+      codename = "bucket",
+      name = "ведро",
+      sprite = sprite_intact,
+      hp = 1,
+      on_remove = function(self)
+        State:add_at(solids[i_broken](), self.position, "solids")
+        breaking_sound:play_at(self.position)
+      end,
+      shader = reflective(Vector.down),
+    }
+  end
+end
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Entities
 ----------------------------------------------------------------------------------------------------
