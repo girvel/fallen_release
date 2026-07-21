@@ -163,6 +163,88 @@ do
   end
 end
 
+for _, tuple in ipairs {
+  {3, "locker_damaged"},
+  {5, "panel_damaged"},
+  {6, "panel"},
+  {7, "panel"},
+  {11, "cabinet_damaged"},
+  {12, "fireplace"},
+  {17, "cabinet"},
+  {18, "cabinet"},
+  {19, "cabinet"},
+  {20, "cabinet"},
+  {21, "cabinet"},
+  {22, "cabinet"},
+} do
+  local index, codename = unpack(tuple --[=[@as [integer, string]]=])
+  local i, this_sprite = packer:geti(index)
+  solids[i] = function()
+    return {
+      boring_flag = true,
+      transparent_flag = true,
+      codename = codename,
+      sprite = this_sprite,
+    }
+  end
+end
+
+packer.offset = 56
+for x = 1, 4 do
+  for y = 1, 3 do
+    local codename = (x == 3 and y == 3) and "sink" or "countertop"
+    local i, this_sprite = packer:get(x, y)
+    solids[i] = function()
+      return {
+        boring_flag = true,
+        transparent_flag = true,
+        codename = codename,
+        sprite = this_sprite,
+      }
+    end
+  end
+end
+
+for x = 5, 8 do
+  for y = 1, 3 do
+    local codename = (5 <= x and x <= 8 and y == 3) and "bed" or "table"
+    local i, this_sprite = packer:get(x, y)
+    solids[i] = function()
+      return {
+        boring_flag = true,
+        transparent_flag = true,
+        codename = codename,
+        sprite = this_sprite,
+      }
+    end
+  end
+end
+
+packer.offset = 80
+for _, tuple in ipairs {
+  {1, "sofa"},
+  {2, "sofa"},
+  {3, "sofa"},
+  {4, "stool"},
+  {5, "loo"},
+  {9, "coal"},
+  {10, "coal"},
+  {11, "coal"},
+  {12, "coal"},
+  {15, "stage"},
+} do
+  local index, codename = unpack(tuple --[=[@as [integer, string]]=])
+  local i, this_sprite = packer:geti(index)
+  solids[i] = function()
+    return {
+      boring_flag = true,
+      transparent_flag = true,
+      codename = codename,
+      sprite = this_sprite,
+    }
+  end
+end
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Entities
 ----------------------------------------------------------------------------------------------------
