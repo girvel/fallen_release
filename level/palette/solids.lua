@@ -31,8 +31,8 @@ for y = 1, 4 do
   end
 end
 
-for y = 5, 8 do
-  for x = 1, 4 do
+for y = 1, 4 do
+  for x = 5, 8 do
     local i, this_sprite = packer:get(x, y)
     solids[i] = function()
       return {
