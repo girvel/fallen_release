@@ -231,6 +231,11 @@ end
 --- @param identifier string
 --- @return string
 local parse_layer_name = function(identifier)
+  local layer, other_identifier = identifier:match("^(.*)_from_(.*)")
+  if layer and other_identifier then
+    
+  end
+
   for _, candidate in ipairs(level.grid_layers) do
     if identifier:starts_with(candidate) then
       return candidate
