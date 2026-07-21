@@ -1,3 +1,4 @@
+local reflective = require("level.shaders.reflective")
 local async = require("engine.tech.async")
 local sound = require("engine.tech.sound")
 local interactive = require("engine.tech.interactive")
@@ -108,7 +109,7 @@ do
       transparent_flag = true,
       codename = "panel",
       name = "приборная панель",
-      sprite = sprite_broken
+      sprite = sprite_broken,
     }
   end
 
@@ -126,6 +127,7 @@ do
         State:add_at(solids[i_broken](), self.position, "solids")
         breaking_sound:play_at(self.position)
       end,
+      shader = reflective(Vector.down),
     }
   end
 end
