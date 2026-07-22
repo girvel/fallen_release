@@ -1,3 +1,5 @@
+local level = require("engine.tech.level")
+local animated = require("engine.tech.animated")
 local creature = require("engine.mech.creature")
 local perks = require("engine.mech.perks")
 local on_solids = require("level.palette.on_solids")
@@ -11,7 +13,7 @@ local player_base = require("engine.state.player.base")
 local abilities = require("engine.mech.abilities")
 
 
-local solids = {}
+local solids = {fs = {}}
 
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Atlas
@@ -327,6 +329,46 @@ solids.player = function()
   player_base.mix_in(result)
   humanoid.mix_in(result)
   return result
+end
+
+solids.fs.open = function(self)
+  if self.grid_layer == "on_solids" or not self.animation.current:starts_with("idle") then
+    return
+  end
+  self.interact = nil
+  self:animate("open"):next(function()
+    animated.change_pack(self, "assets/animations/"..self.codename.."/open", "no_atlas")
+    level.change_grid_layer(self, "on_solids")
+  end)
+end
+
+for _, postfix in ipairs {"", "c"} do
+  for i = 1, 3 do
+    local codename = "megadoor"..i..postfix
+    local is_interactive = i == 3
+    solids[codename] = function()  --- @diagnostic disable-line
+      local result = {
+        name = "шлюз",
+        codename = codename,
+        boring_flag = true,
+      }
+      animated.mix_in(result, "assets/animations/"..codename.."/closed", "no_atlas")
+      if is_interactive then
+        interactive.mix_in(result, function(self, other)
+          if self._locked then
+            -- TODO popup
+            return
+          end
+          for d = 0, 2 do
+            local e = State.grids.solids:slow_get(self.position + Vector.left * d)
+            Log.tracel(e)
+            if e then solids.fs.open(e) end
+          end
+        end)
+      end
+      return result
+    end
+  end
 end
 
 return solids
