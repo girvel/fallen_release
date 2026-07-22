@@ -1,3 +1,4 @@
+local sprite = require("engine.tech.sprite")
 local is_blind_for = function(x, y)
   local player = State.player
   if not player.is_blind then return false end
@@ -33,14 +34,27 @@ local draw_grid = function(self, layer, grid, dt)
     sprite_batch:clear()
   end
 
-  for x = State.camera.vision_start.x, State.camera.vision_end.x do
-    for y = State.camera.vision_start.y, State.camera.vision_end.y do
+  local k = State.camera.scale
+  local total_k = k * sprite.cell_size
+  local dx, dy = unpack(State.camera.offset)
+  local start = State.camera.vision_start
+  local finish = State.camera.vision_end
+
+  for x = start.x, finish.x do
+    for y = start.y, finish.y do
       if not vision_map:is_visible_unsafe(x, y)
         or is_blind_for(x, y)
       then goto continue end
 
       local e = grid:unsafe_get(x, y)
-      if not e or not e.sprite then goto continue end
+      if not e or not e.sprite then
+        if layer == "tiles" then
+          local relx = x * total_k - dx
+          local rely = y * total_k - dy
+          love.graphics.draw(self._bg_canvas, relx, rely, 0, k, k)
+        end
+        goto continue
+      end
 
       local is_hidden_by_perspective = (
         not vision_map:is_transparent_unsafe(x, y)

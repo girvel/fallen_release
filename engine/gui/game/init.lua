@@ -7,6 +7,7 @@ local game = {}
 --- @field _sprite_batches table<string, love.SpriteBatch>
 --- @field _temp_canvas love.Canvas
 --- @field _main_canvas love.Canvas
+--- @field _bg_canvas love.Canvas
 local methods = {
   draw_entity = require("engine.gui.game.draw_entity"),
   draw_gui = require("engine.gui.game.draw_gui"),
@@ -18,6 +19,11 @@ local methods = {
 game.mt = {__index = methods}
 
 game.new = function()
+  local bg_canvas
+  if State.level.background then
+    bg_canvas = love.graphics.newCanvas(State.level.background.sprite.image:getDimensions())
+  end
+
   return setmetatable({
     type = "game",
     _sprite_batches = Fun.iter(State.level.atlases)
@@ -25,6 +31,7 @@ game.new = function()
       :tomap(),
     _temp_canvas = love.graphics.newCanvas(),
     _main_canvas = love.graphics.newCanvas(),
+    _bg_canvas = bg_canvas,
   }, game.mt)
 end
 

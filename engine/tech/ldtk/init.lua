@@ -13,6 +13,7 @@ local ldtk = {}
 --- @field ldtk_path string
 --- @field palette palette entity factories by layer and then name
 --- @field rails_new fun(checkpoint: string): rails
+--- @field bg_new? fun(): entity
 --- @field level_mix_in fun(t: level)
 
 --- @alias ch table<string, entity>
@@ -24,6 +25,7 @@ local ldtk = {}
 --- @field positions ps
 --- @field entities ch
 --- @field locked_entities table<entity, true>
+--- @field background? entity
 local level_methods = {}
 
 --- @class load_result
@@ -52,12 +54,19 @@ ldtk.load = function(path)
   coroutine.yield("preload", 1)
   local generation_data = generate_entities(definition.palette, preload_data.entities)
 
+  local bg
+  if definition.bg_new then
+    bg = definition.bg_new()
+    table.insert(generation_data, bg)
+  end
+
   local level = {
     entities = Table.strict(generation_data.captured_entities, "captured entities"),
     positions = Table.strict(preload_data.positions, "captured positions"),
     locked_entities = {},
     atlases = generation_data.atlases,
     grid_size = preload_data.size,
+    background = bg,
   }
   Table.extend(level, level_methods)
   definition.level_mix_in(level)
