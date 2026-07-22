@@ -376,7 +376,6 @@ for _, postfix in ipairs {"", "c"} do
           end
           for d = 0, 2 do
             local e = State.grids.solids:slow_get(self.position + Vector.left * d)
-            Log.tracel(e)
             if e then solids.fs.open(e) end
           end
         end)

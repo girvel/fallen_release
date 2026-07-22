@@ -471,7 +471,7 @@ local DEFAULT_ICON = "'"
 
 local COLORS = {
   actions = Vector.hex("79ad9c"),
-  bonus_actions = colors.green_high,
+  bonus_actions = colors.light_green,
   reactions = Vector.hex("fcea9b"),
   movement = Vector.hex("429858"),
 }
@@ -511,7 +511,7 @@ draw_resources = function()
         local icon = ICONS[r] or DEFAULT_ICON
         local highlighted_n = cost and cost[r]
         if highlighted_n then
-          love.graphics.setColor(colors.red_high)
+          love.graphics.setColor(colors.red)
             ui.text(icon * highlighted_n)
           love.graphics.setColor(COLORS[r] or colors.white)
             ui.text(icon * math.max(0, amount - highlighted_n))
@@ -537,7 +537,7 @@ end
 
 local HOSTILITY_COLOR = {
   enemy = colors.red,
-  ally = colors.green_dim,
+  ally = colors.light_green,
 }
 
 draw_move_order = function()
@@ -559,7 +559,7 @@ draw_move_order = function()
         if State.combat.current_i == i then
           ui.text("x ")
         else
-          love.graphics.setColor(colors.white_dim)
+          love.graphics.setColor(colors.dark_red)
           ui.text("- ")
         end
 
@@ -660,8 +660,8 @@ end
 
 local SKIP_SOUNDS = sound.multiple("engine/assets/sounds/skip_line", .05)
 
-local FAILURE = colors.red_high
-local SUCCESS = colors.green_high
+local FAILURE = colors.red
+local SUCCESS = colors.light_green
 
 local hate = Vector.hex("e64e4b")
 local last_text
@@ -832,7 +832,7 @@ draw_order = function()
 
   local H = 100
   ui.start_frame("center", dialogue_y - H - 20, 800, H)
-    ui.start_color(colors.golden)
+    ui.start_color(colors.yellow)
     ui.start_frame(10, 32)
     ui.start_font(36)
       ui.text(text)
@@ -844,43 +844,60 @@ draw_order = function()
   ui.finish_frame()
 end
 
-local get_suggestion = function()
-  local override = State.player.suggestion
-  if override then return override end
-
-  if State.level.locked_entities[State.player] then return end
-
-  local target = interactive.get_for(State.player)  --[[@as item]]
-  if target
-    and actions.interact:is_available(State.player)
-  then
-    local name = Name.game(target)
-    local roll = target.damage_roll
-    if roll then
-      if target.bonus then
-        roll = roll + target.bonus
-      end
-      name = ("%s (%s)"):format(name, roll:simplified())
-    end
-    return "[E] для взаимодействия с "..name
-  end
-
-  target = State.grids.solids:slow_get(State.player.position + State.player.direction)
-  if target and target.sokoban_flag then
-    return "[2] чтобы толкнуть "..Name.game(target)
-  end
-end
+local canvas = love.graphics.newCanvas()
 
 draw_suggestion = function()
-  local text = get_suggestion()
-  if not text then return end
-
-  ui.start_frame(nil, love.graphics.getHeight() - 100)
-  ui.start_alignment("center")
+  local subrender_size
+  local prev_canvas = love.graphics.getCanvas()
+  love.graphics.setCanvas(canvas)
+  love.graphics.clear()
+  ui.start_frame()
   ui.start_font(32)
-    ui.text(text)
+  ui.start_line()
+  do
+    local override = State.player.suggestion
+    if override then
+      ui.text(override)
+      goto proceed
+    end
+
+    if State.level.locked_entities[State.player] then goto proceed end
+
+    local target = interactive.get_for(State.player)  --[[@as item]]
+    if target
+      and actions.interact:is_available(State.player)
+    then
+      ui.text("[E] для взаимодействия с ")
+
+      local name = Name.game(target)
+      local roll = target.damage_roll
+      if roll then
+        if target.bonus then
+          roll = roll + target.bonus
+          ui.start_color(colors.yellow)
+        end
+        ui.text("%s", name)
+        if target.bonus then
+          ui.finish_color()
+        end
+        ui.text(" (%s)", roll:simplified())
+      end
+      goto proceed
+    end
+
+    target = State.grids.solids:slow_get(State.player.position + State.player.direction)
+    if target and target.sokoban_flag then
+      ui.text("[2] чтобы толкнуть "..Name.game(target))
+    end
+  end ::proceed::
+  subrender_size = ui.get_context().cursor_x
+  ui.finish_line()
   ui.finish_font()
-  ui.finish_alignment()
+  ui.finish_frame()
+  love.graphics.setCanvas(prev_canvas)
+
+  ui.start_frame(love.graphics.getWidth() / 2 - subrender_size / 2, love.graphics.getHeight() - 100)
+    ui.image(canvas, 1)
   ui.finish_frame()
 end
 

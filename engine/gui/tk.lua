@@ -172,7 +172,7 @@ tk.choose_save = function(show_new_save)
 
   ui.start_frame()
   ui.start_alignment("right")
-  ui.start_color(colors.white_dim)
+  ui.start_color(colors.dark_red)
     for i, option in ipairs(options) do
       if show_new_save and i == 1 then
         ui.br()

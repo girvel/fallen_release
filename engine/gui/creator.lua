@@ -178,7 +178,7 @@ methods.draw_gui = function(self, dt)
           if i == self.pane_i then
             ui.text(" [%s] ", i)
           else
-            if i > State.player.level then ui.start_styles({link_color = colors.golden}) end
+            if i > State.player.level then ui.start_styles({link_color = colors.yellow}) end
             if ui.text_button(" [%s] ", i).is_clicked then
               self.pane_i = i
             end
@@ -283,7 +283,7 @@ draw_base_pane = function(self, dt)
   ui.start_line()
   ui.start_font(30)
     self:selector()
-    ui.start_color(colors.white_dim)
+    ui.start_color(colors.dark_red)
       ui.text("## ")
     ui.finish_color()
     ui.text("Раса: ")
@@ -353,7 +353,7 @@ draw_pane = function(self, dt)
   ui.start_line()
     self:selector()
     ui.start_font(36)
-      ui.start_color(colors.white_dim)
+      ui.start_color(colors.dark_red)
         ui.text("## ")
       ui.finish_color()
       ui.text("Класс: ")

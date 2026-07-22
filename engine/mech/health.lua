@@ -5,8 +5,8 @@ local item   = require "engine.tech.item"
 
 local health = {}
 
-health.COLOR_DAMAGE = colors.red_high
-health.COLOR_HEALING = colors.green_high
+health.COLOR_DAMAGE = colors.red
+health.COLOR_HEALING = colors.light_green
 
 --- Restores `amount` of `target`'s health with FX
 --- @param target entity

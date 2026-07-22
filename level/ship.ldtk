@@ -315,7 +315,7 @@
 			"tileRect": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
 			"uiTileRect": null,
 			"nineSliceBorders": [],
-			"maxCount": 0,
+			"maxCount": 1,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
 			"pivotX": 0,
@@ -1080,7 +1080,7 @@
 			"__cHei": 1,
 			"identifier": "dagger",
 			"uid": 33,
-			"relPath": "../engine/assets/animations/dagger/idle.png",
+			"relPath": "../engine/assets/animations/dagger/idle_01.png",
 			"embedAtlas": null,
 			"pxWid": 64,
 			"pxHei": 16,
@@ -2506,7 +2506,7 @@
 						},
 						{
 							"__identifier": "player",
-							"__grid": [28,41],
+							"__grid": [35,129],
 							"__pivot": [0,0],
 							"__tags": ["solid"],
 							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
@@ -2515,10 +2515,10 @@
 							"width": 16,
 							"height": 16,
 							"defUid": 3,
-							"px": [448,656],
+							"px": [560,2064],
 							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
-							"__worldX": 448,
-							"__worldY": 656
+							"__worldX": 560,
+							"__worldY": 2064
 						}
 					]
 				},

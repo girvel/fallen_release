@@ -43,7 +43,7 @@ methods.draw_gui = function(self, dt)
 
       ui.start_font(36)
         ui.start_line()
-          ui.start_color(colors.white_dim)
+          ui.start_color(colors.dark_red)
           ui.text("# ")
 
           if quest.status == "new" or quest.status == "active" then
@@ -61,13 +61,13 @@ methods.draw_gui = function(self, dt)
         local prefix
         local needs_color_reset = true
         if objective.status == "done" then
-          ui.start_color(colors.white_dim)
+          ui.start_color(colors.dark_red)
           prefix = "+ "
         elseif objective.status == "failed" then
-          ui.start_color(colors.white_dim)
+          ui.start_color(colors.dark_red)
           prefix = "x "
         elseif objective.status == "new" then
-          ui.start_color(colors.golden)
+          ui.start_color(colors.yellow)
           prefix = "- "
         else
           prefix = "- "

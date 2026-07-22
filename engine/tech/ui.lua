@@ -241,9 +241,9 @@ ui.start = function()
     line_last_h = 0,
     styles = {
       link_color = colors.blue_high,
-      punctuation_color = colors.white_dim,
+      punctuation_color = colors.dark_red,
     },
-    color = Vector.white,
+    color = V(love.graphics.getColor()),
   }
 
   stack = {}
@@ -581,7 +581,7 @@ local get_image = function(base)
   return base
 end
 
---- @param image string|love.Image
+--- @param image string|love.Drawable
 --- @param scale? integer
 ui.image = function(image, scale)
   local frame = context.frame

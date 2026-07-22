@@ -36,7 +36,6 @@ perks.relentless = {
 
 perks.toughness = {
   modify_incoming_damage = function(self, entity, damage, source, is_critical)
-    Log.traces(1)
     if damage >= 8 or is_critical then return damage end
     return 0
   end,
