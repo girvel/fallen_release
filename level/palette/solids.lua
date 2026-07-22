@@ -1,3 +1,4 @@
+local animated = require("engine.tech.animated")
 local level = require("engine.tech.level")
 local animated = require("engine.tech.animated")
 local creature = require("engine.mech.creature")
@@ -329,6 +330,20 @@ solids.player = function()
   player_base.mix_in(result)
   humanoid.mix_in(result)
   return result
+end
+
+solids.mannequin = function()
+  local e = {
+    name = "манекен",
+    codename = "mannequin",
+    hp = 1000,
+    armor = 5,
+    transparent_flag = true,
+    boring_flag = true,
+    sounds = sound.multiple("assets/sounds/hits_body", 0.3),
+  }
+  animated.mix_in(e, "assets/animations/mannequin", "no_atlas")
+  return e
 end
 
 solids.fs.open = function(self)

@@ -11,7 +11,7 @@
 	"iid": "7cebdd80-6fc0-11f1-b298-23dcb58a5112",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 35,
+	"nextUid": 38,
 	"identifierStyle": "Free",
 	"toc": [],
 	"worldLayout": "Free",
@@ -327,6 +327,41 @@
 					"tilesetUid": null
 				}
 			]
+		},
+		{
+			"identifier": "mannequin",
+			"uid": 36,
+			"tags": ["solid"],
+			"exportToToc": false,
+			"allowOutOfBounds": false,
+			"doc": null,
+			"width": 16,
+			"height": 16,
+			"resizableX": false,
+			"resizableY": false,
+			"minWidth": null,
+			"maxWidth": null,
+			"minHeight": null,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 0.08,
+			"lineOpacity": 0,
+			"hollow": false,
+			"color": "#BE4A2F",
+			"renderMode": "Tile",
+			"showName": true,
+			"tilesetId": 35,
+			"tileRenderMode": "FitInside",
+			"tileRect": { "tilesetUid": 35, "x": 0, "y": 0, "w": 16, "h": 16 },
+			"uiTileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0,
+			"pivotY": 0,
+			"fieldDefs": []
 		},
 		{
 			"identifier": "megadoor1",
@@ -918,6 +953,25 @@
 			"customData": [],
 			"savedSelections": [],
 			"cachedPixelData": { "opaqueTiles": "0000", "averageColors": "0e440e440e440e44" }
+		},
+		{
+			"__cWid": 1,
+			"__cHei": 1,
+			"identifier": "mannequin",
+			"uid": 35,
+			"relPath": "../assets/animations/mannequin/idle_01.png",
+			"embedAtlas": null,
+			"pxWid": 16,
+			"pxHei": 16,
+			"tileGridSize": 16,
+			"spacing": 0,
+			"padding": 0,
+			"tags": [],
+			"tagsSourceEnumUid": null,
+			"enumTags": [],
+			"customData": [],
+			"savedSelections": [],
+			"cachedPixelData": { "opaqueTiles": "0", "averageColors": "3535" }
 		}
 	], "enums": [], "externalEnums": [], "levelFields": [] },
 	"levels": [
@@ -2190,22 +2244,6 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "player",
-							"__grid": [14,89],
-							"__pivot": [0,0],
-							"__tags": ["solid"],
-							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
-							"__smartColor": "#BE4A2F",
-							"iid": "0d31eab0-6fc0-11f1-b298-c9678240c370",
-							"width": 16,
-							"height": 16,
-							"defUid": 3,
-							"px": [224,1424],
-							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
-							"__worldX": 224,
-							"__worldY": 1424
-						},
-						{
 							"__identifier": "megadoor1",
 							"__grid": [13,87],
 							"__pivot": [0,0],
@@ -2252,6 +2290,38 @@
 							"fieldInstances": [],
 							"__worldX": 240,
 							"__worldY": 1392
+						},
+						{
+							"__identifier": "mannequin",
+							"__grid": [37,128],
+							"__pivot": [0,0],
+							"__tags": ["solid"],
+							"__tile": { "tilesetUid": 35, "x": 0, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#BE4A2F",
+							"iid": "6cd0d740-6fc0-11f1-857b-67d4e68715ce",
+							"width": 16,
+							"height": 16,
+							"defUid": 36,
+							"px": [592,2048],
+							"fieldInstances": [],
+							"__worldX": 592,
+							"__worldY": 2048
+						},
+						{
+							"__identifier": "player",
+							"__grid": [35,129],
+							"__pivot": [0,0],
+							"__tags": ["solid"],
+							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#BE4A2F",
+							"iid": "74838370-6fc0-11f1-857b-f7e5cfd44606",
+							"width": 16,
+							"height": 16,
+							"defUid": 3,
+							"px": [560,2064],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
+							"__worldX": 560,
+							"__worldY": 2064
 						}
 					]
 				},
@@ -2281,19 +2351,35 @@
 					"entityInstances": [
 						{
 							"__identifier": "dagger",
-							"__grid": [16,89],
+							"__grid": [37,130],
 							"__pivot": [0,0],
 							"__tags": ["item"],
 							"__tile": { "tilesetUid": 33, "x": 16, "y": 0, "w": 16, "h": 16 },
 							"__smartColor": "#EAD4AA",
-							"iid": "788e1360-6fc0-11f1-857b-7d56adc08fef",
+							"iid": "1504af90-6fc0-11f1-857b-d91d133d6886",
 							"width": 16,
 							"height": 16,
 							"defUid": 34,
-							"px": [256,1424],
+							"px": [592,2080],
 							"fieldInstances": [],
-							"__worldX": 256,
-							"__worldY": 1424
+							"__worldX": 592,
+							"__worldY": 2080
+						},
+						{
+							"__identifier": "dagger",
+							"__grid": [37,131],
+							"__pivot": [0,0],
+							"__tags": ["item"],
+							"__tile": { "tilesetUid": 33, "x": 16, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#EAD4AA",
+							"iid": "153e8440-6fc0-11f1-857b-dbd33aa7a2cb",
+							"width": 16,
+							"height": 16,
+							"defUid": 34,
+							"px": [592,2096],
+							"fieldInstances": [],
+							"__worldX": 592,
+							"__worldY": 2096
 						}
 					]
 				},

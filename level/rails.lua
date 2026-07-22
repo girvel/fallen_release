@@ -1,3 +1,5 @@
+local items = require("level.palette.items")
+local item = require("engine.tech.item")
 local black_and_white_and_red = require("level.shaders.black_and_white_and_red")
 local black_and_white = require("level.shaders.black_and_white")
 local async = require("engine.tech.async")
@@ -22,6 +24,8 @@ rails.new = function(checkpoint)
 end
 
 init_debug = function()
+  item.give(State.player, State:add(items.yellow_gloves()))
+
   State.runner:extend {
     intro = cutscene.make {
       enabled = true,
