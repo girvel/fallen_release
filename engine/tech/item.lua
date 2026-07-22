@@ -6,7 +6,7 @@ local interactive = require "engine.tech.interactive"
 
 local item = {}
 
-item.DROPPING_SLOTS = {"hand", "offhand", "head", "body"}
+item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "body"}
 
 -- TODO replace tags.heavy with like tag_heavy or flag_heavy
 
