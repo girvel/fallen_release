@@ -1,8 +1,19 @@
 --- Module for level grid logic
 local level = {}
 
---- @alias grid_layer "tiles"|"on_tiles"|"items"|"marks"|"solids"|"on_solids"|"on2_solids"
+--- @class grids
+--- @field pipes grid<entity>
+--- @field tiles grid<entity>
+--- @field on_tiles grid<entity>
+--- @field items grid<entity>
+--- @field marks grid<entity>
+--- @field solids grid<entity>
+--- @field on_solids grid<entity>
+--- @field on2_solids grid<entity>
+
+--- @alias grid_layer "pipes"|"tiles"|"on_tiles"|"items"|"marks"|"solids"|"on_solids"|"on2_solids"
 level.grid_layers = {
+  "pipes",
   "tiles",
   "on_tiles",
   "marks",
@@ -23,8 +34,9 @@ for i, l1 in ipairs(level.grid_layers) do
   end
 end
 
---- @alias layer "tiles"|"on_tiles"|"marks"|"fx_under"|"items"|"solids"|"fx_over"|"on_solids"|"on2_solids"|"weather"|"shadows"|"fx_over_shadows"
+--- @alias layer "pipes"|"tiles"|"on_tiles"|"marks"|"fx_under"|"items"|"solids"|"fx_over"|"on_solids"|"on2_solids"|"weather"|"shadows"|"fx_over_shadows"
 level.layers = {
+  "pipes",
   "tiles",
   "on_tiles",
   "marks",

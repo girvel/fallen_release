@@ -22,7 +22,7 @@ local state = {}
 --- @field shadow state_shadow
 --- @field shader shader?
 --- @field rails rails
---- @field grids table<grid_layer, grid<entity>>
+--- @field grids grids
 --- @field level level
 --- @field player player
 --- @field is_loaded boolean is level fully loaded
