@@ -13,6 +13,7 @@ local animated = {}
 --- @field looped boolean
 --- @field current animation_name|string
 --- @field frame number
+--- @field fps? number
 --- @field _end_promise promise
 --- @field _fx_flag boolean
 
@@ -129,7 +130,7 @@ methods.animate = function(self, animation_name, assertive, looped)
   return animation._end_promise
 end
 
-local DEFAULT_ANIMATION_FPS = 6
+animated.default_fps = 6
 
 --- @param self entity
 --- @param dt? number
@@ -144,7 +145,7 @@ methods.animation_update = function(self, dt)
 
   -- DT State.real_time
   -- even if animation is 1 frame idle, still should play out for 1-frame FXs
-  animation.frame = animation.frame + dt * DEFAULT_ANIMATION_FPS
+  animation.frame = animation.frame + dt * (self.animation.fps or animated.default_fps)
   if math.floor(animation.frame) > #current_pack then
     if animation._fx_flag then
       State:remove(self)

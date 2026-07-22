@@ -13,7 +13,7 @@ local ldtk = {}
 --- @field ldtk_path string
 --- @field palette palette entity factories by layer and then name
 --- @field rails_new fun(checkpoint: string): rails
---- @field level_mix_in fun(t: level_base)
+--- @field level_mix_in fun(t: level)
 
 --- @alias ch table<string, entity>
 --- @alias ps table<string, vector>
