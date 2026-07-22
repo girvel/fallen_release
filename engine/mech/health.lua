@@ -166,6 +166,9 @@ health.attack_precog = function(source, target, attack_roll, damage_roll)
   if source.modify then
     damage_amount = source:modify("outgoing_damage", damage_amount, target, is_critical)
   end
+  if target.modify then
+    damage_amount = target:modify("incoming_damage", damage_amount, source, is_critical)
+  end
 
   return true, is_critical, damage_amount
 end

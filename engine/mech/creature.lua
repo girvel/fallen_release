@@ -6,7 +6,7 @@ local creature = {}
 
 
 --- @class _creature_methods
-local methods = {}
+creature.methods = {}
 
 --- @param entity table
 creature.mix_in = function(entity)
@@ -25,7 +25,7 @@ creature.mix_in = function(entity)
     }
   end
 
-  Table.extend(entity, methods)
+  Table.extend(entity, creature.methods)
 
   entity:rest("full")
   entity:rotate(entity.direction or Vector.right)
@@ -44,6 +44,7 @@ end
 --- | '"dex_armor_bonus"'
 --- | '"activation"'
 --- | '"hp"'
+--- | '"incoming_damage"'
 --- | '"incoming_attack_roll"'
 --- | '"incoming_is_critical"'
 --- | '"outgoing_damage"'
@@ -57,7 +58,7 @@ end
 --- @param modname creature_modification
 --- @param value any
 --- @param ... any
-methods.modify = function(self, modname, value, ...)
+creature.methods.modify = function(self, modname, value, ...)
   modname = "modify_" .. modname
   for _, p in ipairs(self.perks) do
     local mod = p[modname]
@@ -91,7 +92,7 @@ end
 
 --- @param self entity
 --- @param rest_type rest_type
-methods.get_resources = function(self, rest_type)
+creature.methods.get_resources = function(self, rest_type)
   local result = {}
   if rest_type == "move" then
     result = {
@@ -118,13 +119,13 @@ methods.get_resources = function(self, rest_type)
 end
 
 --- @param self entity
-methods.get_max_hp = function(self)
+creature.methods.get_max_hp = function(self)
   return math.max(1, self:modify("max_hp", self.max_hp or self.level * self:get_modifier("con")))
 end
 
 --- @param self entity
 --- @param rest_type rest_type
-methods.rest = function(self, rest_type)
+creature.methods.rest = function(self, rest_type)
   if rest_type == "long" or rest_type == "full" then
     health.set_hp(self, self:get_max_hp())
   end
@@ -134,7 +135,7 @@ end
 
 --- @param self entity
 --- @param direction? vector
-methods.rotate = function(self, direction)
+creature.methods.rotate = function(self, direction)
   if direction then
     self.direction = direction
   else
@@ -151,7 +152,7 @@ end
 
 --- Compute armor class; doesn't take priority over .armor
 --- @param self entity
-methods.get_armor = function(self)
+creature.methods.get_armor = function(self)
   return self.armor
     or self:modify("armor", 10 + self:modify("dex_armor_bonus", self:get_modifier("dex")))
 end
@@ -159,7 +160,7 @@ end
 --- @param self entity
 --- @param ability ability|skill
 --- @return number
-methods.get_modifier = function(self, ability)
+creature.methods.get_modifier = function(self, ability)
   if abilities.set[ability] then
     return abilities.get_modifier(self:modify(
       "ability_score",
@@ -182,7 +183,7 @@ end
 --- @param self entity
 --- @param ability ability|skill
 --- @return d
-methods.get_roll = function(self, ability)
+creature.methods.get_roll = function(self, ability)
   return D(20) + self:get_modifier(ability) + xp.get_proficiency_bonus(self.level or 1)
 end
 
@@ -193,7 +194,7 @@ local FAILURE = sound.multiple("engine/assets/sounds/check_failed")
 --- @param to_check ability|skill
 --- @param dc integer difficulty class
 --- @return boolean
-methods.ability_check_precog = function(self, to_check, dc)
+creature.methods.ability_check_precog = function(self, to_check, dc)
   local roll = D(20) + self:get_modifier(to_check)
   local result = roll:roll()
   Log.debug("%s rolls check %s: %s against %s",
@@ -204,7 +205,7 @@ end
 
 --- @param self entity
 --- @param success boolean
-methods.ability_check_enact = function(self, success)
+creature.methods.ability_check_enact = function(self, success)
   local sounds = success and SUCCESS or FAILURE
   sounds:play_at(self.position)
 end
@@ -213,7 +214,7 @@ end
 --- @param to_check ability|skill
 --- @param dc integer difficulty class
 --- @return boolean
-methods.ability_check = function(self, to_check, dc)
+creature.methods.ability_check = function(self, to_check, dc)
   local success = self:ability_check_precog(to_check, dc)
   self:ability_check_enact(success)
   return success
@@ -223,7 +224,7 @@ end
 --- @param to_check ability
 --- @param dc integer difficulty class
 --- @return boolean
-methods.saving_throw = function(self, to_check, dc)
+creature.methods.saving_throw = function(self, to_check, dc)
   local roll = self:modify("saving_throw", D(20) + self:get_modifier(to_check), to_check)
   local result = roll:roll()
   local success = result >= dc
@@ -242,7 +243,7 @@ end
 --- @param self entity
 --- @param weapon item?
 --- @return integer
-methods.get_combat_modifier = function(self, weapon)
+creature.methods.get_combat_modifier = function(self, weapon)
   local str = self:get_modifier("str")
   if not weapon then return str end
 
@@ -259,14 +260,14 @@ end
 
 --- @param self entity
 --- @param mod ability
-methods.get_spell_dc = function(self, mod)
+creature.methods.get_spell_dc = function(self, mod)
   return 10 + xp.get_proficiency_bonus(self.level or 1) + self:get_modifier(mod)
 end
 
 --- @param self entity
 --- @param slot string
 --- @return d
-methods.get_attack_roll = function(self, slot)
+creature.methods.get_attack_roll = function(self, slot)
   local weapon = self.inventory[slot]
   local roll = D(20)
     + xp.get_proficiency_bonus(self.level)
@@ -282,7 +283,7 @@ end
 --- @param self entity
 --- @param slot string
 --- @return d
-methods.get_damage_roll = function(self, slot)
+creature.methods.get_damage_roll = function(self, slot)
   local weapon = self.inventory[slot]
   if not weapon then
     return D.new({}, self:get_modifier("str") + 1)
@@ -305,21 +306,21 @@ methods.get_damage_roll = function(self, slot)
 end
 
 --- @param self entity
-methods.get_initiative_roll = function(self)
+creature.methods.get_initiative_roll = function(self)
   return self:modify("initiative_roll", D(20) + self:get_modifier("dex"))
 end
 
 --- Whether the entity can use actions at this moment
-methods.can_act = function(self)
+creature.methods.can_act = function(self)
   return not State.level.locked_entities[self] and not (State.combat and State.combat:get_current() ~= self)
 end
 
 --- Whether the entity is free from cutscenes/combat
-methods.is_free = function(self)
+creature.methods.is_free = function(self)
   return not State.level.locked_entities[self] and not (State.combat and State:in_combat(self))
 end
 
 Ldump.mark(creature, {
-  mix_in = {methods = "const"},
+  {methods = "const"},
 }, ...)
 return creature

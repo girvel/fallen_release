@@ -13,3 +13,5 @@ local bcd = 2
 3. Function calls always use braces (`()`) except if it's something like `action.plain {...}`, where action.plain is kind of a type
 4. Private fields start with _
 5. Partial implementations start with _. For example, a cutscene implements the :run function, that then calls :_run, but it can be overriden by providing :run yourself
+6. 2-space indent
+7. 100 line width

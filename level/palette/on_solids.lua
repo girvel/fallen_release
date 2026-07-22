@@ -57,6 +57,7 @@ for _, tuple in ipairs {
   {21, "vines"},
   {23, "helm"},
   {24, "inscription"},
+  {25, "door_open"},
   {28, "vines"},
   {29, "vines"},
   {36, "vines"},
@@ -76,4 +77,5 @@ for _, tuple in ipairs {
   end
 end
 
+Ldump.mark(on_solids, {}, ...)
 return on_solids

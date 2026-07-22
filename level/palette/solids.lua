@@ -1,3 +1,6 @@
+local creature = require("engine.mech.creature")
+local perks = require("engine.mech.perks")
+local on_solids = require("level.palette.on_solids")
 local reflective = require("level.shaders.reflective")
 local async = require("engine.tech.async")
 local sound = require("engine.tech.sound")
@@ -20,6 +23,7 @@ local packer = factoring.packer(solids.ATLAS_IMAGE)
 packer.offset = 0
 for y = 1, 4 do
   for x = 1, 4 do
+    if y == 4 and x <= 2 then goto continue end
     local i, this_sprite = packer:get(x, y)
     solids[i] = function()
       return {
@@ -28,11 +32,13 @@ for y = 1, 4 do
         sprite = this_sprite,
       }
     end
+    ::continue::
   end
 end
 
 for y = 1, 4 do
   for x = 5, 8 do
+    if y == 4 and x <= 6 then goto continue end
     local i, this_sprite = packer:get(x, y)
     solids[i] = function()
       return {
@@ -42,6 +48,7 @@ for y = 1, 4 do
         transparent_flag = true,
       }
     end
+    ::continue::
   end
 end
 
@@ -64,6 +71,21 @@ local make_open = function(factory, target_layer, soundname)
   end
 end
 
+do
+  local open = make_open(on_solids[25], "on_solids", false)
+  local i, this_sprite = packer:geti(25)
+  solids[i] = function()
+    local e = {
+      boring_flag = true,
+      codename = "door",
+      name = "дверь",
+      sprite = this_sprite,
+    }
+    interactive.mix_in(e, open)
+    return e
+  end
+end
+
 packer.offset = 32
 for _, tuple in ipairs {
   {1, "locker", "шкафчик", "cabinet"},
@@ -72,7 +94,7 @@ for _, tuple in ipairs {
   {15, "chest", "сундук", "chest"},
 } do
   local index, codename, name, soundname = unpack(
-    tuple --[=[@as [integer, string, string, string|false]]=]
+    tuple --[=[@as [integer, string, string, string, boolean, string|false]]=]
   )
 
   local i_open, sprite_open = packer:geti(index + 1)
@@ -98,6 +120,31 @@ for _, tuple in ipairs {
     }
     interactive.mix_in(e, open)
     return e
+  end
+end
+
+do
+  local breaking_sound = sound.multiple("assets/sounds/door_breaking")
+  local i, this_sprite = packer:get(2, 0)
+  solids[i] = function()
+    return {
+      boring_flag = true,
+      transparent_flag = true,
+      codename = "breakable_door",
+      name = "дверь",
+      sprite = this_sprite,
+      hp = 1,
+      on_remove = function(self)
+        State:add_at(on_solids[17](), self.position, "on_solids")
+        breaking_sound:play_at(self.position)
+      end,
+      modify = creature.methods.modify,
+      perks = {
+        perks.toughness,
+      },
+      conditions = {},
+      inventory = {},
+    }
   end
 end
 
