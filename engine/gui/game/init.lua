@@ -8,6 +8,7 @@ local game = {}
 --- @field _temp_canvas love.Canvas
 --- @field _main_canvas love.Canvas
 --- @field _bg_canvas love.Canvas
+--- @field _bg_offset number
 local methods = {
   draw_entity = require("engine.gui.game.draw_entity"),
   draw_gui = require("engine.gui.game.draw_gui"),
@@ -32,6 +33,7 @@ game.new = function()
     _temp_canvas = love.graphics.newCanvas(),
     _main_canvas = love.graphics.newCanvas(),
     _bg_canvas = bg_canvas,
+    _bg_offset = 0,
   }, game.mt)
 end
 

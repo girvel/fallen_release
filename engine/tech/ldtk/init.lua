@@ -57,7 +57,7 @@ ldtk.load = function(path)
   local bg
   if definition.bg_new then
     bg = definition.bg_new()
-    table.insert(generation_data, bg)
+    table.insert(generation_data.entities, bg)
   end
 
   local level = {

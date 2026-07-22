@@ -1,3 +1,4 @@
+local sprite = require("engine.tech.sprite")
 --- @param self gui_game
 --- @param dt number
 local preprocess = function(self, dt)
@@ -20,18 +21,40 @@ local preprocess = function(self, dt)
   love.graphics.setCanvas(self._main_canvas)
   love.graphics.clear(0, 0, 0, 0)
 
+  State.camera:_update(dt)
+
   local bg = State.level.background
   if bg then
+    self._bg_offset = (self._bg_offset + State.level.water_speed * dt) % sprite.cell_size
+
     local old_canvas = love.graphics.getCanvas()
     love.graphics.setCanvas(self._bg_canvas)
-      local offset = Vector.zero
-      love.graphics.draw(bg.sprite.image, unpack(offset))
-      -- for _, delta in ipairs(Vector.extended_directions) do
-      --   love.graphics.draw(bg.sprite.image, unpack(
-      --     offset + delta * State.camera.scale
-      --   ))
-      -- end
+      local offset = math.floor(self._bg_offset)
+      love.graphics.draw(bg.sprite.image, 0, offset)
+      love.graphics.draw(bg.sprite.image, 0, offset - sprite.cell_size)
     love.graphics.setCanvas(old_canvas)
+
+    local k = State.camera.scale
+    local total_k = k * sprite.cell_size
+    local dx, dy = unpack(State.camera.offset)
+    local vision_map = State.player.ai._vision_map
+    for x = State.camera.vision_start.x, State.camera.vision_end.x do
+      for y = State.camera.vision_start.y, State.camera.vision_end.y do
+        if not vision_map:is_visible_unsafe(x, y) then goto continue end
+        local relx = x * total_k - dx
+        local rely = y * total_k - dy
+        local tile = State.grids.tiles:unsafe_get(x, y)
+        if tile then
+          love.graphics.setColor(Vector.black)
+          love.graphics.rectangle("fill", relx, rely, total_k, total_k)
+        else
+          love.graphics.setColor(Vector.white)
+          love.graphics.draw(self._bg_canvas, relx, rely, 0, k, k)
+        end
+        ::continue::
+      end
+    end
+    love.graphics.setColor(Vector.white)
   end
 
   local shader = State.shader

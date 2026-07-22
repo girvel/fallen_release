@@ -56,11 +56,11 @@ local list = function(items)
   ui.offset(0, BLOCK_GAP)
 end
 
-credits.draw_gui = function(self)
+credits.draw_gui = function(self, dt)
   if love.keyboard.isDown("space") then
-    offset = offset + love.timer.getDelta() * SCROLL_SPEED
+    offset = offset + dt * SCROLL_SPEED
   else
-    offset = offset + love.timer.getDelta() * SPEED
+    offset = offset + dt * SPEED
   end
   gap_before_title = gap_before_title or love.graphics.getHeight() - 100
 

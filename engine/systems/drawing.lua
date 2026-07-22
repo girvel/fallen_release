@@ -12,10 +12,6 @@ return Tiny.sortedProcessingSystem {
     return Table.index_of(level.layers, a.layer) < Table.index_of(level.layers, b.layer)
   end,
 
-  preProcess = function(_, dt)
-    State.camera:_update(dt)
-  end,
-
   process = function(_, entity, dt)
     Kernel.gui:draw_entity(entity, dt)
   end,
