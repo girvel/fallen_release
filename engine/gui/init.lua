@@ -112,7 +112,6 @@ methods.player_has_died = function(self)
 end
 
 methods.to_start_screen = function(self)
-  assert(self._mode.type == "death" or self._mode.type == "ending")
   self:_set_mode(STATES.start_menu.new())
   State = (nil --[[@as state]])
 end

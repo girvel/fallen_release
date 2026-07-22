@@ -25,6 +25,9 @@ end
 
 init_debug = function()
   item.give(State.player, State:add(items.yellow_gloves()))
+  State.runner:run_task(function()
+    Kernel.gui:_set_mode(love.filesystem.load("level/credits.lua")())
+  end)
 
   State.runner:extend {
     intro = cutscene.make {
