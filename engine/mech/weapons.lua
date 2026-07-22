@@ -47,7 +47,8 @@ weapons.knife = function()
   local e = {
     name = "кухонный нож",
     codename = "knife",
-    damage_roll = D(4),
+    damage_roll = D(2),
+    bonus = 1,
     tags = {
       finesse = true,
       light = true,
@@ -55,6 +56,75 @@ weapons.knife = function()
     slot = "hands",
   }
   item.mix_in(e, "engine/assets/animations/knife")
+  return e
+end
+
+weapons.dagger = function()
+  local e = {
+    name = "кортик",
+    codename = "dagger",
+    damage_roll = D(4),
+    tags = {
+      finesse = true,
+      light = true,
+    },
+    slot = "hands",
+  }
+  item.mix_in(e, "engine/assets/animations/dagger")
+  return e
+end
+
+weapons.razor = function()
+  local e = {
+    name = "опасная бритва",
+    codename = "razor",
+    damage_roll = D(4),
+    tags = {
+      finesse = true,
+      light = true,
+    },
+    slot = "hands",
+  }
+  item.mix_in(e, "engine/assets/animations/razor")
+  return e
+end
+
+weapons.machete = function()
+  local e = {
+    name = "мачете",
+    codename = "machete",
+    damage_roll = D(6),
+    tags = {},
+    slot = "hands",
+  }
+  item.mix_in(e, "engine/assets/animations/machete")
+  return e
+end
+
+weapons.mace = function()
+  local e = {
+    name = "булава",
+    codename = "mace",
+    damage_roll = D(8),
+    tags = {light = true},
+    slot = "hands",
+  }
+  item.mix_in(e, "engine/assets/animations/mace")
+  return e
+end
+
+weapons.greatsword = function()
+  local e = {
+    name = "двуручный меч",
+    codename = "greatsword",
+    damage_roll = D(6) * 2,
+    tags = {
+      two_handed = true,
+      heavy = true,
+    },
+    slot = "hands",
+  }
+  item.mix_in(e, "engine/assets/animations/greatsword")
   return e
 end
 

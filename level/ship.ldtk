@@ -11,7 +11,7 @@
 	"iid": "7cebdd80-6fc0-11f1-b298-23dcb58a5112",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 33,
+	"nextUid": 35,
 	"identifierStyle": "Free",
 	"toc": [],
 	"worldLayout": "Free",
@@ -607,6 +607,41 @@
 			"pivotX": 0,
 			"pivotY": 0,
 			"fieldDefs": []
+		},
+		{
+			"identifier": "dagger",
+			"uid": 34,
+			"tags": ["item"],
+			"exportToToc": false,
+			"allowOutOfBounds": false,
+			"doc": null,
+			"width": 16,
+			"height": 16,
+			"resizableX": false,
+			"resizableY": false,
+			"minWidth": null,
+			"maxWidth": null,
+			"minHeight": null,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 0.08,
+			"lineOpacity": 0,
+			"hollow": false,
+			"color": "#EAD4AA",
+			"renderMode": "Tile",
+			"showName": true,
+			"tilesetId": 33,
+			"tileRenderMode": "FitInside",
+			"tileRect": { "tilesetUid": 33, "x": 16, "y": 0, "w": 16, "h": 16 },
+			"uiTileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0,
+			"pivotY": 0,
+			"fieldDefs": []
 		}
 	], "tilesets": [
 		{
@@ -864,6 +899,25 @@
 			"customData": [],
 			"savedSelections": [],
 			"cachedPixelData": { "opaqueTiles": "0000", "averageColors": "0e430e530e430e53" }
+		},
+		{
+			"__cWid": 4,
+			"__cHei": 1,
+			"identifier": "dagger",
+			"uid": 33,
+			"relPath": "../engine/assets/animations/dagger/idle.png",
+			"embedAtlas": null,
+			"pxWid": 64,
+			"pxHei": 16,
+			"tileGridSize": 16,
+			"spacing": 0,
+			"padding": 0,
+			"tags": [],
+			"tagsSourceEnumUid": null,
+			"enumTags": [],
+			"customData": [],
+			"savedSelections": [],
+			"cachedPixelData": { "opaqueTiles": "0000", "averageColors": "0e440e440e440e44" }
 		}
 	], "enums": [], "externalEnums": [], "levelFields": [] },
 	"levels": [
@@ -2224,7 +2278,24 @@
 					"seed": 1522052,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "dagger",
+							"__grid": [16,89],
+							"__pivot": [0,0],
+							"__tags": ["item"],
+							"__tile": { "tilesetUid": 33, "x": 16, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#EAD4AA",
+							"iid": "788e1360-6fc0-11f1-857b-7d56adc08fef",
+							"width": 16,
+							"height": 16,
+							"defUid": 34,
+							"px": [256,1424],
+							"fieldInstances": [],
+							"__worldX": 256,
+							"__worldY": 1424
+						}
+					]
 				},
 				{
 					"__identifier": "tiles",
