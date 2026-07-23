@@ -43,6 +43,8 @@ local context
 --- @class ui_context
 --- @field cursor_x integer
 --- @field cursor_y integer
+--- @field max_x integer
+--- @field max_y integer
 --- @field frame ui_frame
 --- @field alignment {x: ui_alignment_x, y: ui_alignment_y}
 --- @field font love.Font
@@ -51,6 +53,7 @@ local context
 --- @field line_last_h integer
 --- @field styles ui_styles
 --- @field color vector
+--- @field canvas love.Canvas
 
 --- @class ui_styles
 --- @field link_color vector
@@ -228,6 +231,8 @@ ui.start = function()
   context = {
     cursor_x = 0,
     cursor_y = 0,
+    max_x = 0,
+    max_y = 0,
     frame = {
       x = 0,
       y = 0,
@@ -244,6 +249,7 @@ ui.start = function()
       punctuation_color = colors.dark_red,
     },
     color = V(love.graphics.getColor()),
+    canvas = love.graphics.getCanvas(),
   }
 
   stack = {}
@@ -337,15 +343,20 @@ ui.start_frame = function(x, y, w, h)
   ui.stack_push("frame", frame)
   ui.stack_push("cursor_x", frame.x)
   ui.stack_push("cursor_y", frame.y)
+  ui.stack_push("max_x", frame.x)
+  ui.stack_push("max_y", frame.y)
   -- love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
 end
 
 --- @param push_y? "push_frame"|"push_cursor"
 --- @return ui_frame
 ui.finish_frame = function(push_y)
+  local prev_frame = ui.stack_pop("frame")
   ui.stack_pop("cursor_x")
   local prev_cursor_y = ui.stack_pop("cursor_y")
-  local prev_frame = ui.stack_pop("frame")
+  context.max_x = math.max(context.max_x, ui.stack_pop("max_x"))
+  context.max_y = math.max(context.max_y, ui.stack_pop("max_y"))
+
   if push_y == "push_frame" then
     context.cursor_y = prev_frame.y + prev_frame.h
   elseif push_y == "push_cursor" then
@@ -413,6 +424,46 @@ ui.finish_color = function()
   love.graphics.setColor(context.color)
 end
 
+ui.start_canvas = function()
+  local w, h = love.graphics.getDimensions()
+  ui.stack_push("canvas", love.graphics.newCanvas())
+  ui.stack_push("alignment", "left")
+  ui.stack_push("frame", {
+    x = 0, y = 0,
+    w = w, h = h,
+  })
+  ui.stack_push("cursor_x", 0)
+  ui.stack_push("cursor_y", 0)
+  ui.stack_push("max_x", 0)
+  ui.stack_push("max_y", 0)
+  love.graphics.setCanvas(context.canvas)
+  love.graphics.clear()
+end
+
+ui.finish_canvas = function()
+  local rendered_canvas = ui.stack_pop("canvas")
+  ui.stack_pop("alignment")
+  local frame = ui.stack_pop("frame")
+  ui.stack_pop("cursor_x")
+  ui.stack_pop("cursor_y")
+  local max_x = ui.stack_pop("max_x")
+  local max_y = ui.stack_pop("max_y")
+  love.graphics.setCanvas(context.canvas)
+
+  local w = max_x - frame.x
+  local h = max_y - frame.y
+
+  local x
+  if context.alignment.x == "left" then
+    x = context.cursor_x
+  elseif context.alignment.x == "center" then
+    x = context.frame.x + (context.frame.w - w) / 2
+  else
+    x = context.frame.x + (context.frame.w - w)
+  end
+  love.graphics.draw(rendered_canvas, x, context.cursor_y)
+end
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] UI elements
 ----------------------------------------------------------------------------------------------------
@@ -469,25 +520,30 @@ ui.text = function(text, ...)
   local wrapped = wrap(text, context.font, context.cursor_x - context.frame.x, context.frame.w)
 
   for i, line in ipairs(wrapped) do
+    local w = font:getWidth(line)
+    local h = font:getHeight()
     local x
     if alignment.x == "center" then
-      x = frame.x + (frame.w - font:getWidth(line)) / 2
+      x = frame.x + (frame.w - w) / 2
     elseif alignment.x == "right" then
-      x = frame.x + frame.w - font:getWidth(line)
+      x = frame.x + frame.w - w
     else
       x = context.cursor_x
     end
 
     local y
     if alignment.y == "center" then
-      y = frame.y + (frame.h - font:getHeight() * #wrapped) / 2 + font:getHeight() * (i - 1)
+      y = frame.y + (frame.h - h * #wrapped) / 2 + h * (i - 1)
     elseif alignment.y == "bottom" then
-      y = frame.y + frame.h - font:getHeight() * #wrapped + font:getHeight() * (i - 1)
+      y = frame.y + frame.h - h * #wrapped + h * (i - 1)
     else
       y = context.cursor_y
     end
 
     love.graphics.print(line, x, y)
+
+    context.max_x = math.max(context.max_x, context.cursor_x + w)
+    context.max_y = math.max(context.max_y, context.cursor_y + h)
 
     if context.is_linear then
       if i < #wrapped then

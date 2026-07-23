@@ -844,15 +844,11 @@ draw_order = function()
   ui.finish_frame()
 end
 
-local canvas = love.graphics.newCanvas()
-
 draw_suggestion = function()
-  local subrender_size
-  local prev_canvas = love.graphics.getCanvas()
-  love.graphics.setCanvas(canvas)
-  love.graphics.clear()
-  ui.start_frame()
+  ui.start_frame(nil, love.graphics.getHeight() - 100)
   ui.start_font(32)
+  ui.start_alignment("center")
+  ui.start_canvas()
   ui.start_line()
   do
     local override = State.player.suggestion
@@ -890,14 +886,10 @@ draw_suggestion = function()
       ui.text("[2] чтобы толкнуть "..Name.game(target))
     end
   end ::proceed::
-  subrender_size = ui.get_context().cursor_x
   ui.finish_line()
+  ui.finish_canvas()
+  ui.finish_alignment()
   ui.finish_font()
-  ui.finish_frame()
-  love.graphics.setCanvas(prev_canvas)
-
-  ui.start_frame(love.graphics.getWidth() / 2 - subrender_size / 2, love.graphics.getHeight() - 100)
-    ui.image(canvas, 1)
   ui.finish_frame()
 end
 
