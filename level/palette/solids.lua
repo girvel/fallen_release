@@ -396,12 +396,14 @@ for _, postfix in ipairs {"", "c"} do
         name = "шлюз",
         codename = codename,
         boring_flag = true,
+        _locked = true,
       }
+
       animated.mix_in(result, "assets/animations/"..codename.."/closed", "no_atlas")
       if is_interactive then
         interactive.mix_in(result, function(self, other)
           if self._locked then
-            -- TODO popup
+            api.popup(5, self, "Закрыто.")
             return
           end
           for d = 0, 2 do
