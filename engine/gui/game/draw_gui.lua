@@ -868,12 +868,16 @@ draw_suggestion = function()
       local name = Name.game(target)
       local roll = target.damage_roll
       if roll then
+        local is_magic = false
         if target.bonus then
           roll = roll + target.bonus
+          is_magic = target.bonus > 0
+        end
+        if is_magic then
           ui.start_color(colors.yellow)
         end
         ui.text("%s", name)
-        if target.bonus then
+        if is_magic then
           ui.finish_color()
         end
         ui.text(" (%s)", roll:simplified())

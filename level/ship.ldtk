@@ -2605,6 +2605,22 @@
 							"fieldInstances": [],
 							"__worldX": 608,
 							"__worldY": 2096
+						},
+						{
+							"__identifier": "knife",
+							"__grid": [34,131],
+							"__pivot": [0,0],
+							"__tags": ["item"],
+							"__tile": { "tilesetUid": 31, "x": 16, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#EAD4AA",
+							"iid": "61cf47c0-6fc0-11f1-810d-21467a6d1759",
+							"width": 16,
+							"height": 16,
+							"defUid": 32,
+							"px": [544,2096],
+							"fieldInstances": [],
+							"__worldX": 544,
+							"__worldY": 2096
 						}
 					]
 				},
