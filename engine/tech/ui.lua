@@ -424,9 +424,9 @@ ui.finish_color = function()
   love.graphics.setColor(context.color)
 end
 
-ui.start_canvas = function()
-  local w, h = love.graphics.getDimensions()
-  ui.stack_push("canvas", love.graphics.newCanvas())
+ui.start_canvas = function(canvas)
+  local w, h = canvas:getDimensions()
+  ui.stack_push("canvas", canvas)
   ui.stack_push("alignment", "left")
   ui.stack_push("frame", {
     x = 0, y = 0,
@@ -443,25 +443,14 @@ end
 ui.finish_canvas = function()
   local rendered_canvas = ui.stack_pop("canvas")
   ui.stack_pop("alignment")
-  local frame = ui.stack_pop("frame")
+  ui.stack_pop("frame")
   ui.stack_pop("cursor_x")
   ui.stack_pop("cursor_y")
   local max_x = ui.stack_pop("max_x")
   local max_y = ui.stack_pop("max_y")
   love.graphics.setCanvas(context.canvas)
 
-  local w = max_x - frame.x
-  local h = max_y - frame.y
-
-  local x
-  if context.alignment.x == "left" then
-    x = context.cursor_x
-  elseif context.alignment.x == "center" then
-    x = context.frame.x + (context.frame.w - w) / 2
-  else
-    x = context.frame.x + (context.frame.w - w)
-  end
-  love.graphics.draw(rendered_canvas, x, context.cursor_y)
+  return love.graphics.newQuad(0, 0, max_x, max_y, rendered_canvas)
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -630,50 +619,64 @@ ui.table = function(headers, content)
   end
 end
 
-local get_image = function(base)
+local get_texture = function(base)
   if type(base) == "string" then
     return love.graphics.newImage(base)  -- cached by kernel
   end
   return base
 end
 
---- @param image string|love.Drawable
+--- @param texture string|love.Texture
 --- @param scale? integer
-ui.image = function(image, scale)
+--- @param quad? love.Quad
+ui.image = function(texture, scale, quad)
   local frame = context.frame
   local alignment = context.alignment
   scale = scale or ui.SCALE
+  texture = get_texture(texture)
 
-  image = get_image(image)
+  local w, h
+  if quad then
+    _, _, w, h = quad:getViewport()
+  else
+    w, h = texture:getDimensions()
+  end
 
-  local x
+  local x  -- NEXT align(w, h)
   if alignment.x == "center" then
-    x = frame.x + (frame.w - image:getWidth() * scale) / 2
+    x = frame.x + (frame.w - w * scale) / 2
   elseif alignment.x == "right" then
-    x = frame.x + frame.w - image:getWidth() * scale
+    x = frame.x + frame.w - w * scale
   else
     x = context.cursor_x
   end
 
   local y
   if alignment.y == "center" then
-    y = frame.y + (frame.h - image:getHeight() * scale) / 2
+    y = frame.y + (frame.h - h * scale) / 2
   elseif alignment.y == "bottom" then
-    y = frame.y + frame.h - image:getHeight() * scale
+    y = frame.y + frame.h - h * scale
   else
     y = context.cursor_y
   end
 
-  love.graphics.draw(image, x, y, 0, scale)
+  if quad then
+    love.graphics.draw(texture, quad, x, y, 0, scale)
+  else
+    love.graphics.draw(texture, x, y, 0, scale)
+  end
+
+  context.max_x = math.max(context.max_x, frame.x + w)
+  context.max_y = math.max(context.max_y, frame.y + h)
 
   if context.is_linear then
     if alignment.x == "left" then
-      context.cursor_x = context.cursor_x + image:getWidth() * scale
-      context.line_last_h = math.max(context.line_last_h, image:getHeight() * scale)
+      context.cursor_x = context.cursor_x + w * scale
+      context.line_last_h = math.max(context.line_last_h, h * scale)
     end
   else
     if alignment.y == "top" then
-      context.cursor_y = context.cursor_y + image:getHeight() * scale
+      context.cursor_y = context.cursor_y + h * scale
     end
   end
 end
@@ -704,7 +707,7 @@ local ACTIVE_FRAME_PERIOD = .1
 --- @param key love.KeyConstant
 --- @return ui_button_out
 ui.key_button = function(image, key, is_disabled)
-  image = get_image(image)
+  image = get_texture(image)
   local w = image:getWidth() * ui.SCALE
   local h = image:getHeight() * ui.SCALE
   local result = button(context.cursor_x, context.cursor_y, w, h)
@@ -822,6 +825,15 @@ end
 ui.offset = function(x, y)
   context.cursor_x = context.cursor_x + (x or 0)
   context.cursor_y = context.cursor_y + (y or 0)
+  context.max_x = math.max(context.max_x, context.cursor_x)
+  context.max_y = math.max(context.max_y, context.cursor_y)
+end
+
+--- @param x? integer
+--- @param y? integer
+ui.expand = function(x, y)
+  context.max_x = context.max_x + x
+  context.max_y = context.max_y + y
 end
 
 -- TODO consider suppressing ui.keyboard? or maybe on higher level?

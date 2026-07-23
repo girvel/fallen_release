@@ -16,6 +16,7 @@ local base = {}
 --- @field notification? string
 --- @field order? string
 --- @field suggestion? string
+--- @field popups popup[]
 --- @field curtain_color vector
 --- @field memory love.Canvas
 --- @field is_memory_enabled boolean
@@ -33,6 +34,11 @@ local base = {}
 --- @class dialogue_options
 --- @field type "options"
 --- @field options table<integer, string>
+
+--- @class popup
+--- @field draw fun()
+--- @field position vector
+--- @field life_time number
 
 --- @param entity table
 base.mix_in = function(entity)
@@ -56,6 +62,7 @@ base.mix_in = function(entity)
   end
 
   entity.creator_model = nil
+  entity.popups = {}
 end
 
 --- @type action

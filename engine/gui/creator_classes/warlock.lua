@@ -53,7 +53,5 @@ warlock.submit = function(creator, datas, perks)
   table.insert(perks, warlock_class.dark_ones_blessing(class_level))
 end
 
--- NEXT submit creator with mouse
-
 Ldump.mark(warlock, {}, ...)
 return warlock

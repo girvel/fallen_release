@@ -1,3 +1,5 @@
+local api = require("engine.tech.api")
+local ui = require("engine.tech.ui")
 local combat_ai = require("engine.mech.ais.combat")
 local races = require("engine.mech.races")
 local animated = require("engine.tech.animated")
@@ -60,7 +62,11 @@ end
 local make_open = function(factory, target_layer, soundname)
   local sounds = soundname and sound.multiple("assets/sounds/"..soundname.."/open", .8)
   return function(self)
-    if self._locked then return end
+    if self._locked then
+      api.popup(5, self, "Закрыто.")
+      return
+    end
+
     local open_itself = function()
       State:remove(self)
       State:add_at(factory(), self.position, target_layer)

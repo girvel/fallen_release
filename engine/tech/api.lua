@@ -595,5 +595,26 @@ api.distance = function(a, b)
   return (a - b):abs2()
 end
 
+--- @param life_time number
+--- @param target entity|vector
+--- @param text string|fun()
+api.popup = function(life_time, target, text)
+  target = api.to_vector(target)
+  local render_text
+  if type(text) == "string" then
+    render_text = function()
+      ui.text(text)
+    end
+  else
+    render_text = text
+  end
+
+  table.insert(State.player.popups, {
+    position = target,
+    draw = render_text,
+    life_time = life_time,
+  })
+end
+
 Ldump.mark(api, {}, ...)
 return api

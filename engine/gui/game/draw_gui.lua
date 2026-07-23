@@ -169,7 +169,7 @@ end
 local draw_gui, draw_sidebar, draw_top_bars, draw_action_grid, draw_resources, draw_move_order,
   draw_bag, draw_dialogue, draw_notification, draw_order, draw_suggestion,
   draw_keyboard_action_grid, draw_cancel_action_grid, draw_upcast_action_grid,
-  use_mouse, draw_curtain
+  use_mouse, draw_curtain, draw_popups
 
 --- @param self gui_game
 --- @param dt number
@@ -178,6 +178,7 @@ draw_gui = function(self, dt)
   hint = nil
 
   use_mouse(self)
+  draw_popups(dt)
   draw_curtain()
   draw_sidebar(self)
   draw_dialogue()
@@ -844,12 +845,12 @@ draw_order = function()
   ui.finish_frame()
 end
 
+local suggestion_canvas = love.graphics.newCanvas()  -- NEXT resizable
+
 draw_suggestion = function()
-  ui.start_frame(nil, love.graphics.getHeight() - 100)
-  ui.start_font(32)
-  ui.start_alignment("center")
-  ui.start_canvas()
+  ui.start_canvas(suggestion_canvas)
   ui.start_line()
+  ui.start_font(32)
   do
     local override = State.player.suggestion
     if override then
@@ -876,11 +877,13 @@ draw_suggestion = function()
         if is_magic then
           ui.start_color(colors.yellow)
         end
-        ui.text("%s", name)
+        ui.text(name)
         if is_magic then
           ui.finish_color()
         end
         ui.text(" (%s)", roll:simplified())
+      else
+        ui.text(name)
       end
       goto proceed
     end
@@ -890,10 +893,14 @@ draw_suggestion = function()
       ui.text("[2] чтобы толкнуть "..Name.game(target))
     end
   end ::proceed::
-  ui.finish_line()
-  ui.finish_canvas()
-  ui.finish_alignment()
   ui.finish_font()
+  ui.finish_line()
+  local quad = ui.finish_canvas()
+
+  ui.start_frame(nil, love.graphics.getHeight() - 100)
+  ui.start_alignment("center")
+    ui.image(suggestion_canvas, 1, quad)
+  ui.finish_alignment()
   ui.finish_frame()
 end
 
@@ -1136,6 +1143,42 @@ render_path = function(path, max_length)
     ui.finish_alignment()
     ui.finish_frame()
   end
+end
+
+local POPUP_MAX_W = 300
+local POPUP_PADDING = ui.SCALE
+local popup_canvas = love.graphics.newCanvas(POPUP_MAX_W, love.graphics.getHeight())  -- NEXT resizable
+
+draw_popups = function(dt)
+  local next_popups = {}
+  for _, popup in ipairs(State.player.popups) do
+    ui.start_canvas(popup_canvas)
+    ui.start_font(18)
+    ui.start_frame(POPUP_PADDING, POPUP_PADDING)
+      popup.draw()
+      ui.expand(POPUP_PADDING - 2, POPUP_PADDING - 2)
+    ui.finish_frame()
+    ui.finish_font()
+    local quad = ui.finish_canvas()
+
+    local gx, gy = unpack(popup.position)
+    local sx, sy = State.camera:game_to_screen(gx + .5, gy - .25)
+    local _, _, w, h = quad:getViewport()
+
+    ui.start_frame(sx - w/2, sy - h, w, h)
+      ui.tile("engine/assets/gui/black_bg.png")
+      local mode, alphamode = love.graphics.getBlendMode()
+      love.graphics.setBlendMode("alpha", "premultiplied")
+      ui.image(popup_canvas, 1, quad)
+      love.graphics.setBlendMode(mode, alphamode)
+    ui.finish_frame()
+
+    popup.life_time = popup.life_time - dt
+    if popup.life_time > 0 then
+      table.insert(next_popups, popup)
+    end
+  end
+  State.player.popups = next_popups
 end
 
 Ldump.mark(draw_gui, {}, ...)

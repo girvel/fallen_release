@@ -61,7 +61,7 @@ local shadow_sprite = {
               ::continue::
             end
 
-            -- NEXT optimize
+            -- TODO optimize
             if light_value > 0 then
               local light_value_int = math.ceil(light_value / .1)
               for d in Iteration.rhombus(light_value_int) do
