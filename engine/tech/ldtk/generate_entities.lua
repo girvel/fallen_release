@@ -2,6 +2,15 @@ local async = require("engine.tech.async")
 local level = require "engine.tech.level"
 
 
+local no_params = setmetatable({}, {
+  __index = function(self, key)
+    return nil
+  end,
+  __newindex = function(self, key, value)
+    Error("Attempting to assign data to entity factory params (immutable)")
+  end,
+})
+
 --- @class generation_data
 --- @field entities entity[]
 --- @field captured_entities table<string, entity>
@@ -52,7 +61,7 @@ local generate_entities = function(palette, preload_entities)
         goto continue_stream
       end
 
-      local entity = factory(entry.args and Common.eval(entry.args))
+      local entity = factory(entry.args and Common.eval(entry.args) or no_params)
 
       if entry.capture_name then
         if not entity then

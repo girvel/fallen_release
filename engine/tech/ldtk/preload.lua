@@ -16,6 +16,16 @@ local sprite = require("engine.tech.sprite")
 --- @field capture_name? string
 --- @field args? string
 
+--- @alias preload.capture preload.capture.name|preload.capture.args
+
+--- @class preload.capture.name
+--- @field capture_name string
+--- @field layer string
+
+--- @class preload.capture.args
+--- @field args string
+--- @field layer string
+
 local put_positions, put_shadows, put_entities, put_tiles
 
 --- @param root table
@@ -46,7 +56,7 @@ local preload = function(root)
     local size = V(ldtk_level.pxWid, ldtk_level.pxHei)
       :div_mut(sprite.cell_size)
 
-    local captures = Grid.new(size)  --[[@as grid<preload_capture>]]
+    local captures = Grid.new(size)  --[[@as grid<preload.capture>]]
     for _, layer in ipairs(ldtk_level.layerInstances) do
       if layer.__identifier == "positions" then
         put_positions(layer, offset, result.positions, captures)
@@ -83,10 +93,6 @@ end
 -- [SECTION] Implementation
 ----------------------------------------------------------------------------------------------------
 
---- @class preload_capture
---- @field capture_name string
---- @field layer string
-
 --- @return string?
 --- @return string?
 local fields = function(instance, ...)
@@ -105,13 +111,6 @@ local fields = function(instance, ...)
   end
 
   return r[1], r[2]
-end
-
-local absolute_position = function(instance)
-  return V(
-    instance.__worldX / sprite.cell_size + 1,
-    instance.__worldY / sprite.cell_size + 1
-  )
 end
 
 local relative_position = function(instance)
@@ -136,7 +135,7 @@ end
 --- @param layer table
 --- @param offset vector
 --- @param positions table<string, vector>
---- @param captures grid<preload_capture>
+--- @param captures grid<preload.capture>
 put_positions = function(layer, offset, positions, captures)
   local last_index = {}
 
@@ -164,6 +163,20 @@ put_positions = function(layer, offset, positions, captures)
 
       captures[position] = {
         capture_name = capture_name,
+        layer = this_layer,
+      }
+    elseif instance.__identifier == "args" then
+      local position = relative_position(instance)
+      local args, this_layer = fields(instance, "args", "layer")
+      if args == nil or args == "" then
+        Error("No args for entity_capture @local:%s", position)
+      end  --- @cast args string
+      if this_layer == nil or this_layer == "" then
+        Error("No layer for entity_capture @local:%s", position)
+      end  --- @cast this_layer string
+
+      captures[position] = {
+        args = args,
         layer = this_layer,
       }
     elseif instance.__identifier:ends_with("_N") then
@@ -231,11 +244,6 @@ end
 --- @param identifier string
 --- @return string
 local parse_layer_name = function(identifier)
-  local layer, other_identifier = identifier:match("^(.*)_from_(.*)")
-  if layer and other_identifier then
-    
-  end
-
   for _, candidate in ipairs(level.grid_layers) do
     if identifier:starts_with(candidate) then
       return candidate
@@ -245,24 +253,32 @@ local parse_layer_name = function(identifier)
   return "solids"
 end
 
---- @param captures grid<preload_capture>
+--- @param captures grid<preload.capture>
 --- @param entity preload_entity
 --- @param layer string
 local use_captures = function(captures, entity, layer)
   local capture = captures[entity.position]
-  if capture and capture.layer == layer then
+  if not capture or capture.layer ~= layer then return end
+  if capture.capture_name then
     if entity.capture_name then
       Error("Attempt to capture an entity as %q, when it already has capture_name %s",
         capture.capture_name, entity.capture_name)
     end
     entity.capture_name = capture.capture_name
     captures[entity.position] = nil
+  elseif capture.args then
+    if entity.args then
+      Error("Attempt to provide args %q via args entity, when it already has args %q",
+        capture.args, entity.args)
+    end
+    entity.args = capture.args
+    captures[entity.position] = nil
   end
 end
 
 --- @param layer table
 --- @param offset vector
---- @param captures grid<preload_capture>
+--- @param captures grid<preload.capture>
 --- @param entities table<string, preload_entity[]>
 put_entities = function(layer, offset, captures, entities)
   local layer_name = parse_layer_name(layer.__identifier)
@@ -285,7 +301,7 @@ end
 
 --- @param layer table
 --- @param offset vector
---- @param captures grid<preload_capture>
+--- @param captures grid<preload.capture>
 --- @param entities table<string, preload_entity[]>
 --- @param is_auto boolean
 put_tiles = function(layer, offset, captures, entities, is_auto)

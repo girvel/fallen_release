@@ -60,6 +60,7 @@ end
 local make_open = function(factory, target_layer, soundname)
   local sounds = soundname and sound.multiple("assets/sounds/"..soundname.."/open", .8)
   return function(self)
+    if self._locked then return end
     local open_itself = function()
       State:remove(self)
       State:add_at(factory(), self.position, target_layer)
@@ -79,12 +80,13 @@ end
 do
   local open = make_open(on_solids[25], "on_solids", false)
   local i, this_sprite = packer:geti(25)
-  solids[i] = function()
+  solids[i] = function(params)
     local e = {
       boring_flag = true,
       codename = "door",
       name = "дверь",
       sprite = this_sprite,
+      _locked = params.locked,
     }
     interactive.mix_in(e, open)
     return e
@@ -351,24 +353,16 @@ end
 local dreamer_races = {races.dwarf, races.human, races.half_elf, races.half_orc, races.halfling}
 
 solids.dreamer = function(params)
-  local race, blood, faction, inventory
-  if params then
-    race = params.race
-    blood = params.blood
-    faction = params.faction
-    inventory = params.inventory
-  end
-
   local e = {
     name = "...",
     codename = "dreamer",
-    race = race or Random.item(dreamer_races),
+    race = params.race or Random.item(dreamer_races),
     max_hp = 15,
-    hp = blood and 6 or nil,
+    hp = params.blood and 6 or nil,
     base_abilities = abilities.new(12, 10, 10, 10, 10, 10),
-    ai = faction and combat_ai.new(),
-    faction = faction,
-    inventory = inventory,
+    ai = params.faction and combat_ai.new(),
+    faction = params.faction,
+    inventory = params.inventory,
     level = 1,
   }
   creature.mix_in(e)
