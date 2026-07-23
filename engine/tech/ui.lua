@@ -105,6 +105,32 @@ local ACTIVE_FRAME = "engine/assets/gui/active_button_frame.png"
 
 local LINE_K = love.system.getOS() == "Windows" and 1 or 1.25
 
+--- @param w integer
+--- @param h integer
+--- @return integer x
+--- @return integer y
+local align = function(w, h)
+  local x  -- NEXT align(w, h)
+  if context.alignment.x == "center" then
+    x = context.frame.x + (context.frame.w - w) / 2
+  elseif context.alignment.x == "right" then
+    x = context.frame.x + context.frame.w - w
+  else
+    x = context.cursor_x
+  end
+
+  local y
+  if context.alignment.y == "center" then
+    y = context.frame.y + (context.frame.h - h) / 2
+  elseif context.alignment.y == "bottom" then
+    y = context.frame.y + context.frame.h - h
+  else
+    y = context.cursor_y
+  end
+
+  return x, y
+end
+
 local get_font = Memoize(function(size)
   return love.graphics.newFont("engine/assets/fonts/clacon2.ttf", size)
 end)
@@ -511,28 +537,12 @@ ui.text = function(text, ...)
   for i, line in ipairs(wrapped) do
     local w = font:getWidth(line)
     local h = font:getHeight()
-    local x
-    if alignment.x == "center" then
-      x = frame.x + (frame.w - w) / 2
-    elseif alignment.x == "right" then
-      x = frame.x + frame.w - w
-    else
-      x = context.cursor_x
-    end
-
-    local y
-    if alignment.y == "center" then
-      y = frame.y + (frame.h - h * #wrapped) / 2 + h * (i - 1)
-    elseif alignment.y == "bottom" then
-      y = frame.y + frame.h - h * #wrapped + h * (i - 1)
-    else
-      y = context.cursor_y
-    end
+    local x, y = align(w, h)
 
     love.graphics.print(line, x, y)
 
-    context.max_x = math.max(context.max_x, context.cursor_x + w)
-    context.max_y = math.max(context.max_y, context.cursor_y + h)
+    context.max_x = math.max(context.max_x, x + w)
+    context.max_y = math.max(context.max_y, y + h)
 
     if context.is_linear then
       if i < #wrapped then
@@ -549,16 +559,6 @@ ui.text = function(text, ...)
         context.cursor_x = context.frame.x
       end
     end
-    -- if alignment.y == "top" then
-    --   if context.is_linear then
-    --     if alignment.x == "left" then
-    --       context.cursor_x = context.cursor_x + font:getWidth("w") * text:utf_len()
-    --       context.line_last_h = math.max(context.line_last_h, font:getHeight() * LINE_K)
-    --     end
-    --   else
-    --     context.cursor_y = context.cursor_y + font:getHeight() * LINE_K
-    --   end
-    -- end
   end
 end
 
@@ -630,7 +630,6 @@ end
 --- @param scale? integer
 --- @param quad? love.Quad
 ui.image = function(texture, scale, quad)
-  local frame = context.frame
   local alignment = context.alignment
   scale = scale or ui.SCALE
   texture = get_texture(texture)
@@ -641,24 +640,10 @@ ui.image = function(texture, scale, quad)
   else
     w, h = texture:getDimensions()
   end
+  w = w * scale
+  h = h * scale
 
-  local x  -- NEXT align(w, h)
-  if alignment.x == "center" then
-    x = frame.x + (frame.w - w * scale) / 2
-  elseif alignment.x == "right" then
-    x = frame.x + frame.w - w * scale
-  else
-    x = context.cursor_x
-  end
-
-  local y
-  if alignment.y == "center" then
-    y = frame.y + (frame.h - h * scale) / 2
-  elseif alignment.y == "bottom" then
-    y = frame.y + frame.h - h * scale
-  else
-    y = context.cursor_y
-  end
+  local x, y = align(w, h)
 
   if quad then
     love.graphics.draw(texture, quad, x, y, 0, scale)
@@ -666,17 +651,17 @@ ui.image = function(texture, scale, quad)
     love.graphics.draw(texture, x, y, 0, scale)
   end
 
-  context.max_x = math.max(context.max_x, frame.x + w)
-  context.max_y = math.max(context.max_y, frame.y + h)
+  context.max_x = math.max(context.max_x, x + w)
+  context.max_y = math.max(context.max_y, y + h)
 
   if context.is_linear then
     if alignment.x == "left" then
-      context.cursor_x = context.cursor_x + w * scale
-      context.line_last_h = math.max(context.line_last_h, h * scale)
+      context.cursor_x = context.cursor_x + w
+      context.line_last_h = math.max(context.line_last_h, h)
     end
   else
     if alignment.y == "top" then
-      context.cursor_y = context.cursor_y + h * scale
+      context.cursor_y = context.cursor_y + h
     end
   end
 end
