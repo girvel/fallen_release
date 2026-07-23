@@ -119,15 +119,15 @@ log.tracel = function(...)
       local lines = source:split("\n", true)
       local expr = extract_expr(lines[info.currentline])
       if select("#", ...) == 1 then
-        log.log("trace", 1, "%s: %s", expr, repr)
+        log.log("trace", 2, "%s: %s", expr, repr)
       else
-        log.log("trace", 1, "(%s): (%s)", expr, repr)
+        log.log("trace", 2, "(%s): (%s)", expr, repr)
       end
       return ...
     end
   end
 
-  _log("trace", 1, repr)
+  _log("trace", 2, repr)
   return ...
 end
 
