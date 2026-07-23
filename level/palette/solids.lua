@@ -1,3 +1,5 @@
+local combat_ai = require("engine.mech.ais.combat")
+local races = require("engine.mech.races")
 local animated = require("engine.tech.animated")
 local level = require("engine.tech.level")
 local animated = require("engine.tech.animated")
@@ -343,6 +345,34 @@ solids.mannequin = function()
     sounds = sound.multiple("assets/sounds/hits_body", 0.3),
   }
   animated.mix_in(e, "assets/animations/mannequin", "no_atlas")
+  return e
+end
+
+local dreamer_races = {races.dwarf, races.human, races.half_elf, races.half_orc, races.halfling}
+
+solids.dreamer = function(params)
+  local race, blood, faction, inventory
+  if params then
+    race = params.race
+    blood = params.blood
+    faction = params.faction
+    inventory = params.inventory
+  end
+
+  local e = {
+    name = "...",
+    codename = "dreamer",
+    race = race or Random.item(dreamer_races),
+    max_hp = 15,
+    hp = blood and 6 or nil,
+    base_abilities = abilities.new(12, 10, 10, 10, 10, 10),
+    ai = faction and combat_ai.new(),
+    faction = faction,
+    inventory = inventory,
+    level = 1,
+  }
+  creature.mix_in(e)
+  humanoid.mix_in(e)
   return e
 end
 

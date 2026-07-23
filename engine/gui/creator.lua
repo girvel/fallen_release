@@ -408,13 +408,13 @@ submit = function(self)
     }
 
     if data.race == races.human then
-      table.insert(perks, races.human.ability_bonus)
+      table.insert(perks, races.human.perk)
     elseif data.race == races.custom_lineage then
       table.insert(perks, data.feat)
-      table.insert(perks, races.custom_lineage:ability_bonus(data.bonus_plus2.codename))
+      table.insert(perks, races.custom_lineage:perk(data.bonus_plus2.codename))
     elseif data.race == races.variant_human then
       table.insert(perks, data.feat)
-      table.insert(perks, races.variant_human:ability_bonus(
+      table.insert(perks, races.variant_human:perk(
         data.bonus_plus1_1.codename, data.bonus_plus1_2.codename
       ))
     else

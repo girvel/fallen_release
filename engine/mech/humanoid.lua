@@ -1,3 +1,4 @@
+local races = require("engine.mech.races")
 local colors = require("engine.tech.colors")
 local mark = require("engine.tech.mark")
 local sprite = require("engine.tech.sprite")
@@ -49,7 +50,10 @@ local humanoid_defaults = {
 
 --- @param entity entity
 humanoid.mix_in = function(entity)
-  animated.mix_in(entity, "engine/assets/animations/humanoid", "directional", Vector.hex("8ed3dc"))
+  animated.mix_in(
+    entity, "engine/assets/animations/humanoid", "directional",
+    entity.race and entity.race.skin_color or races.human.skin_color
+  )
   Table.defaults(entity, humanoid_defaults)
 end
 
