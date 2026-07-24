@@ -319,13 +319,17 @@ packer.offset = 96
 for x = 1, 5 do
   for y = 1, 4 do
     local i, this_sprite = packer:get(x, y)
+    local shader = x > 1 and y == 1
+      and reflective(Vector.up)
+      or reflective(Vector.left)
+
     solids[i] = function()
       return {
         boring_flag = true,
         transparent_flag = true,
         codename = "pipe",
         sprite = this_sprite,
-        shader = reflective(Vector.left),
+        shader = shader,
       }
     end
     if x == 5 and y == 1 then break end

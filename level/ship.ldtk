@@ -4665,7 +4665,7 @@
 						},
 						{
 							"__identifier": "player",
-							"__grid": [15,81],
+							"__grid": [19,95],
 							"__pivot": [0,0],
 							"__tags": ["solid"],
 							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
@@ -4674,10 +4674,10 @@
 							"width": 16,
 							"height": 16,
 							"defUid": 3,
-							"px": [240,1296],
+							"px": [304,1520],
 							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
-							"__worldX": 240,
-							"__worldY": 1296
+							"__worldX": 304,
+							"__worldY": 1520
 						}
 					]
 				},
