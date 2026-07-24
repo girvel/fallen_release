@@ -591,6 +591,7 @@ solids.engineer = function(n)
       name = "инженер-полуэльф",
       race = races.half_elf,
       inventory = {main_hand = items.gas_key()},
+      direction = Vector.down,
     }
   elseif n == 2 then
     e = {
@@ -600,6 +601,7 @@ solids.engineer = function(n)
       faction = "dreamers_detective",
       name = "инженер-полурослик",
       race = races.halfling,
+      direction = Vector.down,
     }
   elseif n == 3 then
     e = {
@@ -623,6 +625,8 @@ solids.engineer = function(n)
           end,
         },
       },
+
+      direction = Vector.up,
     }
   elseif n == 4 then
     e = {
@@ -632,6 +636,7 @@ solids.engineer = function(n)
       faction = "dreamers_detective",
       name = "инженер-дворф",
       race = races.dwarf,
+      direction = Vector.up,
     }
   else
     Error("Invalid n=%s parameter for solids.engineer, expected 1-4 integer", n)
