@@ -11,7 +11,7 @@
 	"iid": "7cebdd80-6fc0-11f1-b298-23dcb58a5112",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 91,
+	"nextUid": 92,
 	"identifierStyle": "Free",
 	"toc": [],
 	"worldLayout": "Free",
@@ -2131,6 +2131,41 @@
 			"fieldDefs": []
 		},
 		{
+			"identifier": "steam_source",
+			"uid": 91,
+			"tags": ["on_solid"],
+			"exportToToc": false,
+			"allowOutOfBounds": false,
+			"doc": null,
+			"width": 16,
+			"height": 16,
+			"resizableX": false,
+			"resizableY": false,
+			"minWidth": null,
+			"maxWidth": null,
+			"minHeight": null,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 0.08,
+			"lineOpacity": 0,
+			"hollow": false,
+			"color": "#733E39",
+			"renderMode": "Tile",
+			"showName": true,
+			"tilesetId": 50,
+			"tileRenderMode": "FitInside",
+			"tileRect": { "tilesetUid": 50, "x": 96, "y": 112, "w": 16, "h": 16 },
+			"uiTileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0,
+			"pivotY": 0,
+			"fieldDefs": []
+		},
+		{
 			"identifier": "position",
 			"uid": 87,
 			"tags": ["position"],
@@ -2890,6 +2925,22 @@
 							"fieldInstances": [],
 							"__worldX": 320,
 							"__worldY": 1376
+						},
+						{
+							"__identifier": "steam_source",
+							"__grid": [22,87],
+							"__pivot": [0,0],
+							"__tags": ["on_solid"],
+							"__tile": { "tilesetUid": 50, "x": 96, "y": 112, "w": 16, "h": 16 },
+							"__smartColor": "#733E39",
+							"iid": "cf05bfc0-6fc0-11f1-b9b7-9ffbd0bcb5e8",
+							"width": 16,
+							"height": 16,
+							"defUid": 91,
+							"px": [352,1392],
+							"fieldInstances": [],
+							"__worldX": 352,
+							"__worldY": 1392
 						}
 					]
 				},
@@ -4763,7 +4814,7 @@
 						},
 						{
 							"__identifier": "player",
-							"__grid": [19,95],
+							"__grid": [22,88],
 							"__pivot": [0,0],
 							"__tags": ["solid"],
 							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
@@ -4772,10 +4823,10 @@
 							"width": 16,
 							"height": 16,
 							"defUid": 3,
-							"px": [304,1520],
+							"px": [352,1408],
 							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
-							"__worldX": 304,
-							"__worldY": 1520
+							"__worldX": 352,
+							"__worldY": 1408
 						}
 					]
 				},

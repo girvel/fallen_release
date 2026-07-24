@@ -4,13 +4,13 @@ local sprite = require("engine.tech.sprite")
 -- [SECTION] External API
 ----------------------------------------------------------------------------------------------------
 
---- @class preload_level
+--- @class preload.level
 --- @field size vector
 --- @field positions table<string, vector>
---- @field entities table<string, preload_entity[]>
+--- @field entities table<string, preload.entity[]>
 --- @field shadows grid<number>
 
---- @class preload_entity
+--- @class preload.entity
 --- @field position vector
 --- @field identifier string
 --- @field capture_name? string
@@ -24,7 +24,7 @@ local sprite = require("engine.tech.sprite")
 local put_positions, put_shadows, put_entities, put_tiles
 
 --- @param root table
---- @return preload_level
+--- @return preload.level
 local preload = function(root)
   local start_t = love.timer.getTime()
 
@@ -42,7 +42,7 @@ local preload = function(root)
     positions = {},
     entities = {},
     shadows = Grid.new(total_size, function() return 0 end),
-  }  --[[@as preload_level]]
+  }  --[[@as preload.level]]
 
   for _, ldtk_level in ipairs(root.levels) do
     local offset = V(ldtk_level.worldX, ldtk_level.worldY)
@@ -249,7 +249,7 @@ local parse_layer_name = function(identifier)
 end
 
 --- @param captures grid<preload.capture>
---- @param entity preload_entity
+--- @param entity preload.entity
 --- @param layer string
 local use_captures = function(captures, entity, layer)
   local capture = captures[entity.position]
@@ -276,7 +276,7 @@ end
 --- @param layer table
 --- @param offset vector
 --- @param captures grid<preload.capture>
---- @param entities table<string, preload_entity[]>
+--- @param entities table<string, preload.entity[]>
 put_entities = function(layer, offset, captures, entities)
   local layer_name = parse_layer_name(layer.__identifier)
   entities[layer_name] = entities[layer_name] or {}
@@ -299,7 +299,7 @@ end
 --- @param layer table
 --- @param offset vector
 --- @param captures grid<preload.capture>
---- @param entities table<string, preload_entity[]>
+--- @param entities table<string, preload.entity[]>
 --- @param is_auto boolean
 put_tiles = function(layer, offset, captures, entities, is_auto)
   local layer_name = parse_layer_name(layer.__identifier)

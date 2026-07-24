@@ -18,7 +18,7 @@ local no_params = setmetatable({}, {
 
 --- @async
 --- @param palette palette
---- @param preload_entities table<layer|string, preload_entity[]>
+--- @param preload_entities table<layer|string, preload.entity[]>
 --- @return generation_data
 local generate_entities = function(palette, preload_entities)
   local start_t = love.timer.getTime()

@@ -178,5 +178,44 @@ on_solids.pipe_valve = function()
   return e
 end
 
+on_solids.steam_source = function()
+  return {
+    codename = "steam_source",
+    boring_flag = true,
+
+    _burst = function(self)
+      local fx = animated.add_fx("assets/animations/steam/", self.position, "fx_over")
+      State.runner:run_task(function()
+        local damaged = {}
+        while State:exists(fx) do
+          local e = State.grids.solids:slow_get(self.position + Vector.right)
+          if fx.animation.frame > 2 and e and e.hp and not damaged[e] then
+            health.attack_save(self, e, "dex", 15, 1)
+            damaged[e] = true
+          end
+          coroutine.yield()
+        end
+      end, "steam_damage")
+    end,
+    _paused = false,
+    _overflow = 0,
+    _overflow_leak = 0,
+
+    ai = {
+      observe = function(self, entity, dt)
+        if entity._paused then return end
+        entity._overflow = entity._overflow + dt
+        if entity._overflow >= 60 then
+          entity._overflow_leak = entity._overflow_leak + dt
+          while entity._overflow_leak > 1 do
+            entity._overflow_leak = entity._overflow_leak - 1
+            entity:_burst()
+          end
+        end
+      end,
+    },
+  }
+end
+
 Ldump.mark(on_solids, {}, ...)
 return on_solids
