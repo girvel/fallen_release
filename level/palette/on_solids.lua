@@ -63,6 +63,16 @@ for _, tuple in ipairs {
   {30, "note"},
   {36, "vines"},
   {37, "vines"},
+  {41, "engine"},
+  {42, "engine"},
+  {43, "engine"},
+  {44, "engine"},
+  {49, "engine"},
+  {50, "engine"},
+  {51, "engine"},
+  {57, "engine"},
+  {58, "engine"},
+  {59, "engine"},
 } do
   local index, codename, perspective_flag = unpack(
     tuple --[=[@as [integer, string, true?]]=]

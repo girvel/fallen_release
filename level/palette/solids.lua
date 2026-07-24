@@ -335,12 +335,33 @@ do
       boring_flag = true,
       transparent_flag = true,
       codename = "pipe",
-      name = "Необычная труба",
+      name = "необычная труба",
       sprite = this_sprite,
       shader = reflective(Vector.right),
     }
     interactive.mix_in(e)
     return e
+  end
+end
+
+packer.offset = 104
+for y = 1, 6 do
+  for x = 5, 8 do
+    if y == 2 and (x == 5 or x == 8) then goto continue end
+    local i, this_sprite = packer:get(x, y)
+    local shader = y == 6 and x > 5 and reflective(Vector.down) or nil
+    solids[i] = function()
+      return {
+        boring_flag = true,
+        transparent_flag = true,
+        codename = "engine",
+        name = "двигатель",
+        sprite = this_sprite,
+        shader = shader,
+      }
+    end
+
+    ::continue::
   end
 end
 
