@@ -53,31 +53,19 @@ appearance_editor.w = 500
 appearance_editor.padding = 20
 
 methods.draw_gui = function(self, dt)
-  if ui.keyboard("return") then
-    Kernel.gui:confirm(
-      "Закончить редактирование внешности персонажа?",
-      function()
-        Log.info(
-          "Finalized appearance:\n  name: %s\n  hair: %s\n  skin: %s\n",
-          State.player.name,
-          State.player.inventory.hair,
-          State.player.inventory.skin
-        )
-        Kernel.gui:close_menu()
-      end
-    )
-  end
-
-  if ui.keyboard("escape") then
-    Kernel.gui:open_menu("escape_menu")
-  end
-
+  local ok_button
   local parent_w = love.graphics.getWidth()
   tk.start_window(
     parent_w - appearance_editor.w - appearance_editor.padding, "center",
     appearance_editor.w, 300
   )
-    ui.h1("Внешность")
+    ui.start_font(40)
+    ui.start_alignment("center")
+      ui.text("Внешность")
+      ui.offset(0, 20)
+    ui.finish_alignment()
+    ui.finish_font()
+
     ui.start_font(24)
       ui.start_line()
         ui.selector()
@@ -103,6 +91,12 @@ methods.draw_gui = function(self, dt)
         local skin_changed = ui.switch(SKIN, self.model, "skin")
       ui.finish_line()
     ui.finish_font()
+
+    ui.start_alignment("center", "bottom")
+    ui.start_font(36)
+      ok_button = ui.choice({"ОК"})
+    ui.finish_font()
+    ui.finish_alignment()
   tk.finish_window()
 
   if name_changed then
@@ -143,6 +137,25 @@ methods.draw_gui = function(self, dt)
     if ui.keyboard(key) then
       State.player:rotate(dir)
     end
+  end
+
+  if ui.keyboard("return") or ok_button then
+    Kernel.gui:confirm(
+      "Закончить редактирование внешности персонажа?",
+      function()
+        Log.info(
+          "Finalized appearance:\n  name: %s\n  hair: %s\n  skin: %s\n",
+          State.player.name,
+          State.player.inventory.hair,
+          State.player.inventory.skin
+        )
+        Kernel.gui:close_menu()
+      end
+    )
+  end
+
+  if ui.keyboard("escape") then
+    Kernel.gui:open_menu("escape_menu")
   end
 end
 

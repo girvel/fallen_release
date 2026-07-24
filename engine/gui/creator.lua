@@ -134,30 +134,7 @@ end
 tk.delegate(methods, "draw_entity", "preprocess", "postprocess")
 
 methods.draw_gui = function(self, dt)
-  if State.player.level > 0 then
-    if ui.keyboard("escape") or ui.keyboard("n") then
-      Kernel.gui:close_menu()
-    end
-
-    if ui.keyboard("j") then
-      Kernel.gui:close_menu()
-      Kernel.gui:open_menu("journal")
-    end
-  end
-
-  if not self.is_disabled and ui.keyboard("return") then
-    if self.model[0].points > 0 then
-      Kernel.gui:show_warning(
-        "Редактирование персонажа не закончено: не все очки способностей израсходованы"
-      )
-    else
-      Kernel.gui:confirm(
-        "Закончить создание персонажа?",
-        function() submit(self) end
-      )
-    end
-  end
-
+  local ok_button
   tk.start_window("center", "center", 780, 700)
     ui.h1("Персонаж")
     ui.start_font(24)
@@ -195,8 +172,38 @@ methods.draw_gui = function(self, dt)
       else
         draw_pane(self, dt)
       end
+
+      ui.start_alignment("center", "bottom")
+      ui.start_font(36)
+        ok_button = ui.choice({"ОК"})
+      ui.finish_font()
+      ui.finish_alignment()
     ui.finish_font()
   tk.finish_window()
+
+  if State.player.level > 0 then
+    if ui.keyboard("escape") or ui.keyboard("n") or self.is_disabled and ok_button then
+      Kernel.gui:close_menu()
+    end
+
+    if ui.keyboard("j") then
+      Kernel.gui:close_menu()
+      Kernel.gui:open_menu("journal")
+    end
+  end
+
+  if not self.is_disabled and (ui.keyboard("return") or ok_button) then
+    if self.model[0].points > 0 then
+      Kernel.gui:show_warning(
+        "Редактирование персонажа не закончено: не все очки способностей израсходованы"
+      )
+    else
+      Kernel.gui:confirm(
+        "Закончить создание персонажа?",
+        function() submit(self) end
+      )
+    end
+  end
 end
 
 --- @param self gui_creator
