@@ -1,3 +1,5 @@
+local on_solids = require("level.palette.on_solids")
+local xp = require("engine.mech.xp")
 local bwr = require("level.shaders.bwr")
 local bw = require("level.shaders.bw")
 local async = require("engine.tech.async")
@@ -65,9 +67,46 @@ init_debug = function()
 
         async.sleep(1)
         sp:lines()
+
+        State.runner.scenes.snoring.enabled = true
+        State.runner.scenes.snoring.triggered = true
         sp:lines()
+
+        State.player.xp = xp.for_level[2]
+        State.level.locked_entities[State.player] = nil
+        Kernel.gui:open_menu("creator")
       end,
-    }
+    },
+
+    snoring = cutscene.make {
+      enabled = false,
+      triggered = false,
+      mode = "sequential",
+      screenplay = "assets/screenplay/snoring.ms",
+      characters = {
+        neighbour = {},
+      },
+
+      _on_add = function(self, ch, ps)
+        ch.neighbour:rotate(Vector.up)
+        on_solids.fs.lie(ch.neighbour, ps.intro_upper_bunk, "upper")
+      end,
+
+      activation_t = 45,
+      _condition = function(self, dt, ch, ps)
+        self.activation_t = self.activation_t + dt
+        if self.activation_t >= 45 then
+          self.activation_t = 0
+          return true
+        end
+        return self.triggered
+      end,
+
+      _run = function(self, ch, ps, sp)
+        self.triggered = false
+        api.popup(5, ch.neighbour, Random.item(sp:literal():split("\n")))
+      end,
+    },
   }
 end
 

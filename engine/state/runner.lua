@@ -24,7 +24,7 @@ local runner = {}
 --- @field name string
 --- @field base_scene scene
 
---- @alias runner_scenes table<string, scene>
+--- @alias runner_scenes table<string, scene|cutscene>
 
 --- @class state_runner
 --- @field scenes runner_scenes

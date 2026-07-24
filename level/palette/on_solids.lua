@@ -1,3 +1,4 @@
+local level = require("engine.tech.level")
 local sound = require("engine.tech.sound")
 local health = require("engine.mech.health")
 local interactive = require("engine.tech.interactive")
@@ -7,7 +8,7 @@ local reflective = require("level.shaders.reflective")
 local factoring = require("engine.tech.factoring")
 
 
-local on_solids = {}
+local on_solids = {fs = {}}
 
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Atlas
@@ -167,6 +168,20 @@ do
     interactive.mix_in(e)
     return e
   end
+end
+
+--- @param entity entity
+--- @param bed_position vector
+--- @param bed_elevation "upper"|"lower"
+on_solids.fs.lie = function(entity, bed_position, bed_elevation)
+  assert(bed_elevation == "upper" or bed_elevation == "lower")
+  level.remove(entity)
+  entity.position = bed_position
+  entity.grid_layer = "on2_solids"
+  level.put(entity)
+  entity:animate("lying_"..bed_elevation, true)
+  entity:animation_set_paused(true)
+  entity.perspective_flag = true
 end
 
 ----------------------------------------------------------------------------------------------------

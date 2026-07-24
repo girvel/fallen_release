@@ -299,6 +299,7 @@ for _, tuple in ipairs {
   {13, "cage", "клетка"},
   {14, "mirage_block", "блок миража"},
   {15, "stage"},
+  {16, "helm"},
 } do
   local index, codename, name = unpack(
     tuple --[=[@as [integer, string, string?]]=]

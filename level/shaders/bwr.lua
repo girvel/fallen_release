@@ -7,6 +7,8 @@ local bwr = {
     nil  --- @diagnostic disable-line
   ),
   preprocess = function(self, entity, dt)
+    -- TODO does not activate before SpriteBatch layer => cobwebs are red
+    --   but it's kind of fine, really
     love.graphics.setColor(entity.creature_flag and colors.red or colors.white)
   end,
   deactivate = function()
