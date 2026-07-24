@@ -104,7 +104,10 @@ init_debug = function()
 
       _run = function(self, ch, ps, sp)
         self.triggered = false
-        api.popup(5, ch.neighbour, Random.item(sp:literal():split("\n")))
+        api.popup(
+          5, ch.neighbour.position + Vector.down * .5,
+          Random.item(sp:literal():split("\n"))
+        )
       end,
     },
   }
