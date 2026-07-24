@@ -134,13 +134,15 @@ end
 tk.delegate(methods, "draw_entity", "preprocess", "postprocess")
 
 methods.draw_gui = function(self, dt)
-  if ui.keyboard("escape") or ui.keyboard("n") then
-    Kernel.gui:close_menu()
-  end
+  if State.player.level > 0 then
+    if ui.keyboard("escape") or ui.keyboard("n") then
+      Kernel.gui:close_menu()
+    end
 
-  if ui.keyboard("j") then
-    Kernel.gui:close_menu()
-    Kernel.gui:open_menu("journal")
+    if ui.keyboard("j") then
+      Kernel.gui:close_menu()
+      Kernel.gui:open_menu("journal")
+    end
   end
 
   if not self.is_disabled and ui.keyboard("return") then
