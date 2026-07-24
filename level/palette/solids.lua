@@ -1,3 +1,4 @@
+local interactive = require("engine.tech.interactive")
 local api = require("engine.tech.api")
 local ui = require("engine.tech.ui")
 local combat_ai = require("engine.mech.ais.combat")
@@ -291,15 +292,20 @@ for _, tuple in ipairs {
   {10, "coal"},
   {11, "coal"},
   {12, "coal"},
+  {13, "cage", "клетка"},
+  {14, "mirage_block", "блок миража"},
   {15, "stage"},
 } do
-  local index, codename = unpack(tuple --[=[@as [integer, string]]=])
+  local index, codename, name = unpack(
+    tuple --[=[@as [integer, string, string?]]=]
+  )
   local i, this_sprite = packer:geti(index)
   solids[i] = function()
     return {
       boring_flag = true,
       transparent_flag = true,
       codename = codename,
+      name = name,
       sprite = this_sprite,
     }
   end
@@ -319,6 +325,22 @@ for x = 1, 5 do
       }
     end
     if x == 5 and y == 1 then break end
+  end
+end
+
+do
+  local i, this_sprite = packer:get(6, 1)
+  solids[i] = function()
+    local e = {
+      boring_flag = true,
+      transparent_flag = true,
+      codename = "pipe",
+      name = "Необычная труба",
+      sprite = this_sprite,
+      shader = reflective(Vector.right),
+    }
+    interactive.mix_in(e)
+    return e
   end
 end
 

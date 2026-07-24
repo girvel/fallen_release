@@ -60,6 +60,7 @@ for _, tuple in ipairs {
   {25, "door_open"},
   {28, "vines"},
   {29, "vines"},
+  {30, "note"},
   {36, "vines"},
   {37, "vines"},
 } do
