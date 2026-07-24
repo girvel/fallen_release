@@ -45,9 +45,9 @@ methods.control = function(self, entity)
     else
       item.give(entity, State:add(items.coal()))
     end
-
-    api.travel(entity, State.level.positions[travel_points[self.point_i]])
   end
+
+  api.travel(entity, State.level.positions[travel_points[self.point_i]])
 end
 
 methods.observe = function(self, entity, dt)

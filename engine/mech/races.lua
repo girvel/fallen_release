@@ -69,5 +69,10 @@ races.dwarf = {
   skin_color = Vector.hex("8ed3dc"),
 }
 
+races.furry = {
+  codename = "furry",
+  skin_color = Vector.hex("3f5d92"),
+}
+
 Ldump.mark(races, "const", ...)
 return races

@@ -4328,22 +4328,6 @@
 							"__worldY": 1952
 						},
 						{
-							"__identifier": "player",
-							"__grid": [15,102],
-							"__pivot": [0,0],
-							"__tags": ["solid"],
-							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
-							"__smartColor": "#BE4A2F",
-							"iid": "74838370-6fc0-11f1-857b-f7e5cfd44606",
-							"width": 16,
-							"height": 16,
-							"defUid": 3,
-							"px": [240,1632],
-							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
-							"__worldX": 240,
-							"__worldY": 1632
-						},
-						{
 							"__identifier": "cook",
 							"__grid": [19,134],
 							"__pivot": [0,0],
@@ -4678,6 +4662,22 @@
 							],
 							"__worldX": 624,
 							"__worldY": 1472
+						},
+						{
+							"__identifier": "player",
+							"__grid": [15,81],
+							"__pivot": [0,0],
+							"__tags": ["solid"],
+							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#BE4A2F",
+							"iid": "74838370-6fc0-11f1-857b-f7e5cfd44606",
+							"width": 16,
+							"height": 16,
+							"defUid": 3,
+							"px": [240,1296],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
+							"__worldX": 240,
+							"__worldY": 1296
 						}
 					]
 				},
