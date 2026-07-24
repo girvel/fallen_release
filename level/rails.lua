@@ -27,9 +27,9 @@ init_debug = function()
   State.level.entities.black_door._locked = false
 
   State.runner:extend {
-    intro = cutscene.make {
+    _100_intro = cutscene.make {
       enabled = true,
-      screenplay = "assets/screenplay/intro.ms",
+      screenplay = "assets/screenplay/100_intro.ms",
       characters = {
         player = {},
       },
@@ -68,8 +68,8 @@ init_debug = function()
         async.sleep(1)
         sp:lines()
 
-        State.runner.scenes.snoring.enabled = true
-        State.runner.scenes.snoring.triggered = true
+        State.runner.scenes._102_snoring.enabled = true
+        State.runner.scenes._102_snoring.triggered = true
         sp:lines()
 
         State.player.xp = xp.for_level[2]
@@ -78,11 +78,11 @@ init_debug = function()
       end,
     },
 
-    snoring = cutscene.make {
+    _102_snoring = cutscene.make {
       enabled = false,
       triggered = false,
       mode = "sequential",
-      screenplay = "assets/screenplay/snoring.ms",
+      snores = love.filesystem.read("assets/screenplay/102_snoring.txt"):strip():split("\n"),
       characters = {
         neighbour = {},
       },
@@ -102,12 +102,9 @@ init_debug = function()
         return self.triggered
       end,
 
-      _run = function(self, ch, ps, sp)
+      _run = function(self, ch, ps)
         self.triggered = false
-        api.popup(
-          5, ch.neighbour.position + Vector.down * .5,
-          Random.item(sp:literal():split("\n"))
-        )
+        api.popup(5, ch.neighbour.position + Vector.down * .5, Random.item(self.snores))
       end,
     },
   }
