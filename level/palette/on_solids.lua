@@ -1,3 +1,5 @@
+local health = require("engine.mech.health")
+local interactive = require("engine.tech.interactive")
 local animated = require("engine.tech.animated")
 local sprite = require("engine.tech.sprite")
 local reflective = require("level.shaders.reflective")
@@ -56,6 +58,7 @@ for _, tuple in ipairs {
   {14, "son_mary_top"},
   {15, "blood", true},
   {16, "cauldron", true},
+  {17, "vines"},
   {18, "vines"},
   {19, "vines"},
   {20, "vines"},
@@ -68,6 +71,9 @@ for _, tuple in ipairs {
   {28, "vines"},
   {29, "vines"},
   {30, "note"},
+  {33, "vines"},
+  {34, "vines"},
+  {35, "vines"},
   {36, "vines"},
   {37, "vines"},
   {41, "engine"},
@@ -80,6 +86,25 @@ for _, tuple in ipairs {
   {57, "engine"},
   {58, "engine"},
   {59, "engine"},
+  {65, "plate"},
+  {66, "plate"},
+  {67, "plate"},
+  {68, "plate"},
+  {73, "vase"},
+  {74, "vase"},
+  {75, "vase"},
+  {76, "candle"},
+  {77, "candle"},
+  {78, "candle"},
+  {81, "vase"},
+  {82, "vase"},
+  {83, "vase"},
+  {89, "skull"},
+  {90, "bones"},
+  {91, "bones"},
+  {92, "bones"},
+  {93, "bone_meal"},
+  {94, "bone_meal"},
 } do
   local index, codename, perspective_flag = unpack(
     tuple --[=[@as [integer, string, true?]]=]
@@ -92,6 +117,50 @@ for _, tuple in ipairs {
       codename = codename,
       sprite = this_sprite,
     }
+  end
+end
+
+local collect_food = function(self, other)
+  State:remove(self)
+  State:add_at(on_solids[Random.choice(65, 66, 67, 68)](), self.position, "on_solids")
+  health.heal(other, 1)
+end
+
+packer.offset = 64
+for _, tuple in ipairs {
+  {5, "food", "пища"},
+  {6, "food", "пища"},
+  {7, "food", "пища"},
+  {20, "beer", "кружка с пивом"},
+  {22, "wine", "бутылка вина"},
+} do
+  local index, codename, name = unpack(
+    tuple --[=[@as [integer, string, string]]=]
+  )
+  local i, this_sprite = packer:geti(index)
+  on_solids[i] = function()
+    local e = {
+      boring_flag = true,
+      codename = codename,
+      name = name,
+      sprite = this_sprite
+    }
+    interactive.mix_in(e, collect_food)
+    return e
+  end
+end
+
+do
+  local i, this_sprite = packer:get(5, 3)
+  on_solids[i] = function()
+    local e = {
+      boring_flag = true,
+      codename = "newspaper",
+      name = "газета",
+      sprite = this_sprite
+    }
+    interactive.mix_in(e)
+    return e
   end
 end
 

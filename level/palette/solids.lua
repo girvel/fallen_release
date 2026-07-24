@@ -1,3 +1,4 @@
+local health = require("engine.mech.health")
 local class = require("engine.mech.class")
 local hauler_ai = require("level.hauler_ai")
 local sprite = require("engine.tech.sprite")
@@ -110,6 +111,8 @@ for _, tuple in ipairs {
   {9, "cabinet", "шкаф", "cabinet"},
   {13, "crate", "ящик", false},
   {15, "chest", "сундук", "chest"},
+  {99, "crate", "ящик", false},
+  {107, "barrel", "бочка", false},
 } do
   local index, codename, name, soundname = unpack(
     tuple --[=[@as [integer, string, string, string, boolean, string|false]]=]
@@ -292,6 +295,7 @@ for _, tuple in ipairs {
   {3, "sofa"},
   {4, "stool"},
   {5, "loo"},
+  {6, "stool"},
   {9, "coal"},
   {10, "coal"},
   {11, "coal"},
@@ -370,6 +374,35 @@ for y = 1, 6 do
     end
 
     ::continue::
+  end
+end
+
+packer.offset = 144
+local cobweb_on_death = function(self)
+  for _, d in ipairs(Vector.directions) do
+    local e = State.grids[self.grid_layer]:slow_get(self.position + d)
+    if e and e._cobweb_flag and e.hp > 0 then
+      health.damage(e, 1)
+    end
+  end
+end
+for y = 1, 2 do
+  for x = 1, 3 do
+    local i, this_sprite = packer:get(x, y)
+    solids[i] = function()
+      return {
+        boring_flag = true,
+        low_flag = true,
+        transparent_flag = true,
+        seethrough_flag = true,
+        _cobweb_flag = true,
+        codename = "cobweb",
+        name = "паутина",
+        sprite = this_sprite,
+        hp = 1,
+        on_death = cobweb_on_death,
+      }
+    end
   end
 end
 

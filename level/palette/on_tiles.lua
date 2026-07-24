@@ -12,7 +12,23 @@ on_tiles.ATLAS_IMAGE = love.graphics.newImage("assets/atlases/on_tiles.png")
 local packer = factoring.packer(on_tiles.ATLAS_IMAGE)
 
 packer.offset = 0
-for index, codename in ipairs {"toilet", "magazine", "blood", "dirt"} do
+for _, tuple in ipairs {
+  {1, "toilet"},
+  {2, "magazine"},
+  {3, "blood"},
+  {4, "dirt"},
+  {9, "mushroom"},
+  {10, "mushroom"},
+  {11, "mushroom"},
+  {17, "bones"},
+  {18, "bones"},
+  {19, "bones"},
+  {19, "bone_meal"},
+  {20, "bone_meal"},
+} do
+  local index, codename = unpack(
+    tuple --[=[@as [integer, string]]=]
+  )
   local i, this_sprite = packer:geti(index)
   on_tiles[i] = function()
     return {
