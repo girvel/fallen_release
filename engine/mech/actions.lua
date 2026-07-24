@@ -312,6 +312,7 @@ local WHOOSH = sound.multiple("engine/assets/sounds/whoosh", .1)
 --- @param slot string
 base_attack = function(entity, slot)
   local target = State.grids.solids:slow_get(entity.position + entity.direction)
+  if not target then return end
 
   WHOOSH:play_at(entity.position)
   local did_hit, is_crit, damage = health.attack_precog(
@@ -322,11 +323,16 @@ base_attack = function(entity, slot)
     )
 
   entity:animate(slot .. "_attack"):next(function()
+    if not State:exists(target) then return end
     health.attack_enact(entity, target, did_hit, is_crit, damage)
     if not did_hit then return end
 
-    if target and target.sounds and target.sounds.hit then
+    if target.sounds and target.sounds.hit then
       target.sounds.hit:play_at(target.position)
+    end
+
+    if target.modify then
+      target:modify("on_hit", nil, entity, slot)
     end
   end)
 end

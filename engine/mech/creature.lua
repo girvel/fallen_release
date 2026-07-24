@@ -31,6 +31,14 @@ creature.mix_in = function(entity)
   entity:rotate(entity.direction or Vector.right)
 end
 
+--- @param entity table
+creature.mix_in_perks = function(entity)
+  if entity.inventory == nil then entity.inventory = {} end
+  if entity.perks == nil then entity.perks = {} end
+  if entity.conditions == nil then entity.conditions = {} end
+  entity.modify = creature.methods.modify
+end
+
 --- @alias creature_modification
 --- | '"resources"'
 --- | '"max_hp"'

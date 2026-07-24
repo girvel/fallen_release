@@ -219,7 +219,12 @@ end
 --- @param fail boolean
 --- @param damage integer
 health.attack_save_enact = function(source, target, fail, damage)
-  health.damage(target, damage, source, fail)
+  if fail then
+    health.damage(target, damage, source, fail)
+  else
+    State.hostility:register(source, target)
+    State:add(floater.new("-", target.position, health.COLOR_DAMAGE))
+  end
 end
 
 --- Attacks through making the target roll the saving throw; halves the damage on success

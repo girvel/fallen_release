@@ -148,7 +148,7 @@ do
   local breaking_sound = sound.multiple("assets/sounds/door_breaking")
   local i, this_sprite = packer:get(5, 0)
   solids[i] = function()
-    return {
+    local e = {
       boring_flag = true,
       transparent_flag = true,
       codename = "breakable_door",
@@ -166,6 +166,8 @@ do
       conditions = {},
       inventory = {},
     }
+    creature.mix_in_perks(e)
+    return e
   end
 end
 
@@ -184,7 +186,7 @@ do
   local breaking_sound = sound.multiple("assets/sounds/glass_breaking", .5)
   local i_intact, sprite_intact = packer:get(4, 1)
   solids[i_intact] = function()
-    return {
+    local e = {
       boring_flag = true,
       transparent_flag = true,
       codename = "panel",
@@ -196,7 +198,11 @@ do
         breaking_sound:play_at(self.position)
       end,
       shader = reflective(Vector.down),
+      perks = {perks.hardness},
+      modify = creature.methods.modify,
     }
+    creature.mix_in_perks(e)
+    return e
   end
 end
 
@@ -590,7 +596,7 @@ solids.engineer = function(n)
       faction = "dreamers_detective",
       name = "инженер-полуэльф",
       race = races.half_elf,
-      inventory = {main_hand = items.gas_key()},
+      inventory = {hand = items.gas_key()},
       direction = Vector.down,
     }
   elseif n == 2 then

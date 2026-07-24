@@ -1,3 +1,4 @@
+local health = require("engine.mech.health")
 local animated = require("engine.tech.animated")
 
 
@@ -39,6 +40,14 @@ perks.toughness = {
     if damage >= 8 or is_critical then return damage end
     return 0
   end,
+}
+
+perks.hardness = {
+  modify_on_hit = function(self, entity, _, source, slot)
+    if not source.inventory[slot] and not source.inventory.gloves then
+      health.attack_save(entity, source, "con", 15, 1)
+    end
+  end
 }
 
 perks.invincible = {
