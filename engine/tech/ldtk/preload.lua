@@ -16,14 +16,9 @@ local sprite = require("engine.tech.sprite")
 --- @field capture_name? string
 --- @field args? string
 
---- @alias preload.capture preload.capture.name|preload.capture.args
-
---- @class preload.capture.name
---- @field capture_name string
---- @field layer string
-
---- @class preload.capture.args
---- @field args string
+--- @class preload.capture
+--- @field args? string
+--- @field capture_name? string
 --- @field layer string
 
 local put_positions, put_shadows, put_entities, put_tiles
@@ -93,11 +88,10 @@ end
 -- [SECTION] Implementation
 ----------------------------------------------------------------------------------------------------
 
---- @return string?
---- @return string?
+--- @return string? ...
 local fields = function(instance, ...)
   local len = select("#", ...)
-  assert(len <= 2)
+  assert(len <= 5)
 
   local r = {}
   for _, field in ipairs(instance.fieldInstances) do
@@ -110,7 +104,7 @@ local fields = function(instance, ...)
     end
   end
 
-  return r[1], r[2]
+  return r[1], r[2], r[3], r[4], r[5]
 end
 
 local relative_position = function(instance)
@@ -167,7 +161,7 @@ put_positions = function(layer, offset, positions, captures)
       }
     elseif instance.__identifier == "args" then
       local position = relative_position(instance)
-      local args, this_layer = fields(instance, "args", "layer")
+      local args, this_layer, capture_name = fields(instance, "args", "layer", "capture_name")
       if args == nil or args == "" then
         Error("No args for entity_capture @local:%s", position)
       end  --- @cast args string
@@ -178,6 +172,7 @@ put_positions = function(layer, offset, positions, captures)
       captures[position] = {
         args = args,
         layer = this_layer,
+        capture_name = capture_name,
       }
     elseif instance.__identifier:ends_with("_N") then
       local position = relative_position(instance)
@@ -259,20 +254,22 @@ end
 local use_captures = function(captures, entity, layer)
   local capture = captures[entity.position]
   if not capture or capture.layer ~= layer then return end
+  captures[entity.position] = nil
+
   if capture.capture_name then
     if entity.capture_name then
       Error("Attempt to capture an entity as %q, when it already has capture_name %s",
         capture.capture_name, entity.capture_name)
     end
     entity.capture_name = capture.capture_name
-    captures[entity.position] = nil
-  elseif capture.args then
+  end
+
+  if capture.args then
     if entity.args then
       Error("Attempt to provide args %q via args entity, when it already has args %q",
         capture.args, entity.args)
     end
     entity.args = capture.args
-    captures[entity.position] = nil
   end
 end
 

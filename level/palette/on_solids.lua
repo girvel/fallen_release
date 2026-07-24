@@ -1,9 +1,15 @@
+local animated = require("engine.tech.animated")
 local sprite = require("engine.tech.sprite")
 local reflective = require("level.shaders.reflective")
 local factoring = require("engine.tech.factoring")
 
 
 local on_solids = {}
+
+----------------------------------------------------------------------------------------------------
+-- [SECTION] Atlas
+----------------------------------------------------------------------------------------------------
+
 on_solids.ATLAS_IMAGE = love.graphics.newImage("assets/atlases/on_solids.png")
 local packer = factoring.packer(on_solids.ATLAS_IMAGE)
 
@@ -50,7 +56,6 @@ for _, tuple in ipairs {
   {14, "son_mary_top"},
   {15, "blood", true},
   {16, "cauldron", true},
-  {17, "door_broken", true},
   {18, "vines"},
   {19, "vines"},
   {20, "vines"},
@@ -58,6 +63,8 @@ for _, tuple in ipairs {
   {23, "helm"},
   {24, "inscription"},
   {25, "door_open"},
+  {26, "door_open"},
+  {27, "door_broken"},
   {28, "vines"},
   {29, "vines"},
   {30, "note"},
@@ -86,6 +93,20 @@ for _, tuple in ipairs {
       sprite = this_sprite,
     }
   end
+end
+
+----------------------------------------------------------------------------------------------------
+-- [SECTION] Entities
+----------------------------------------------------------------------------------------------------
+
+on_solids.pipe_valve = function()
+  local e = {
+    codename = "pipe_valve",
+    name = "Вентиль",
+    boring_flag = true,
+  }
+  animated.mix_in(e, "assets/animations/pipe_valve/", "no_atlas")
+  return e
 end
 
 Ldump.mark(on_solids, {}, ...)

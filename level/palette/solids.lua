@@ -1,9 +1,6 @@
-local interactive = require("engine.tech.interactive")
 local api = require("engine.tech.api")
-local ui = require("engine.tech.ui")
 local combat_ai = require("engine.mech.ais.combat")
 local races = require("engine.mech.races")
-local animated = require("engine.tech.animated")
 local level = require("engine.tech.level")
 local animated = require("engine.tech.animated")
 local creature = require("engine.mech.creature")
@@ -84,9 +81,9 @@ local make_open = function(factory, target_layer, soundname)
   end
 end
 
-do
-  local open = make_open(on_solids[25], "on_solids", false)
-  local i, this_sprite = packer:geti(25)
+for index = 25, 26 do
+  local open = make_open(on_solids[index], "on_solids", false)
+  local i, this_sprite = packer:geti(index)
   solids[i] = function(params)
     local e = {
       boring_flag = true,
@@ -139,7 +136,7 @@ end
 
 do
   local breaking_sound = sound.multiple("assets/sounds/door_breaking")
-  local i, this_sprite = packer:get(2, 0)
+  local i, this_sprite = packer:get(5, 0)
   solids[i] = function()
     return {
       boring_flag = true,
@@ -149,7 +146,7 @@ do
       sprite = this_sprite,
       hp = 1,
       on_remove = function(self)
-        State:add_at(on_solids[17](), self.position, "on_solids")
+        State:add_at(on_solids[27](), self.position, "on_solids")
         breaking_sound:play_at(self.position)
       end,
       modify = creature.methods.modify,

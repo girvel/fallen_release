@@ -24,6 +24,8 @@ rails.new = function(checkpoint)
 end
 
 init_debug = function()
+  local ch = State.level.entities
+  ch.black_door._locked = false
   item.give(State.player, State:add(items.yellow_gloves()))
 
   State.runner:extend {
