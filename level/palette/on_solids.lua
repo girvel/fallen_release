@@ -1,3 +1,4 @@
+local sound = require("engine.tech.sound")
 local health = require("engine.mech.health")
 local interactive = require("engine.tech.interactive")
 local animated = require("engine.tech.animated")
@@ -168,15 +169,35 @@ end
 -- [SECTION] Entities
 ----------------------------------------------------------------------------------------------------
 
-on_solids.pipe_valve = function()
+local valve_rotation_sounds = sound.multiple("assets/sounds/pipe_valve/rotate", .05)
+
+on_solids.pipe_valve = function(steam_source_pos)
   local e = {
     codename = "pipe_valve",
     name = "Вентиль",
     boring_flag = true,
+
+    on_add = function(self)
+      self._steam_source = State.grids.on_solids:slow_get(steam_source_pos)
+      if not self._steam_source then
+        Error("No on_solids.steam_source at %s", steam_source_pos)
+      end
+    end,
   }
   animated.mix_in(e, "assets/animations/pipe_valve/", "no_atlas")
+  interactive.mix_in(e, function(self)
+    valve_rotation_sounds:play_at(self.position)
+    self:animate("rotate"):next(function()
+      if not self._steam_source then return end
+      self._steam_source:_burst()
+      self._steam_source._overflow = 0
+    end)
+  end)
   return e
 end
+
+local pipe_overflow_sound = sound.new("assets/sounds/pipe_overflow.wav"):set_looping(true)
+local pipe_burst_sounds = sound.multiple("assets/sounds/steam_hissing", .8)
 
 on_solids.steam_source = function()
   return {
@@ -185,6 +206,7 @@ on_solids.steam_source = function()
 
     _burst = function(self)
       local fx = animated.add_fx("assets/animations/steam/", self.position, "fx_over")
+      pipe_burst_sounds:play_at(self.position)
       State.runner:run_task(function()
         local damaged = {}
         while State:exists(fx) do
@@ -197,6 +219,7 @@ on_solids.steam_source = function()
         end
       end, "steam_damage")
     end,
+
     _paused = false,
     _overflow = 0,
     _overflow_leak = 0,
@@ -206,11 +229,23 @@ on_solids.steam_source = function()
         if entity._paused then return end
         entity._overflow = entity._overflow + dt
         if entity._overflow >= 60 then
+          if not self._overflow_sound then
+            self._overflow_sound = pipe_overflow_sound
+              :clone()
+              :place(entity.position)
+              :play()
+          end
           entity._overflow_leak = entity._overflow_leak + dt
           while entity._overflow_leak > 1 do
             entity._overflow_leak = entity._overflow_leak - 1
             entity:_burst()
           end
+          return
+        end
+
+        if self._overflow_sound then
+          self._overflow_sound:stop()
+          self._overflow_sound = nil
         end
       end,
     },

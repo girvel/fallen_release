@@ -63,7 +63,7 @@ end
 animated.fx = function(path, position, layer)
   local result = {}
 
-  local _, _, head = path:find("/?([^/]+)$")
+  local head = path:match("/?([^/]+)/?$")
   result.codename = head and (head .. "_fx") or "unnamed_fx"
   result.boring_flag = true
   result.position = position

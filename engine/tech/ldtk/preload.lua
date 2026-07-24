@@ -1,5 +1,7 @@
 local level = require("engine.tech.level")
 local sprite = require("engine.tech.sprite")
+
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] External API
 ----------------------------------------------------------------------------------------------------
@@ -14,7 +16,7 @@ local sprite = require("engine.tech.sprite")
 --- @field position vector
 --- @field identifier string
 --- @field capture_name? string
---- @field args? string
+--- @field args? any
 
 --- @class preload.capture
 --- @field args? string
@@ -98,7 +100,14 @@ local fields = function(instance, ...)
     for i = 1, len do
       local requested_field = select(i, ...)
       if requested_field == field.__identifier then
-        r[i] = field.__value
+        if field.__type == "String" or field.__type:starts_with("LocalEnum.") then
+          r[i] = field.__value
+        elseif field.__type == "Point" then
+          r[i] = "V("..(field.__value.cx + 1)..", "..(field.__value.cy + 1)..")"
+        else
+          Error("Unsupported LDtk field type %s", field.__type)
+          r[i] = nil
+        end
         break
       end
     end
