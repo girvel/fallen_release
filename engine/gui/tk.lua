@@ -20,6 +20,19 @@ tk.delegate = function(methods, ...)
   end
 end
 
+tk.finalize_mode = function(methods)
+  for _, method in ipairs {"draw_gui", "draw_entity", "preprocess", "postprocess"} do
+    if not methods[method] then
+      methods[method] = function(self, ...)
+        local base = self._prev[method]
+        if base then
+          return base(self._prev, ...)
+        end
+      end
+    end
+  end
+end
+
 tk.WINDOW_PADDING = 40
 
 --- @param x integer|"center"|"right"

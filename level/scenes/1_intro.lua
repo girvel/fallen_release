@@ -79,6 +79,20 @@ return {
       api.line(State.player, map_literal()[sorted_abilities[6][1]])
       api.line(State.player, map_literal()[sorted_abilities[5][1]])
       api.line(State.player, map_literal()[sorted_abilities[1][1]])
+
+      local wrong_names = map_literal()
+
+      while true do
+        Kernel.gui:open_menu("appearance_editor")
+        while Kernel.gui:is_opened("appearance_editor") do
+          coroutine.yield()
+        end
+        local reaction = wrong_names[State.player.name:utf_lower()]
+        if not reaction then break end
+        api.line(State.player, reaction)
+      end
+
+      sp:lines()
     end,
   },
 

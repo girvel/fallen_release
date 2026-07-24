@@ -3,6 +3,7 @@ local ui = require("engine.tech.ui")
 local tk = require("engine.gui.tk")
 
 
+-- TODO just convert to items & ditch model
 local HAIR_TYPES = {
   {codename = "none", name = "Лысый"},
   {codename = "hair_short_1", name = "Короткие (1)"},
@@ -55,7 +56,15 @@ methods.draw_gui = function(self, dt)
   if ui.keyboard("return") then
     Kernel.gui:confirm(
       "Закончить редактирование внешности персонажа?",
-      function() Kernel.gui:close_menu() end
+      function()
+        Log.info(
+          "Finalized appearance:\n  name: %s\n  hair: %s\n  skin: %s\n",
+          State.player.name,
+          State.player.inventory.hair,
+          State.player.inventory.skin
+        )
+        Kernel.gui:close_menu()
+      end
     )
   end
 
@@ -73,7 +82,7 @@ methods.draw_gui = function(self, dt)
       ui.start_line()
         ui.selector()
         ui.text("Имя:  ")
-        ui.field(self.model, "name", 22)
+        local name_changed = ui.field(self.model, "name", 22)
       ui.finish_line()
 
       ui.start_line()
@@ -95,6 +104,10 @@ methods.draw_gui = function(self, dt)
       ui.finish_line()
     ui.finish_font()
   tk.finish_window()
+
+  if name_changed then
+    State.player.name = self.model.name:strip()
+  end
 
   local inventory = State.player.inventory
   if hair_type_changed or hair_color_changed then

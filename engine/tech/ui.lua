@@ -825,20 +825,24 @@ end
 --- @param container table
 --- @param key any
 ui.field = function(container, key, max_length)
+  local changed = false
   local is_selected = state.selection.i == state.selection.max_i
   ui.text("%s%s", container[key], is_selected and state.time % 2 >= 1 and "█" or " ")
   if is_selected then
     if input.keyboard.pressed.backspace then
       container[key] = container[key]:utf_sub(1, -2)
       input.keyboard.pressed.backspace = nil
+      changed = true
     end
 
     container[key] = container[key] .. input.keyboard.input
     if max_length then
       container[key] = container[key]:utf_sub(1, max_length)
+      changed = true
     end
     input.keyboard.pressed = {}
   end
+  return changed
 end
 
 --- @return boolean is_selected
