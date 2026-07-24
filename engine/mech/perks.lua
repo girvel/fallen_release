@@ -41,5 +41,11 @@ perks.toughness = {
   end,
 }
 
+perks.invincible = {
+  modify_incoming_damage = function(self, entity, damage, source, is_critical)
+    return 0
+  end,
+}
+
 Ldump.mark(perks, {}, ...)
 return perks

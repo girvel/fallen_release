@@ -1,3 +1,8 @@
+local class = require("engine.mech.class")
+local hauler_ai = require("level.hauler_ai")
+local sprite = require("engine.tech.sprite")
+local items = require("level.palette.items")
+local monsters = require("engine.mech.monsters")
 local api = require("engine.tech.api")
 local combat_ai = require("engine.mech.ais.combat")
 local races = require("engine.mech.races")
@@ -16,7 +21,9 @@ local player_base = require("engine.state.player.base")
 local abilities = require("engine.mech.abilities")
 
 
+--- @class solids: mech.monsters
 local solids = {fs = {}}
+Table.extend(solids, monsters)
 
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Atlas
@@ -413,6 +420,198 @@ solids.dreamer = function(params)
   }
   creature.mix_in(e)
   humanoid.mix_in(e)
+  return e
+end
+
+solids.cook = function()
+  local e = {
+    name = "...",
+    codename = "cook",
+    race = Random.item(dreamer_races),
+    max_hp = 15,
+    level = 1,
+    base_abilities = abilities.new(10, 10, 10, 10, 10, 10),
+    ai = {
+      init = function(self, entity)
+        self._sub = State.hostility:subscribe(function(attacker, target)
+          if entity.hp <= 0 or target ~= entity then return end
+          api.popup(5, entity, Random.choice("Ааай", "Оой"))
+          entity.interact = nil
+        end)
+      end,
+    },
+  }
+  creature.mix_in(e)
+  humanoid.mix_in(e)
+  interactive.mix_in(e)
+  return e
+end
+
+solids.combat_dreamer = function(params)
+  local e = {
+    name = "...",
+    codename = "combat_dreamer",
+    race = Random.item(dreamer_races),
+    faction = "guards",
+    ai = combat_ai.new(),
+    armor = 15,
+    max_hp = 32,
+    base_abilities = abilities.new(15, 10, 14, 7, 12, 7),
+    inventory = {
+      main_hand = items.mace(),
+      other_hand = items.small_shield(),
+    },
+    level = 3,
+  }
+  creature.mix_in(e)
+  humanoid.mix_in(e)
+  interactive.mix_in(e)
+  return e
+end
+
+solids.markiss = function()
+  local e = {
+    name = "Кот",
+    codename = "markiss",
+    level = 1,
+    race = races.furry,
+    portrait = sprite.image("assets/portraits/markiss.png"),
+    inventory = {
+      head = items.furry_head(),
+    },
+    max_hp = 15,
+    base_abilities = abilities.new(10, 10, 10, 10, 10, 10),
+    ai = hauler_ai.new(),
+    perks = {perks.invincible},
+  }
+  creature.mix_in(e)
+  humanoid.mix_in(e)
+  interactive.mix_in(e)
+  return e
+end
+
+solids.hauler = function()
+  local e = {
+    name = "...",
+    codename = "hauler",
+    level = 1,
+    race = Random.item(dreamer_races),
+    max_hp = 15,
+    base_abilities = abilities.new(16, 10, 10, 10, 10, 10),
+    ai = hauler_ai.new(),
+    faction = "haulers",
+  }
+  creature.mix_in(e)
+  humanoid.mix_in(e)
+  return e
+end
+
+solids.janitor = function()
+  local e = solids.dreamer {
+    inventory = {
+      hand = items.mop(),
+      offhand = items.bucket(),
+    }
+  }
+
+  e.name = "уборщик"
+  e.codename = "janitor"
+  e.ai = {  --- @diagnostic disable-line
+    combat_module = combat_ai.new(),
+
+    init = function(self, entity)
+      self.combat_module:init(entity)
+    end,
+
+    deinit = function(self, entity)
+      self.combat_module:deinit(entity)
+    end,
+
+    control = function(self, entity)
+      if State.hostility:get(entity, State.player) == "enemy" then
+        return self.combat_module:control(entity)
+      end
+
+      -- NEXT hauler AI
+    end,
+
+    observe = function(self, entity, dt)
+      return self.combat_module:observe(entity, dt)
+    end,
+  }
+
+  return e
+end
+
+solids.engineer = function(n)
+  local e
+  if n == 1 then
+    e = {
+      max_hp = 22,
+      base_abilities = abilities.new(16, 14, 12, 8, 8, 8),
+      level = 2,
+      faction = "dreamers_detective",
+      name = "инженер-полуэльф",
+      race = races.half_elf,
+      inventory = {main_hand = items.gas_key()},
+    }
+  elseif n == 2 then
+    e = {
+      max_hp = 22,
+      base_abilities = abilities.new(16, 14, 12, 8, 8, 8),
+      level = 2,
+      faction = "dreamers_detective",
+      name = "инженер-полурослик",
+      race = races.halfling,
+    }
+  elseif n == 3 then
+    e = {
+      name = "инженер-полуорк",
+      race = races.half_orc,
+      level = 3,
+      hp = 34,
+      max_hp = 35,
+      inventory = {gloves = items.yellow_gloves()},
+      faction = "half_orc",
+
+      base_abilities = abilities.new(18, 6, 12, 8, 8, 8),
+      perks = {
+        class.save_proficiency("dex"),
+        {
+          modify_resources = function(self, entity, resources, rest_type)
+            if rest_type == "move" then
+              resources.actions = resources.actions + 1
+            end
+            return resources
+          end,
+        },
+      },
+    }
+  elseif n == 4 then
+    e = {
+      max_hp = 22,
+      base_abilities = abilities.new(16, 14, 12, 8, 8, 8),
+      level = 2,
+      faction = "dreamers_detective",
+      name = "инженер-дворф",
+      race = races.dwarf,
+    }
+  else
+    Error("Invalid n=%s parameter for solids.engineer, expected 1-4 integer", n)
+    return
+  end
+
+  creature.mix_in(e)
+  humanoid.mix_in(e)
+  return e
+end
+
+solids.protected_dreamer = function()
+  local e = solids.dreamer {
+    inventory = {body = items.protective_robe()},
+    faction = "protected_dreamers",
+  }
+  interactive.mix_in(e)
   return e
 end
 

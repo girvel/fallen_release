@@ -35,7 +35,7 @@ items.coal = function()
   local e = {
     name = "Уголь",
     codename = "coal",
-    slot = "underhand",
+    slot = "bag",
     boring_flag = true,
   }
   item.mix_in(e, "assets/animations/coal")
@@ -85,6 +85,31 @@ items.bucket = function()
     no_drop_flag = true,
   }
   item.mix_in(e, "assets/animations/bucket")
+  return e
+end
+
+items.furry_head = function()
+  local e = {
+    codename = "furry_head",
+    slot = "head",
+    no_drop_flag = true,
+  }
+  item.mix_in(e, "assets/animations/furry_head")
+  return e
+end
+
+items.mop = function()
+  local e = {
+    codename = "mop",
+    name = "швабра",
+    damage_roll = D(6),
+    tags = {
+      heavy = true,
+      versatile = true,
+    },
+    slot = "hands",
+  }
+  item.mix_in(e, "assets/animations/mop")
   return e
 end
 
