@@ -112,8 +112,8 @@ for _, tuple in ipairs {
   {9, "cabinet", "шкаф", "cabinet"},
   {13, "crate", "ящик", false},
   {15, "chest", "сундук", "chest"},
-  {99, "crate", "ящик", false},
-  {107, "barrel", "бочка", false},
+  {97, "crate", "ящик", false},
+  {105, "barrel", "бочка", false},
 } do
   local index, codename, name, soundname = unpack(
     tuple --[=[@as [integer, string, string, string, boolean, string|false]]=]
