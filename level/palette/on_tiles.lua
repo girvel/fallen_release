@@ -17,6 +17,7 @@ for _, tuple in ipairs {
   {2, "magazine"},
   {3, "blood"},
   {4, "dirt"},
+  {5, "bucket"},
   {9, "mushroom"},
   {10, "mushroom"},
   {11, "mushroom"},

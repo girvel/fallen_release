@@ -1550,7 +1550,7 @@
 			"hollow": false,
 			"color": "#D77643",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 15,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 15, "x": 0, "y": 0, "w": 16, "h": 16 },
@@ -1585,7 +1585,7 @@
 			"hollow": false,
 			"color": "#D77643",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 16,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 16, "x": 0, "y": 0, "w": 16, "h": 16 },
@@ -1620,7 +1620,7 @@
 			"hollow": false,
 			"color": "#D77643",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 17,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 17, "x": 0, "y": 0, "w": 16, "h": 16 },
@@ -1655,7 +1655,7 @@
 			"hollow": false,
 			"color": "#D77643",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 18,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 18, "x": 0, "y": 0, "w": 16, "h": 16 },
@@ -1690,7 +1690,7 @@
 			"hollow": false,
 			"color": "#D77643",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 19,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 19, "x": 0, "y": 0, "w": 16, "h": 16 },
@@ -1725,7 +1725,7 @@
 			"hollow": false,
 			"color": "#D77643",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 20,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 20, "x": 0, "y": 0, "w": 16, "h": 16 },
@@ -1900,7 +1900,7 @@
 			"hollow": false,
 			"color": "#EAD4AA",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 42,
 			"tileRenderMode": "FullSizeUncropped",
 			"tileRect": { "tilesetUid": 42, "x": 0, "y": 0, "w": 32, "h": 16 },
@@ -1935,7 +1935,7 @@
 			"hollow": false,
 			"color": "#EAD4AA",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 43,
 			"tileRenderMode": "FullSizeUncropped",
 			"tileRect": { "tilesetUid": 43, "x": 0, "y": 0, "w": 32, "h": 16 },
@@ -1970,7 +1970,7 @@
 			"hollow": false,
 			"color": "#E4A672",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 50,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 50, "x": 432, "y": 0, "w": 16, "h": 16 },
@@ -2152,7 +2152,7 @@
 			"hollow": false,
 			"color": "#3E2731",
 			"renderMode": "Tile",
-			"showName": true,
+			"showName": false,
 			"tilesetId": 50,
 			"tileRenderMode": "FitInside",
 			"tileRect": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
@@ -2174,7 +2174,7 @@
 					"canBeNull": false,
 					"arrayMinLength": null,
 					"arrayMaxLength": null,
-					"editorDisplayMode": "Hidden",
+					"editorDisplayMode": "ValueOnly",
 					"editorDisplayScale": 1,
 					"editorDisplayPos": "Above",
 					"editorLinkStyle": "StraightArrow",
@@ -2242,7 +2242,7 @@
 			"savedSelections": [{ "ids": [0,1], "mode": "Random" }],
 			"cachedPixelData": {
 				"opaqueTiles": "1100110000000000000000001100000011111010111100001100000000000000000000000000000000000000000000100000000000000000000000000000111100001111000011110000011100000000",
-				"averageColors": "f236f23632364236f236f3243324432572368236b236c23673258324b325c32482367236c236b23683247224c324b324f745f21342363236e744000043243224f369f258f258f369f2587369f3690000f434f424f424f4348467835694489448f534f53475357535743474343448355ae235c235c235e235b37aa369a36aa369a23562356235a235d37a9369936900009235c23552359235b36a746674666355b744c734b73432344535323500000000411171118211a21133476aa7f2354634643464345535553564345845000000005535553575354535d222e322e322d322553575358535753500007111722200006434553575355535f434f535f434f37a7467735600000000f424f434f424f37b6744673400000000f424f424f424f37b5eee5eee5eee0000c423f369f369f3695eee4eee4eee000000002c961b962b96"
+				"averageColors": "f236f23632364236f236f3243324432572368236b236c23673258324b325c32482367236c236b23683247224c324b324f745f21342363236e744000043243224f369f258f258f369f2587369f3690000f434f424f424f4348467835694489448f534f534753575357434743434480000e235c235c235e235b37aa369a36aa369a23562356235a235d37a9369936900009235c23552359235b36a746674666355b744c734b73432344535323500000000411171118211a21133476aa7f2354634643464345535553564345845000000005535553575354535d222e322e322d322553575358535753500007111722200006434553575355535f434f535f434f37a7467735600000000f424f434f424f37b6744673400000000f424f424f424f37b5eee5eee5eee0000c423f369f369f3695eee4eee4eee000000002c961b962b96"
 			}
 		},
 		{
@@ -2444,7 +2444,7 @@
 			"savedSelections": [],
 			"cachedPixelData": {
 				"opaqueTiles": "0000000000000000000000000000000000000000000000000000000000000000",
-				"averageColors": "33241cab3845632300000000000000002aa92aa91877000000000000000000002ccb2ccb2ccb499859980000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+				"averageColors": "33241cab38456323355a0000000000002aa92aa91877000000000000000000002ccb2ccb2ccb499859980000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 			}
 		},
 		{

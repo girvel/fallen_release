@@ -1,3 +1,4 @@
+local on_tiles = require("level.palette.on_tiles")
 local health = require("engine.mech.health")
 local class = require("engine.mech.class")
 local hauler_ai = require("level.hauler_ai")
@@ -207,17 +208,6 @@ do
 end
 
 do
-  local i_broken, sprite_broken = packer:get(8, 3)
-  solids[i_broken] = function()
-    return {
-      boring_flag = true,
-      transparent_flag = true,
-      codename = "bucket",
-      name = "ведро",
-      sprite = sprite_broken,
-    }
-  end
-
   local breaking_sound = sound.multiple("assets/sounds/bucket")
   local i_intact, sprite_intact = packer:get(7, 3)
   solids[i_intact] = function()
@@ -229,7 +219,7 @@ do
       sprite = sprite_intact,
       hp = 1,
       on_remove = function(self)
-        State:add_at(solids[i_broken](), self.position, "solids")
+        State:add_at(on_tiles[5](), self.position, "on_tiles")
         breaking_sound:play_at(self.position)
       end,
       shader = reflective(Vector.down),
