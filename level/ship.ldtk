@@ -3739,22 +3739,6 @@
 							"__worldY": 1472
 						},
 						{
-							"__identifier": "player",
-							"__grid": [22,88],
-							"__pivot": [0,0],
-							"__tags": ["solid"],
-							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
-							"__smartColor": "#BE4A2F",
-							"iid": "74838370-6fc0-11f1-857b-f7e5cfd44606",
-							"width": 16,
-							"height": 16,
-							"defUid": 3,
-							"px": [352,1408],
-							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
-							"__worldX": 352,
-							"__worldY": 1408
-						},
-						{
 							"__identifier": "megadoor1c",
 							"__grid": [27,68],
 							"__pivot": [0,0],
@@ -4015,6 +3999,22 @@
 							"fieldInstances": [],
 							"__worldX": 688,
 							"__worldY": 1168
+						},
+						{
+							"__identifier": "player",
+							"__grid": [18,108],
+							"__pivot": [0,0],
+							"__tags": ["solid"],
+							"__tile": { "tilesetUid": 1, "x": 48, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#BE4A2F",
+							"iid": "74838370-6fc0-11f1-857b-f7e5cfd44606",
+							"width": 16,
+							"height": 16,
+							"defUid": 3,
+							"px": [288,1728],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player", "__tile": null, "defUid": 8, "realEditorValues": [] }],
+							"__worldX": 288,
+							"__worldY": 1728
 						}
 					]
 				},

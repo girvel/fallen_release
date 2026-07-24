@@ -17,6 +17,7 @@ creature.mix_in = function(entity)
   if entity.perks == nil then entity.perks = {} end
   if entity.conditions == nil then entity.conditions = {} end
   if entity.transparent_flag == nil then entity.transparent_flag = true end
+  if entity.creature_flag == nil then entity.creature_flag = true end
   if entity.moving_flag == nil then entity.moving_flag = true end
   if entity.xp == nil then entity.xp = 0 end
   if entity.sounds == nil then
