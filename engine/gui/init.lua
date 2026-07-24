@@ -4,8 +4,9 @@ local animated = require("engine.tech.animated")
 local level    = require("engine.tech.level")
 local sound    = require("engine.tech.sound")
 
-local mode = {}
+local gui = {}
 
+--- @enum (key) gui.mode
 local STATES = {
   start_menu = require("engine.gui.start_menu"),
   game = require("engine.gui.game"),
@@ -31,7 +32,18 @@ local empty_f = function() end
 --- @class gui
 --- @field _mode table
 local methods = {}
-mode.mt = {__index = methods}
+gui.mt = {__index = methods}
+
+--- @param type gui.mode
+--- @return boolean
+methods.is_opened = function(self, type)
+  local mode = self._mode
+  while mode do
+    if mode.type == type then return true end
+    mode = mode._prev
+  end
+  return false
+end
 
 methods._set_mode = function(self, mode_value)
   self._mode = mode_value
@@ -141,11 +153,11 @@ methods.confirm = function(self, message, f)
   self:_set_mode(STATES.confirmation.new(self._mode, message, f))
 end
 
-mode.new = function()
-  local result = setmetatable({}, mode.mt)
+gui.new = function()
+  local result = setmetatable({}, gui.mt)
   result:_set_mode(STATES.start_menu.new())
   return result
 end
 
-Ldump.mark(mode, {mt = "const"}, ...)
-return mode
+Ldump.mark(gui, {mt = "const"}, ...)
+return gui

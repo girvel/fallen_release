@@ -170,23 +170,29 @@ end
 --- @param ability ability|skill
 --- @return number
 creature.methods.get_modifier = function(self, ability)
+  return abilities.get_modifier(self:get_score(ability))
+end
+
+--- @param self entity
+--- @param ability ability|skill
+--- @return number
+creature.methods.get_score = function(self, ability)
   if abilities.set[ability] then
-    return abilities.get_modifier(self:modify(
+    return self:modify(
       "ability_score",
       self.base_abilities[ability],
       ability
-    ))
-  end
-
-  if not abilities.skill_bases[ability] then
+    )
+  elseif abilities.skill_bases[ability] then
+    return self:modify(
+      "skill_score",
+      self:get_score(abilities.skill_bases[ability]),
+      ability
+    )
+  else
     Error("%s is not a skill nor an ability", ability)
+    return 0
   end
-
-  return self:modify(
-    "skill_score",
-    self:get_modifier(abilities.skill_bases[ability]),
-    ability
-  )
 end
 
 --- @param self entity
