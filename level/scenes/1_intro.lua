@@ -1,3 +1,5 @@
+local interactive = require("engine.tech.interactive")
+local item = require("engine.tech.item")
 local abilities = require("engine.mech.abilities")
 local on_solids = require("level.palette.on_solids")
 local xp = require("engine.mech.xp")
@@ -14,6 +16,7 @@ return {
     screenplay = "assets/screenplay/100_intro.ms",
     characters = {
       player = {},
+      intro_note = {},
     },
 
     _run = function(self, ch, ps, sp)
@@ -102,6 +105,13 @@ return {
       end)
 
       sp:lines()
+
+      api.order(sp:literal())
+      sp:lines()
+
+      item.set_cue(ch.intro_note, "highlight", true)
+      interactive.mix_in(ch.intro_note)
+      ch.intro_note.name = "записка"
     end,
   },
 
