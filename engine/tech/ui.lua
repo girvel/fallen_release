@@ -948,10 +948,9 @@ ui.choice = function(options)
 
   local result
   for i, option in ipairs(options) do
-    local button_out = button(
-      context.cursor_x, context.cursor_y,
-      context.frame.w, context.font:getHeight() * LINE_K
-    )
+    local w, h = context.frame.w, context.font:getHeight() * LINE_K
+    local x, y = align(w, h)
+    local button_out = button(x, y, w, h)
 
     if button_out.is_mouse_over then
       state.selection.i = state.selection.max_i + i
