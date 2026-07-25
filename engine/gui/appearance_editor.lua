@@ -3,7 +3,9 @@ local ui = require("engine.tech.ui")
 local tk = require("engine.gui.tk")
 
 
--- TODO just convert to items & ditch model
+-- Uses HAIR_TYPES & HAIR_COLORS instead of items themselves, because hair is constructed from
+-- two components => can't just plug in the list of items
+
 local HAIR_TYPES = {
   {codename = "none", name = "Лысый"},
   {codename = "hair_short_1", name = "Короткие (1)"},
