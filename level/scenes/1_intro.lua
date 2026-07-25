@@ -20,6 +20,7 @@ return {
     },
 
     _run = function(self, ch, ps, sp)
+      do return end -- NEXT RM
       State.player:rotate(Vector.down)
       local prev_fov = State.player.fov_r
       State.player.fov_r = 0

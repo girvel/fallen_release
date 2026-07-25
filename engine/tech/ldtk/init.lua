@@ -14,6 +14,7 @@ local ldtk = {}
 --- @field palette palette entity factories by layer and then name
 --- @field rails_new fun(checkpoint: string): rails
 --- @field bg_new? fun(): entity
+--- @field journal_new fun(): table
 --- @field level_mix_in fun(t: level)
 
 --- @alias ch table<string, entity>
@@ -53,6 +54,7 @@ ldtk.load = function(path)
   local preload_data = preload(json)
   coroutine.yield("preload", 1)
   local generation_data = generate_entities(definition.palette, preload_data.entities)
+  State.player.journal_new = definition.journal_new
 
   local bg
   if definition.bg_new then

@@ -6,6 +6,8 @@ local creature = require "engine.mech.creature"
 
 local base = {}
 
+-- TODO maybe .hears, .speaks etc. should go to State.gui, which is a game state for Kernel.gui
+
 --- @class player_base: entity_strict
 --- @field fov_r integer
 --- @field ai player_ai
@@ -23,6 +25,7 @@ local base = {}
 --- @field is_deaf boolean
 --- @field creator_model table?
 --- @field appearance_model table?
+--- @field journal_new fun(): table
 
 --- @alias dialogue_line plain_dialogue_line | dialogue_options
 

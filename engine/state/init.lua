@@ -196,7 +196,6 @@ methods.load_level = function(self, path)
 
   for i, e in ipairs(load_data.entities) do
     e = self:add(e)
-    if e.player_flag then self.player = e --[[@as player]] end
 
     if i % 500 == 0 and love.timer.getTime() - last_yield_t >= async.yield_period then
       coroutine.yield("add", i / #load_data.entities)
