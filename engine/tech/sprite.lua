@@ -197,11 +197,11 @@ transform_colors = function(base, target_color)
       if color_eq(anchor, color) then
         goto continue
       end
-      main_color = color
-      break
     end
+    main_color = color
+    break
 
-    ::continue::
+    ::continue::  --- @diagnostic disable-line
   end
 
   if not main_color then return end
