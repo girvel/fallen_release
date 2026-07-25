@@ -1,5 +1,4 @@
 local sprite = require("engine.tech.sprite")
-local abilities = require("engine.mech.abilities")
 local ai = require("engine.state.player.ai")
 local action = require("engine.tech.action")
 local creature = require "engine.mech.creature"
@@ -23,6 +22,7 @@ local base = {}
 --- @field is_blind boolean
 --- @field is_deaf boolean
 --- @field creator_model table?
+--- @field appearance_model table?
 
 --- @alias dialogue_line plain_dialogue_line | dialogue_options
 

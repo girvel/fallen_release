@@ -40,7 +40,7 @@ appearance_editor.new = function(prev)
   return setmetatable({
     type = "appearance_editor",
     _prev = prev,
-    model = {
+    model = State.player.appearance_model or {
       name = "Протагонист",
       hair_type = HAIR_TYPES[1],
       hair_color = HAIR_COLORS[2],
@@ -145,6 +145,7 @@ methods.draw_gui = function(self, dt)
     Kernel.gui:confirm(
       "Закончить редактирование внешности персонажа?",
       function()
+        State.player.appearance_model = self.model
         Log.info(
           "Finalized appearance:\n  name: %s\n  hair: %s\n  skin: %s\n",
           State.player.name,

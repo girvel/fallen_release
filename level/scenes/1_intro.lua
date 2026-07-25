@@ -80,9 +80,9 @@ return {
       api.line(State.player, map_literal()[sorted_abilities[5][1]])
       api.line(State.player, map_literal()[sorted_abilities[1][1]])
 
-      local wrong_names = map_literal()
-
+      api.travel_scripted(State.player, State.player.position + Vector.down):wait()
       api.scale(10)
+      local wrong_names = map_literal()
       while true do
         Kernel.gui:open_menu("appearance_editor")
         while Kernel.gui:is_opened("appearance_editor") do
@@ -92,7 +92,14 @@ return {
         if not reaction then break end
         api.line(State.player, reaction)
       end
-      api.scale()
+
+      api.scale():next(function()
+      -- memory glitches with api.scale, remove this when it's fixed
+        local prev_canvas = love.graphics.getCanvas()
+        love.graphics.setCanvas(State.player.memory)
+        love.graphics.clear()
+        love.graphics.setCanvas(prev_canvas)
+      end)
 
       sp:lines()
     end,

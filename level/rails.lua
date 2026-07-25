@@ -17,9 +17,6 @@ end
 
 init_debug = function()
   State.level.entities.black_door._locked = false
-  State.runner:run_task(function()
-    Kernel.gui:open_menu("appearance_editor")
-  end)
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)
