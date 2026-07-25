@@ -56,9 +56,7 @@ love.load = function(args)
       h = 0
     end
 
-    if args.fixed_size then
-      mode.resizable = false
-    end
+    mode.resizable = not args.fixed_size
 
     if args.youtube then
       mode.x = 200

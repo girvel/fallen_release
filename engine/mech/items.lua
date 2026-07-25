@@ -186,7 +186,7 @@ end
 --- @enum (key) hair_color
 local hair_colors = {
   gray = Vector.hex("4f5a5c"),
-  red = Vector.hex("e86c46"),
+  red = Vector.hex("904a5d"),
   brown = Vector.hex("544747"),
 }
 

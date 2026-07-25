@@ -82,6 +82,7 @@ return {
 
       local wrong_names = map_literal()
 
+      api.scale(10)
       while true do
         Kernel.gui:open_menu("appearance_editor")
         while Kernel.gui:is_opened("appearance_editor") do
@@ -91,6 +92,7 @@ return {
         if not reaction then break end
         api.line(State.player, reaction)
       end
+      api.scale()
 
       sp:lines()
     end,
