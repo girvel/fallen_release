@@ -18,5 +18,5 @@ return {
   level_mix_in = function(base)
     base.water_speed = 5
   end,
-  journal_new = require("level.logic.journal").new,
+  journal_new = require("level.logic.codex").new,
 }
