@@ -175,4 +175,21 @@ return {
       State.player.suggestion = nil
     end,
   },
+
+  _108_leaving_room = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/108_leaving_room.ms",
+    characters = {
+      player = {}
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.player_room_exit
+    end,
+
+    _run = function(self, ch, ps, sp)
+      if State.rails.intro_note_status ~= "none" then return end
+      sp:lines()
+    end,
+  },
 }

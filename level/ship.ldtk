@@ -3066,6 +3066,44 @@
 							}] }],
 							"__worldX": 544,
 							"__worldY": 2080
+						},
+						{
+							"__identifier": "position",
+							"__grid": [19,109],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "35244610-6fc0-11f1-a7ee-ff8480a1e965",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [304,1744],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player_room_eating", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["player_room_eating"]
+							}] }],
+							"__worldX": 304,
+							"__worldY": 1744
+						},
+						{
+							"__identifier": "position",
+							"__grid": [15,107],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "38a863c0-6fc0-11f1-a7ee-997d8b8bbc50",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [240,1712],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "player_room_exit", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["player_room_exit"]
+							}] }],
+							"__worldX": 240,
+							"__worldY": 1712
 						}
 					]
 				},
@@ -9130,7 +9168,6 @@
 						{ "px": [496,1888], "src": [16,0], "f": 0, "t": 1, "d": [7583], "a": 1 },
 						{ "px": [512,1888], "src": [0,16], "f": 0, "t": 8, "d": [7584], "a": 1 },
 						{ "px": [528,1888], "src": [0,16], "f": 0, "t": 8, "d": [7585], "a": 1 },
-						{ "px": [544,1888], "src": [0,16], "f": 0, "t": 8, "d": [7586], "a": 1 },
 						{ "px": [560,1888], "src": [0,16], "f": 0, "t": 8, "d": [7587], "a": 1 },
 						{ "px": [576,1888], "src": [16,0], "f": 0, "t": 1, "d": [7588], "a": 1 },
 						{ "px": [592,1888], "src": [16,0], "f": 0, "t": 1, "d": [7589], "a": 1 },

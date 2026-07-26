@@ -43,6 +43,7 @@ end
 
 local skip_intro = function(self)
   State.runner:remove("_100_intro")
+  State.runner:remove("_108_leaving_room")
   self.intro_note_status = "picked_up"
   self:set_quest("warmup", stages.warmup.intro_heard)
 end
