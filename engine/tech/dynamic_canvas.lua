@@ -20,8 +20,11 @@ end
 --- @param screen_h integer
 dynamic_canvas.handle_resize = function(screen_w, screen_h)
   local n = 0
-  for _, params in pairs(map) do
-    params.container[params.key] = love.graphics.newCanvas(screen_w, screen_h)
+  for prev_canvas, params in pairs(map) do
+    local canvas = love.graphics.newCanvasRaw(screen_w, screen_h)
+    map[canvas] = params
+    params.container[params.key] = canvas
+    Ldump.serializer.handlers[canvas] = Ldump.serializer.handlers[prev_canvas]
     n = n + 1
   end
   Log.debug("Resized %s canvases to %sx%s", n, screen_w, screen_h)
