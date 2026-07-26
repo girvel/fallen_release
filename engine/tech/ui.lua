@@ -882,10 +882,9 @@ ui.text_button = function(text, ...)
   -- TODO bug overlap when next to each other
   text = format(text, ...)
 
-  local result = button(
-    context.cursor_x, context.cursor_y,
-    context.font:getWidth("w") * text:utf_len(), context.font:getHeight()
-  )
+  local w, h = context.font:getWidth("w") * text:utf_len(), context.font:getHeight()
+  local x, y = align(w, h)
+  local result = button(x, y, w, h)
 
   if result.is_mouse_over then
     ui.cursor("hand")

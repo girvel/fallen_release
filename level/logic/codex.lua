@@ -7,7 +7,8 @@ local tk = require("engine.gui.tk")
 local codex_module = {}
 
 --- @class codex
---- @field page string
+--- @field history string[]
+--- @field history_i integer
 local methods = {}
 codex_module.mt = {__index = methods}
 
@@ -17,6 +18,8 @@ local first_header
 codex_module.new = function()
   return setmetatable({
     page = "index",
+    history = {"index"},
+    history_i = 1,
   }, codex_module.mt)
 end
 
@@ -25,10 +28,45 @@ local pages = {}
 
 methods.draw = function(self, dt)
   tk.start_window("center", "center", "read_max", 700)
-    ui.h1("Журнал")
+    ui.start_font(40)
+      local w = ui.get_context().frame.w
+      local offset = 100
+
+      ui.start_frame(nil, nil, w / 2 - offset)
+      ui.start_alignment("right")
+        if self.history_i > 1 then
+          if ui.text_button(" < ").is_clicked then self:move(-1) end
+        end
+      ui.finish_alignment()
+      ui.finish_frame()
+
+      ui.start_frame(w / 2 + offset)
+        if self.history_i < #self.history then
+          if ui.text_button(" > ").is_clicked then self:move(1) end
+        end
+      ui.finish_frame()
+
+      ui.start_alignment("center")
+        ui.text("Журнал")
+      ui.finish_alignment()
+
+      ui.br()
+    ui.finish_font()
+
     first_header = true
-    pages[self.page](self)
+    pages[self.history[self.history_i]](self)
   tk.finish_window()
+end
+
+--- @param destination string
+methods.go = function(self, destination)
+  table.insert(self.history, destination)
+  self.history_i = self.history_i + 1
+end
+
+--- @param offset -1|1
+methods.move = function(self, offset)
+  self.history_i = Math.median(1, self.history_i + offset, #self.history)
 end
 
 --- @param text string
@@ -92,7 +130,7 @@ end
 --- @param destination string
 methods.link = function(self, text, destination)
   if ui.text_button(text).is_clicked then
-    self.page = destination
+    self:go(destination)
   end
 end
 
