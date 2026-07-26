@@ -3,20 +3,20 @@ local ui = require("engine.tech.ui")
 local tk = require("engine.gui.tk")
 
 
-local codex = {}
+local codex_module = {}
 
 --- @class codex
 --- @field page string
 local methods = {}
-codex.mt = {__index = methods}
+codex_module.mt = {__index = methods}
 
 local first_header
 
 --- @return codex
-codex.new = function()
+codex_module.new = function()
   return setmetatable({
     page = "index",
-  }, codex.mt)
+  }, codex_module.mt)
 end
 
 --- @type table<string, fun(codex: codex)>
@@ -42,14 +42,15 @@ methods.header = function(self, text, is_done)
 
     ui.start_line()
       ui.start_color(colors.dark_red)
-      ui.text("# ")
 
       if is_done then
-        ui.finish_color()
+        ui.text("X ")
         ui.text(text)
+        ui.finish_color()
       else
-        ui.text(text)
+        ui.text("# ")
         ui.finish_color()
+        ui.text(text)
       end
     ui.finish_line()
   ui.finish_font()
@@ -57,22 +58,33 @@ methods.header = function(self, text, is_done)
   ui.offset(0, 20)
 end
 
+methods.start_li = function(self, is_done)
+  ui.start_line()
+  ui.start_color(colors.dark_red)
+
+  if is_done then
+    ui.text("+ ")
+  else
+    ui.text("- ")
+    ui.finish_color()
+  end
+  ui.stack_push("codex_is_done", is_done)
+end
+
+methods.finish_li = function(self)
+  local is_done = ui.stack_pop("codex_is_done")
+  if is_done then
+    ui.finish_color()
+  end
+  ui.finish_line()
+end
+
 --- @param text string
 --- @param is_done boolean
 methods.li = function(self, text, is_done)
-  ui.start_line()
-    ui.start_color(colors.dark_red)
-
-    if is_done then
-      ui.text("+ ")
-      ui.text(text)
-      ui.finish_color()
-    else
-      ui.text("- ")
-      ui.finish_color()
-      ui.text(text)
-    end
-  ui.finish_line()
+  self:start_li(is_done)
+    ui.text(text)
+  self:finish_li()
 end
 
 --- @param text string
@@ -89,10 +101,10 @@ pages.index = function(codex)
     codex:header(warmup < 30 and "???" or "Разминка", warmup >= 1000)
     codex:li("Осмотреться", false)
     if State.rails.has_intro_note then
-      ui.start_line()
-        codex:li("Прочитать ")
+      codex:start_li(false)
+        ui.text("Прочитать ")
         codex:link("записку", "intro_note")
-      ui.finish_line()
+      codex:finish_li()
     end
   end
 end
@@ -110,5 +122,5 @@ pages.intro_note = function(codex)
   ui.text("Удачной работы, я от усталости уже вырубаюсь.")
 end
 
-Ldump.mark(codex, {mt = "const"}, ...)
-return codex
+Ldump.mark(codex_module, {mt = "const"}, ...)
+return codex_module
