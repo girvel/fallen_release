@@ -68,6 +68,10 @@ local generate_entities = function(palette, preload_entities)
           Error("Entity capture at %s@%s attempted, but factory returned no entity",
             layer, entry.position)
         else
+          local prev_capture = result.captured_entities[entry.capture_name]
+          if prev_capture then
+            Error("%s already captured", entry.capture_name)
+          end
           result.captured_entities[entry.capture_name] = entity
         end
       end
