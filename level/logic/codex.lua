@@ -35,14 +35,18 @@ methods.draw = function(self, dt)
       ui.start_frame(nil, nil, w / 2 - offset)
       ui.start_alignment("right")
         if self.history_i > 1 then
-          if ui.text_button(" < ").is_clicked then self:move(-1) end
+          if ui.text_button(" < ").is_clicked or ui.keyboard("left") then
+            self:move(-1)
+          end
         end
       ui.finish_alignment()
       ui.finish_frame()
 
       ui.start_frame(w / 2 + offset)
         if self.history_i < #self.history then
-          if ui.text_button(" > ").is_clicked then self:move(1) end
+          if ui.text_button(" > ").is_clicked or ui.keyboard("right") then
+            self:move(1)
+          end
         end
       ui.finish_frame()
 
