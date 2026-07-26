@@ -16,7 +16,7 @@ end
 local run = function(command, ...)
   command = command:format(...)
   log.log("debug", 2, command)
-  local exit_code = os.execute(command)
+  local _, _, exit_code = os.execute(command)
   if exit_code ~= 0 then
     log.fatal("Command exited with code %s", exit_code)
     os.exit(1)

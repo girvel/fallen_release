@@ -199,9 +199,9 @@ transform_colors = function(base, target_color)
       end
     end
     main_color = color
-    break
+    do break end
 
-    ::continue::  --- @diagnostic disable-line
+    ::continue::
   end
 
   if not main_color then return end
