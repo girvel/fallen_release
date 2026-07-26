@@ -1,3 +1,4 @@
+local stages = require("level.logic.stages")
 local interactive = require("engine.tech.interactive")
 local item = require("engine.tech.item")
 local abilities = require("engine.mech.abilities")
@@ -20,7 +21,6 @@ return {
     },
 
     _run = function(self, ch, ps, sp)
-      do return end -- NEXT RM
       State.player:rotate(Vector.down)
       local prev_fov = State.player.fov_r
       State.player.fov_r = 0
@@ -105,6 +105,7 @@ return {
         love.graphics.setCanvas(prev_canvas)
       end)
 
+      api.line(State.player, '"'..State.player.name..'"?')
       sp:lines()
 
       api.order(sp:literal())
@@ -113,6 +114,8 @@ return {
       item.set_cue(ch.intro_note, "highlight", true)
       interactive.mix_in(ch.intro_note)
       ch.intro_note.name = "записка"
+
+      State.rails:set_quest("warmup", stages.warmup.intro_heard)
     end,
   },
 
@@ -143,6 +146,33 @@ return {
     _run = function(self, ch, ps)
       self.triggered = false
       api.popup(5, ch.neighbour.position + Vector.down * .5, Random.item(self.snores))
+    end,
+  },
+
+  intro_note_pickup = cutscene.make {
+    enabled = true,
+    characters = {
+      intro_note = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.intro_note.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State:remove(ch.intro_note)
+      State.rails.intro_note_status = "picked_up"
+      State.player.suggestion = "Нажмите [J] чтобы открыть журнал"
+      local timeout = 10
+      while not Kernel.gui:is_opened("journal") and timeout > 0 do
+        local dt = coroutine.yield()
+        timeout = timeout - dt
+      end
+      State.player.suggestion = nil
+    end,
+
+    _on_cancel = function(self)
+      State.player.suggestion = nil
     end,
   },
 }

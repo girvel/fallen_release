@@ -337,7 +337,7 @@ draw_keyboard_action_grid = function(self)
     ui.offset(4)
 
     do
-      local journal_image = State.quests.has_new_content and gui.journal or gui.journal_inactive
+      local journal_image = State.player.has_new_task and gui.journal or gui.journal_inactive
       local button = ui.key_button(journal_image, "j")
       if State.quests.has_new_content then
         ui.offset(-64)

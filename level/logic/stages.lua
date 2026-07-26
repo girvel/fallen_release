@@ -5,9 +5,11 @@ local stages = {}
 
 --- @return stages
 stages.new = function()
-  return {
+  --- @enum (key) stages.keys
+  local result = {
     warmup = 0,
   }
+  return result
 end
 
 stages.NONE = 0
@@ -16,9 +18,8 @@ stages.COMPLETED = 1000
 --- @enum stages.warmup
 stages.warmup = {
   intro_heard = 10,
-  note_picked_up = 20,
-  note_read = 30,
-  left = 35,
+  needs_to_leave = 20,
+  left = 30,
   in_room = 40,
   weapon_picked_up = 50,
   practiced = 60,

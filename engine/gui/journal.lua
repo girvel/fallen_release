@@ -30,6 +30,8 @@ end
 tk.delegate(methods, "draw_entity", "preprocess", "postprocess")
 
 methods.draw_gui = function(self, dt)
+  State.player.has_new_task = false
+
   if ui.keyboard("escape") or ui.keyboard("j") then
     Kernel.gui:close_menu()
   end

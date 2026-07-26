@@ -6,7 +6,7 @@ local rails = {}
 
 --- @class rails
 --- @field quests stages
---- @field has_intro_note boolean
+--- @field intro_note_status "none"|"picked_up"|"read"
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -31,7 +31,7 @@ rails.new = function(checkpoint)
   State.runner:extend(require("level.scenes.1_intro"))
   return setmetatable({
     quests = quests.new(),
-    has_intro_note = false,
+    intro_note_status = "none",
   }, rails.mt)
 end
 
@@ -40,6 +40,15 @@ end
 
 checkpoints.cp2 = function()
   level.unsafe_move(State.player, State.level.positions.cp2)
+end
+
+--- @param questname stages.keys
+--- @param stage integer
+methods.set_quest = function(self, questname, stage)
+  if self.quests[questname] < stage then
+    State.player.has_new_task = true
+  end
+  self.quests[questname] = stage
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)

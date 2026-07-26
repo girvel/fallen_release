@@ -26,6 +26,7 @@ local base = {}
 --- @field creator_model table?
 --- @field appearance_model table?
 --- @field journal_new fun(): table
+--- @field has_new_task boolean
 
 --- @alias dialogue_line plain_dialogue_line | dialogue_options
 
@@ -63,6 +64,7 @@ base.mix_in = function(entity)
       State.level.grid_size * sprite.cell_size * State.camera.scale
     ))
   end
+  entity.has_new_task = false
 
   entity.creator_model = nil
   entity.popups = {}

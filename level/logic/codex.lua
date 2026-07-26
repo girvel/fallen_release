@@ -100,22 +100,22 @@ pages.index = function(codex)
   local warmup = State.rails.quests.warmup
   if warmup > 0 then
     codex:header(
-      warmup < stages.warmup.note_read and "???" or "Разминка",
+      warmup < stages.warmup.left and "???" or "Разминка",
       warmup >= stages.COMPLETED
     )
 
     if warmup >= stages.warmup.intro_heard then
-      codex:li("Осмотреться", warmup >= stages.warmup.note_picked_up)
+      codex:li("Осмотреться", warmup >= stages.warmup.needs_to_leave)
     end
 
-    if State.rails.has_intro_note then
-      codex:start_li(warmup >= stages.warmup.note_read)
+    if State.rails.intro_note_status ~= "none" then
+      codex:start_li(State.rails.intro_note_status == "read")
         ui.text("Прочитать ")
         codex:link("записку", "intro_note")
       codex:finish_li()
     end
 
-    if warmup >= stages.warmup.note_read then
+    if warmup >= stages.warmup.needs_to_leave then
       codex:li(
         "Выйти из помещения.",
         warmup >= stages.warmup.left
@@ -160,6 +160,11 @@ pages.index = function(codex)
 end
 
 pages.intro_note = function(codex)
+  if State.rails.intro_note_status == "picked_up" then
+    State.rails.intro_note_status = "read"
+    State.rails:set_quest("warmup", stages.warmup.needs_to_leave)
+  end
+
   ui.h1("Записка коллеги")
 
   ui.text("С пробуждением, брат."); ui.br()
