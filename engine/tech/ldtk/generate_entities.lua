@@ -70,7 +70,10 @@ local generate_entities = function(palette, preload_entities)
         else
           local prev_capture = result.captured_entities[entry.capture_name]
           if prev_capture then
-            Error("%s already captured", entry.capture_name)
+            Error(
+              "%s captured at %s and then at %s",
+              entry.capture_name, prev_capture.position, entry.position
+            )
           end
           result.captured_entities[entry.capture_name] = entity
         end
