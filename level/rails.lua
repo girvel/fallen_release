@@ -1,13 +1,13 @@
+local quests = require("level.logic.stages")
+
+
 local rails = {}
 
 --- @class rails
---- @field quests rails.quests
+--- @field quests stages
 --- @field has_intro_note boolean
 local methods = {}
 rails.mt = {__index = methods}
-
---- @class rails.quests
---- @field warmup integer
 
 local init_debug
 
@@ -18,9 +18,7 @@ rails.new = function(checkpoint)
   if Kernel.debug then init_debug() end
   State.runner:extend(require("level.scenes.1_intro"))
   return setmetatable({
-    quests = {
-      warmup = 0,
-    },
+    quests = quests.new(),
     has_intro_note = false,
   }, rails.mt)
 end

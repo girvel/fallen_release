@@ -1,3 +1,4 @@
+local stages = require("level.logic.stages")
 local colors = require("engine.tech.colors")
 local ui = require("engine.tech.ui")
 local tk = require("engine.gui.tk")
@@ -98,13 +99,62 @@ end
 pages.index = function(codex)
   local warmup = State.rails.quests.warmup
   if warmup > 0 then
-    codex:header(warmup < 30 and "???" or "Разминка", warmup >= 1000)
-    codex:li("Осмотреться", false)
+    codex:header(
+      warmup < stages.warmup.note_read and "???" or "Разминка",
+      warmup >= stages.COMPLETED
+    )
+
+    if warmup >= stages.warmup.intro_heard then
+      codex:li("Осмотреться", warmup >= stages.warmup.note_picked_up)
+    end
+
     if State.rails.has_intro_note then
-      codex:start_li(false)
+      codex:start_li(warmup >= stages.warmup.note_read)
         ui.text("Прочитать ")
         codex:link("записку", "intro_note")
       codex:finish_li()
+    end
+
+    if warmup >= stages.warmup.note_read then
+      codex:li(
+        "Выйти из помещения.",
+        warmup >= stages.warmup.left
+      )
+    end
+
+    if warmup >= stages.warmup.left then
+      codex:li(
+        "Пройти в тренировочную комнату; она должна находится вниз по коридору.",
+        warmup >= stages.warmup.in_room
+      )
+    end
+
+    if warmup >= stages.warmup.in_room then
+      codex:li(
+        "Выбрать себе оружие в тренировочной комнате.",
+        warmup >= stages.warmup.weapon_picked_up
+      )
+    end
+
+    if warmup >= stages.warmup.weapon_picked_up then
+      codex:li(
+        "Потренировать удары на чучеле. В комнате также должна быть методичка по основам битвы.",
+        warmup >= stages.warmup.practiced
+      )
+    end
+
+    if warmup >= stages.warmup.practiced then
+      codex:li(
+        "Активировать блок на столе и продолжить тренировку.",
+        warmup >= stages.warmup.mirage_defeated
+      )
+    end
+
+    if warmup >= stages.warmup.bird_fed then
+      codex:li(
+        "Покормить какую-то птицу в клетке. Корм должен быть в ящике.",
+        warmup >= stages.warmup.bird_fed
+      )
     end
   end
 end
