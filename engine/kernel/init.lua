@@ -1,3 +1,4 @@
+local dynamic_canvas = require("engine.tech.dynamic_canvas")
 local kernel = {}
 
 --- @class kernel middleware between fallen engine and LOVE
@@ -20,7 +21,7 @@ local mt = {__index = methods}
 --- @param args table
 --- @return kernel
 kernel.new = function(args)
-  return setmetatable({
+  local result = {
     gui = require("engine.gui").new(),
     overlay = require("engine.kernel.debug_overlay").new(args.debug and not args.youtube),
     args = args,
@@ -28,11 +29,12 @@ kernel.new = function(args)
     frame_n = 0,
     cpu_time = 0,
     start_time = 0,
-    screenshot = love.graphics.newCanvas(),
     _specific_key_rates = {},
     _delays = {},
     _is_active = false,
-  }, mt)
+  }
+  result.screenshot = dynamic_canvas.new(result, "screenshot")
+  return setmetatable(result, mt)
 end
 
 --- @param name string

@@ -1,8 +1,9 @@
+local dynamic_canvas = require("engine.tech.dynamic_canvas")
 local sprite = require("engine.tech.sprite")
 local tk = require("engine.gui.tk")
 
 
-local tmp_canvas = love.graphics.newCanvas(sprite.cell_size, sprite.cell_size)
+local tmp_canvas
 
 --- @param self gui_game
 --- @param entity table
@@ -23,6 +24,7 @@ local draw_entity = function(self, entity, dt)
     canvas = love.graphics.getCanvas()
     love.graphics.setShader(entity.shader.love_shader)
     love.graphics.setCanvas(tmp_canvas)
+    -- OPT drawing a whole-screen sized canvas may be expensive
     love.graphics.clear()
     if entity.shader.preprocess then
       entity.shader:preprocess(entity, dt)
@@ -63,6 +65,8 @@ local draw_entity = function(self, entity, dt)
     love.graphics.draw(tmp_canvas)
   end
 end
+
+tmp_canvas = dynamic_canvas.new(Common.locals(draw_entity), "tmp_canvas")
 
 Ldump.mark(draw_entity, {}, ...)
 return draw_entity

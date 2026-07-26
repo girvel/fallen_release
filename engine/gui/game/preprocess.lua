@@ -1,8 +1,10 @@
 local sprite = require("engine.tech.sprite")
+
+
 --- @param self gui_game
 --- @param dt number
 local preprocess = function(self, dt)
-  love.graphics.setCanvas(self._main_canvas.canvas)
+  love.graphics.setCanvas(self._main_canvas)
   love.graphics.clear(0, 0, 0, 0)
 
   State.camera:_update(dt)

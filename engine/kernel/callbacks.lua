@@ -65,6 +65,7 @@ love.load = function(args)
     end
 
     love.window.updateMode(w, h, mode)
+    dynamic_canvas.handle_resize(love.graphics.getDimensions())
   end
 
   if args.playground then
@@ -98,8 +99,6 @@ local handle_event = function(event, a,b,c,d,e,f)
     ui.handle_mouserelease(c)
   elseif event == "update" then
     ui.handle_update(a)
-  elseif event == "resize" then
-    dynamic_canvas.handle_resize(a, b)
   end
 
   if State and State.is_loaded then
@@ -119,6 +118,7 @@ love.run = function()
   local KEY_REPETITION_DELAY = .3
   local serialization_coroutine
   local coroutine_type
+  local prev_size = Vector.zero
 
   Kernel.start_time = love.timer.getTime()
   return function()
@@ -176,6 +176,14 @@ love.run = function()
     Kernel._is_active = love.window.isVisible()
       and love.window.hasFocus()
 
+    -- resize event does not capture all resize attempts
+    -- (for example, Niri's autoresize to a column)
+    local size = V(love.graphics.getDimensions())
+    if prev_size ~= size then
+      prev_size = size
+      dynamic_canvas.handle_resize(unpack(size))
+    end
+
     love.event.pump()
     for name, a,b,c,d,e,f in love.event.poll() do
       if name == "quit" then
@@ -205,10 +213,6 @@ love.run = function()
     handle_event("update", dt)
 
     if Kernel._is_active then
-      if V(love.graphics.getDimensions()) ~= V(Kernel.screenshot:getDimensions()) then
-        Kernel.screenshot = love.graphics.newCanvas()
-      end
-
       love.graphics.setCanvas(Kernel.screenshot)
       love.graphics.origin()
       love.graphics.clear(colors.black)

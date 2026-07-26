@@ -19,4 +19,30 @@ common.eval = function(expression)
   return f()
 end
 
+--- @return integer?
+--- @return any
+local getupvaluen = function(f, name)
+  for i = 1, math.huge do
+    local k, v = debug.getupvalue(f, i)
+    if not k then return end
+    if k == name then return i, v end
+  end
+end
+
+--- @param f function
+common.locals = function(f)
+  return setmetatable({}, {
+    __index = function(self, key)
+      local _, v = getupvaluen(f, key)
+      return v
+    end,
+
+    __newindex = function(self, key, value)
+      local i = getupvaluen(f, key)
+      if not i then error("No upvalue "..key) end
+      debug.setupvalue(f, i, value)
+    end,
+  })
+end
+
 return common
