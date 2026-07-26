@@ -197,6 +197,10 @@ draw_curtain = function()
   ui.start_color(State.player.curtain_color)
     love.graphics.rectangle("fill", 0, 0, w, h)
   ui.finish_color()
+
+  if State.player.curtain_draw then
+    State.player.curtain_draw()
+  end
 end
 
 local PADDING_LX = 48

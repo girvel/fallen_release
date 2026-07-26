@@ -19,6 +19,7 @@ local base = {}
 --- @field suggestion? string
 --- @field popups popup[]
 --- @field curtain_color vector
+--- @field curtain_draw fun()?
 --- @field memory love.Canvas
 --- @field is_memory_enabled boolean
 --- @field is_blind boolean

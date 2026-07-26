@@ -1,3 +1,4 @@
+local ui = require("engine.tech.ui")
 local stages = require("level.logic.stages")
 local interactive = require("engine.tech.interactive")
 local item = require("engine.tech.item")
@@ -21,9 +22,51 @@ return {
     },
 
     _run = function(self, ch, ps, sp)
+      State.player.curtain_color = Vector.black
       State.player:rotate(Vector.down)
       local prev_fov = State.player.fov_r
       State.player.fov_r = 0
+      async.sleep(1)
+
+      local logo_alpha = 0
+      State.player.curtain_draw = function()
+        ui.start_color(V(1, 1, 1, logo_alpha))
+          ui.start_alignment("center", "center")
+          ui.start_font(100)
+            ui.text("St.Celest")
+          ui.finish_font()
+          ui.finish_alignment()
+
+          local h = ui.get_context().frame.h
+          ui.start_frame(nil, h / 2 + 50)
+          ui.start_alignment("center")
+          ui.start_font(50)
+            ui.text("presents")
+          ui.finish_font()
+          ui.finish_alignment()
+          ui.finish_frame()
+        ui.finish_color()
+      end
+
+      local max_timeout = 3
+      local timeout = max_timeout
+      while timeout > 0 do
+        logo_alpha = 1 - timeout / max_timeout
+        timeout = timeout - coroutine.yield()
+      end
+
+      async.sleep(2)
+      max_timeout = 2
+      timeout = max_timeout
+      while timeout > 0 do
+        local v = timeout / max_timeout
+        logo_alpha = v
+        State.player.curtain_color = V(0, 0, 0, v)
+        timeout = timeout - coroutine.yield()
+      end
+
+      async.sleep(2)
+
       State.player.incapacitated = true
       State.player.suggestion = sp:literal()
       sp:lines()
