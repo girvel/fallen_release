@@ -566,7 +566,7 @@ solids.janitor = function()
         return self.combat_module:control(entity)
       end
 
-      -- NEXT hauler AI
+      -- TODO hauler AI
     end,
 
     observe = function(self, entity, dt)

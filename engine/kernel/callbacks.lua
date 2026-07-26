@@ -97,6 +97,8 @@ local handle_event = function(event, a,b,c,d,e,f)
     ui.handle_mouserelease(c)
   elseif event == "update" then
     ui.handle_update(a)
+  elseif event == "resize" then
+    
   end
 
   if State and State.is_loaded then

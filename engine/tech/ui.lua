@@ -110,7 +110,7 @@ local LINE_K = love.system.getOS() == "Windows" and 1 or 1.25
 --- @return integer x
 --- @return integer y
 local align = function(w, h)
-  local x  -- NEXT align(w, h)
+  local x
   if context.alignment.x == "center" then
     x = context.frame.x + (context.frame.w - w) / 2
   elseif context.alignment.x == "right" then
