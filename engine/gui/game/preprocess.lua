@@ -2,23 +2,7 @@ local sprite = require("engine.tech.sprite")
 --- @param self gui_game
 --- @param dt number
 local preprocess = function(self, dt)
-  local screen_w, screen_h = love.graphics.getDimensions()
-
-  do
-    local w, h = self._temp_canvas:getDimensions()
-    if screen_w ~= w or screen_h ~= h then
-      self._temp_canvas = love.graphics.newCanvas(screen_w, screen_h)
-    end
-  end
-
-  do
-    local w, h = self._main_canvas:getDimensions()
-    if screen_w ~= w or screen_h ~= h then
-      self._main_canvas = love.graphics.newCanvas(screen_w, screen_h)
-    end
-  end
-
-  love.graphics.setCanvas(self._main_canvas)
+  love.graphics.setCanvas(self._main_canvas.canvas)
   love.graphics.clear(0, 0, 0, 0)
 
   State.camera:_update(dt)

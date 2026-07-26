@@ -2,6 +2,8 @@ local sprite = require("engine.tech.sprite")
 local tk = require("engine.gui.tk")
 
 
+local tmp_canvas = love.graphics.newCanvas(sprite.cell_size, sprite.cell_size)
+
 --- @param self gui_game
 --- @param entity table
 --- @param dt number
@@ -20,8 +22,7 @@ local draw_entity = function(self, entity, dt)
   if entity.shader then
     canvas = love.graphics.getCanvas()
     love.graphics.setShader(entity.shader.love_shader)
-    love.graphics.setCanvas(self._temp_canvas)
-    -- OPT isn't it too expensive to draw the image the size of the screen?
+    love.graphics.setCanvas(tmp_canvas)
     love.graphics.clear()
     if entity.shader.preprocess then
       entity.shader:preprocess(entity, dt)
@@ -59,7 +60,7 @@ local draw_entity = function(self, entity, dt)
     love.graphics.setCanvas(canvas)
     --- @diagnostic disable-next-line
     love.graphics.setShader(State.shader and State.shader.love_shader)
-    love.graphics.draw(self._temp_canvas)
+    love.graphics.draw(tmp_canvas)
   end
 end
 

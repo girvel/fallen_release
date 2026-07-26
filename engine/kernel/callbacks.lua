@@ -1,3 +1,4 @@
+local dynamic_canvas = require("engine.tech.dynamic_canvas")
 local colors = require("engine.tech.colors")
 local ui = require("engine.tech.ui")
 local memory = require("engine.tech.memory_shader")
@@ -98,7 +99,7 @@ local handle_event = function(event, a,b,c,d,e,f)
   elseif event == "update" then
     ui.handle_update(a)
   elseif event == "resize" then
-    
+    dynamic_canvas.handle_resize(a, b)
   end
 
   if State and State.is_loaded then

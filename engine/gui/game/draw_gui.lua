@@ -845,7 +845,7 @@ draw_order = function()
   ui.finish_frame()
 end
 
-local suggestion_canvas = love.graphics.newCanvas()  -- NEXT resizable
+local suggestion_canvas = love.graphics.newCanvas(1000, 200)
 
 draw_suggestion = function()
   ui.start_canvas(suggestion_canvas)
@@ -1147,7 +1147,7 @@ end
 
 local POPUP_MAX_W = 300
 local POPUP_PADDING = ui.SCALE
-local popup_canvas = love.graphics.newCanvas(POPUP_MAX_W, love.graphics.getHeight())  -- NEXT resizable
+local popup_canvas = love.graphics.newCanvas(POPUP_MAX_W, 1000)
 
 draw_popups = function(dt)
   local next_popups = {}

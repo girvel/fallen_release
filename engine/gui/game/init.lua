@@ -1,3 +1,4 @@
+local dynamic_canvas = require("engine.tech.dynamic_canvas")
 local game = {}
 
 --- @alias gui_input_mode "normal"|"target"
@@ -5,8 +6,7 @@ local game = {}
 --- @class gui_game
 --- @field type "game"
 --- @field _sprite_batches table<string, love.SpriteBatch>
---- @field _temp_canvas love.Canvas
---- @field _main_canvas love.Canvas
+--- @field _main_canvas dynamic_canvas
 --- @field _bg_canvas love.Canvas
 --- @field _bg_offset number
 local methods = {
@@ -30,8 +30,7 @@ game.new = function()
     _sprite_batches = Fun.iter(State.level.atlases)
       :map(function(layer, base_image) return layer, love.graphics.newSpriteBatch(base_image) end)
       :tomap(),
-    _temp_canvas = love.graphics.newCanvas(),
-    _main_canvas = love.graphics.newCanvas(),
+    _main_canvas = dynamic_canvas.new(function(w, h) return w, h end),
     _bg_canvas = bg_canvas,
     _bg_offset = 0,
   }, game.mt)
