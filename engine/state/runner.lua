@@ -79,7 +79,7 @@ methods.update = function(self, dt)
 
   for _, run in ipairs(runs_copy) do
     self.active_run = run
-    async.resume(run.coroutine)
+    async.resume(run.coroutine, dt)
     self.active_run = nil
 
     if coroutine.status(run.coroutine) == "dead" then
