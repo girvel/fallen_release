@@ -37,10 +37,10 @@ local state = {
 --- @type table<string, table>
 local stack
 
---- @type ui_context
+--- @type ui.context
 local context
 
---- @class ui_context
+--- @class ui.context
 --- @field cursor_x integer
 --- @field cursor_y integer
 --- @field max_x integer
@@ -131,6 +131,8 @@ local align = function(w, h)
   return x, y
 end
 
+--- @param size number
+--- @return love.Font
 local get_font = Memoize(function(size)
   return love.graphics.newFont("engine/assets/fonts/clacon2.ttf", size)
 end)
@@ -214,13 +216,13 @@ end
 
 ui.SCALE = 4  -- has its own scale constant
 
---- @return ui_context
+--- @return ui.context
 --- @nodiscard
 ui.get_context = function()
   return context
 end
 
---- @param key string
+--- @param key ui.context.key|string
 --- @param value any
 ui.stack_push = function(key, value)
   if not stack[key] then
@@ -232,7 +234,7 @@ ui.stack_push = function(key, value)
   context[key] = value
 end
 
---- @param key string
+--- @param key ui.context.key|string
 --- @return any
 ui.stack_pop = function(key)
   if not stack[key] then
@@ -254,6 +256,7 @@ ui.start = function()
   state.selection.max_i = 0
   state.cursor = "normal"
 
+  --- @enum (key) ui.context.key
   context = {
     cursor_x = 0,
     cursor_y = 0,
@@ -426,8 +429,17 @@ end
 ui.finish_line = function()
   ui.stack_pop("is_linear")
   local old_cursor_y = context.cursor_y
+  local old_cursor_x = context.cursor_x
   ui.finish_frame()
-  context.cursor_y = old_cursor_y + ui.stack_pop("line_last_h")
+
+  if context.is_linear then
+    local prev = ui.stack_pop("line_last_h")
+    context.line_last_h = math.max(context.line_last_h, prev)
+    context.cursor_x = old_cursor_x
+    context.cursor_y = old_cursor_y
+  else
+    context.cursor_y = old_cursor_y + ui.stack_pop("line_last_h")
+  end
 end
 
 --- @param styles ui_styles_optional
