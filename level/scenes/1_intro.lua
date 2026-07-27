@@ -158,7 +158,7 @@ return {
       interactive.mix_in(ch.intro_note)
       ch.intro_note.name = "записка"
 
-      State.rails:set_quest("warmup", stages.warmup.intro_heard)
+      State.rails:set_quest("warmup", stages.warmup._0010_intro_heard)
     end,
   },
 
@@ -233,6 +233,20 @@ return {
     _run = function(self, ch, ps, sp)
       if State.rails.intro_note_status ~= "none" then return end
       sp:lines()
+    end,
+  },
+
+  wandering_away = cutscene.make {
+    enabled = true,
+    characters = {},
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ps.player_room_exit) > 7
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.order("Отправляйся в тренировочную комнату")
+      State.rails:set_quest("warmup", stages.warmup._0030_left)
     end,
   },
 }

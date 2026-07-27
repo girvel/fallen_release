@@ -5025,7 +5025,7 @@
 						},
 						{
 							"__identifier": "mannequin",
-							"__grid": [37,127],
+							"__grid": [37,128],
 							"__pivot": [0,0],
 							"__tags": ["solid"],
 							"__tile": { "tilesetUid": 35, "x": 0, "y": 0, "w": 16, "h": 16 },
@@ -5034,10 +5034,10 @@
 							"width": 16,
 							"height": 16,
 							"defUid": 36,
-							"px": [592,2032],
+							"px": [592,2048],
 							"fieldInstances": [],
 							"__worldX": 592,
-							"__worldY": 2032
+							"__worldY": 2048
 						},
 						{
 							"__identifier": "dreamer",

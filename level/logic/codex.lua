@@ -142,12 +142,12 @@ pages.index = function(codex)
   local warmup = State.rails.quests.warmup
   if warmup > 0 then
     codex:header(
-      warmup < stages.warmup.left and "???" or "Разминка",
+      warmup < stages.warmup._0030_left and "???" or "Разминка",
       warmup >= stages.COMPLETED
     )
 
-    if warmup >= stages.warmup.intro_heard then
-      codex:li("Осмотреться", warmup >= stages.warmup.needs_to_leave)
+    if warmup >= stages.warmup._0010_intro_heard then
+      codex:li("Осмотреться", warmup >= stages.warmup._0020_needs_to_leave)
     end
 
     if State.rails.intro_note_status ~= "none" then
@@ -157,45 +157,45 @@ pages.index = function(codex)
       codex:finish_li()
     end
 
-    if warmup >= stages.warmup.needs_to_leave then
+    if warmup >= stages.warmup._0020_needs_to_leave then
       codex:li(
         "Выйти из помещения.",
-        warmup >= stages.warmup.left
+        warmup >= stages.warmup._0030_left
       )
     end
 
-    if warmup >= stages.warmup.left then
+    if warmup >= stages.warmup._0030_left then
       codex:li(
         "Пройти в тренировочную комнату; она должна находится вниз по коридору.",
-        warmup >= stages.warmup.in_room
+        warmup >= stages.warmup._0040_in_room
       )
     end
 
-    if warmup >= stages.warmup.in_room then
+    if warmup >= stages.warmup._0040_in_room then
       codex:li(
         "Выбрать себе оружие в тренировочной комнате.",
-        warmup >= stages.warmup.weapon_picked_up
+        warmup >= stages.warmup._0050_weapon_picked_up
       )
     end
 
-    if warmup >= stages.warmup.weapon_picked_up then
+    if warmup >= stages.warmup._0050_weapon_picked_up then
       codex:li(
         "Потренировать удары на чучеле. В комнате также должна быть методичка по основам битвы.",
-        warmup >= stages.warmup.practiced
+        warmup >= stages.warmup._0060_practiced
       )
     end
 
-    if warmup >= stages.warmup.practiced then
+    if warmup >= stages.warmup._0060_practiced then
       codex:li(
         "Активировать блок на столе и продолжить тренировку.",
-        warmup >= stages.warmup.mirage_defeated
+        warmup >= stages.warmup._0070_mirage_defeated
       )
     end
 
-    if warmup >= stages.warmup.bird_fed then
+    if warmup >= stages.warmup._1000_bird_fed then
       codex:li(
         "Покормить какую-то птицу в клетке. Корм должен быть в ящике.",
-        warmup >= stages.warmup.bird_fed
+        warmup >= stages.warmup._1000_bird_fed
       )
     end
   end
@@ -204,7 +204,7 @@ end
 pages.intro_note = function(codex)
   if State.rails.intro_note_status == "picked_up" then
     State.rails.intro_note_status = "read"
-    State.rails:set_quest("warmup", stages.warmup.needs_to_leave)
+    State.rails:set_quest("warmup", stages.warmup._0020_needs_to_leave)
   end
 
   ui.h1("Записка коллеги")

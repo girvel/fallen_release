@@ -17,14 +17,14 @@ stages.COMPLETED = 1000
 
 --- @enum stages.warmup
 stages.warmup = {
-  intro_heard = 10,
-  needs_to_leave = 20,
-  left = 30,
-  in_room = 40,
-  weapon_picked_up = 50,
-  practiced = 60,
-  mirage_defeated = 70,
-  bird_fed = stages.COMPLETED,
+  _0010_intro_heard = 10,
+  _0020_needs_to_leave = 20,
+  _0030_left = 30,
+  _0040_in_room = 40,
+  _0050_weapon_picked_up = 50,
+  _0060_practiced = 60,
+  _0070_mirage_defeated = 70,
+  _1000_bird_fed = stages.COMPLETED,
 }
 
 Ldump.mark(stages, {mt = "const"}, ...)

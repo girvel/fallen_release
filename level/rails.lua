@@ -44,12 +44,19 @@ end
 local skip_intro = function(self)
   State.runner:remove("_100_intro")
   State.runner:remove("_108_leaving_room")
+  State.runner:remove("wandering_away")
   self.intro_note_status = "picked_up"
-  self:set_quest("warmup", stages.warmup.intro_heard)
+  State:remove(State.level.entities.intro_note)
+  self:set_quest("warmup", stages.warmup._0010_intro_heard)
+end
+
+local load_2_warmup = function()
+  State.runner:extend(require("level.scenes.2_warmup"))
 end
 
 checkpoints.cp2 = function(self)
   skip_intro(self)
+  load_2_warmup()
   level.unsafe_move(State.player, State.level.positions.cp2)
 end
 
