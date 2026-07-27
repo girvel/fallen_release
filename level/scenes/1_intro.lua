@@ -233,6 +233,7 @@ return {
     _run = function(self, ch, ps, sp)
       if State.rails.intro_note_status ~= "none" then return end
       sp:lines()
+      State.rails:transition_2_warmup()
     end,
   },
 

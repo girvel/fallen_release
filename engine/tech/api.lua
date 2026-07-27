@@ -1,3 +1,5 @@
+local translation = require("engine.tech.translation")
+local colors = require("engine.tech.colors")
 local tcod = require("engine.tech.tcod")
 local ui = require("engine.tech.ui")
 local animated = require("engine.tech.animated")
@@ -595,23 +597,68 @@ api.distance = function(a, b)
   return (a - b):abs2()
 end
 
---- @param life_time number
+local SLOW_READING_SPEED = 10
+
 --- @param target entity|vector
 --- @param text string|fun()
-api.popup = function(life_time, target, text)
+--- @param life_time? number
+api.popup = function(target, text, life_time)
   target = api.to_vector(target)
-  local render_text
+  local render_text, final_life_time
   if type(text) == "string" then
     render_text = function()
       ui.text(text)
     end
+    final_life_time = life_time or (text:utf_len() / SLOW_READING_SPEED + 2)
   else
     render_text = text
+    if life_time then
+      final_life_time = life_time
+    else
+      Error("api.popup requires explicit life_time argument when provided a drawing function")
+      final_life_time = 5
+    end
   end
 
   table.insert(State.player.popups, {
     position = target,
     draw = render_text,
+    life_time = final_life_time,
+  })
+end
+
+--- @param ability skill|ability
+--- @param dc integer
+--- @param success string
+--- @param failure string
+api.popup_check = function(ability, dc, success, failure)
+  local translated = (translation.skills[ability] or translation.abilities[ability]):utf_capitalize()
+  local draw, life_time
+  if State.player:ability_check(ability, dc) then
+    draw = function()
+      ui.start_line()
+        ui.start_color(colors.light_green)
+          ui.text("[%s] ", translated)
+        ui.finish_color()
+        ui.text(success)
+      ui.finish_line()
+    end
+    life_time = success:utf_len() / SLOW_READING_SPEED + 2
+  else
+    draw = function()
+      ui.start_line()
+        ui.start_color(colors.light_green)
+          ui.text("[%s] ", translated)
+        ui.finish_color()
+        ui.text(success)
+      ui.finish_line()
+    end
+    life_time = failure:utf_len() / SLOW_READING_SPEED + 2
+  end
+
+  table.insert(State.player.popups, {
+    position = State.player.position,
+    draw = draw,
     life_time = life_time,
   })
 end

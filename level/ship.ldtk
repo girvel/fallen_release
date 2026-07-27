@@ -4597,6 +4597,25 @@
 							],
 							"__worldX": 672,
 							"__worldY": 976
+						},
+						{
+							"__identifier": "position",
+							"__grid": [14,108],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "a526c440-6fc0-11f1-84a6-c5a660aa8e90",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [224,1728],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "cp1", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["cp1"]
+							}] }],
+							"__worldX": 224,
+							"__worldY": 1728
 						}
 					]
 				},

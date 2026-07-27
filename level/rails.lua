@@ -50,13 +50,15 @@ local skip_intro = function(self)
   self:set_quest("warmup", stages.warmup._0010_intro_heard)
 end
 
-local load_2_warmup = function()
-  State.runner:extend(require("level.scenes.2_warmup"))
+checkpoints.cp1 = function(self)
+  skip_intro(self)
+  self:transition_2_warmup()
+  level.unsafe_move(State.player, State.level.positions.cp1)
 end
 
 checkpoints.cp2 = function(self)
   skip_intro(self)
-  load_2_warmup()
+  self:transition_2_warmup()
   level.unsafe_move(State.player, State.level.positions.cp2)
 end
 
@@ -67,6 +69,10 @@ methods.set_quest = function(self, questname, stage)
     State.player.has_new_task = true
   end
   self.quests[questname] = stage
+end
+
+methods.transition_2_warmup = function(self)
+  State.runner:extend(require("level.scenes.2_warmup"))
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)
