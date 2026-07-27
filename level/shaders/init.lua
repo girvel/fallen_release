@@ -1,3 +1,31 @@
+local colors = require("engine.tech.colors")
+
+
+local shaders = {}
+
+local load_shader = function(name)
+  return love.graphics.newShader(
+    love.filesystem.read("level/shaders/"..name..".frag"),
+    nil  --- @diagnostic disable-line
+  )
+end
+
+shaders.bw = {
+  love_shader = load_shader("bwr"),
+}
+
+shaders.bwr = {
+  love_shader = load_shader("bwr"),
+  preprocess = function(self, entity, dt)
+    -- TODO does not activate before SpriteBatch layer => cobwebs are red
+    --   but it's kind of fine, really
+    love.graphics.setColor(entity.creature_flag and colors.red or colors.white)
+  end,
+  deactivate = function()
+    love.graphics.setColor(Vector.white)
+  end,
+}
+
 local get_reflected_image_data = function(position, d)
   local reflected = State.grids.solids:slow_get(position + d)
   if not reflected or not reflected.animation then return end
@@ -26,12 +54,9 @@ end
 
 --- @param d vector
 --- @return shader
-local reflective = Memoize(function(d)
+shaders.reflective = Memoize(function(d)
   return {
-    love_shader = love.graphics.newShader(
-      love.filesystem.read("level/shaders/reflective.frag"),
-      nil  --- @diagnostic disable-line:param-type-mismatch
-    ),
+    love_shader = load_shader("reflective"),
 
     preprocess = function(self, entity)
       local image_data = get_reflected_image_data(entity.position, d)
@@ -43,4 +68,9 @@ local reflective = Memoize(function(d)
   }
 end)
 
-return reflective
+shaders.latrine = {
+  love_shader = load_shader("latrine"),
+}
+
+Ldump.mark(shaders, "const", ...)
+return shaders

@@ -1,3 +1,4 @@
+local shaders = require("level.shaders")
 local on_tiles = require("level.palette.on_tiles")
 local health = require("engine.mech.health")
 local class = require("engine.mech.class")
@@ -13,7 +14,6 @@ local animated = require("engine.tech.animated")
 local creature = require("engine.mech.creature")
 local perks = require("engine.mech.perks")
 local on_solids = require("level.palette.on_solids")
-local reflective = require("level.shaders.reflective")
 local async = require("engine.tech.async")
 local sound = require("engine.tech.sound")
 local interactive = require("engine.tech.interactive")
@@ -198,7 +198,7 @@ do
         State:add_at(solids[i_broken](), self.position, "solids")
         breaking_sound:play_at(self.position)
       end,
-      shader = reflective(Vector.down),
+      shader = shaders.reflective(Vector.down),
       perks = {perks.hardness},
       modify = creature.methods.modify,
     }
@@ -222,7 +222,7 @@ do
         State:add_at(on_tiles[5](), self.position, "on_tiles")
         breaking_sound:play_at(self.position)
       end,
-      shader = reflective(Vector.down),
+      shader = shaders.reflective(Vector.down),
     }
   end
 end
@@ -321,8 +321,8 @@ for x = 1, 5 do
   for y = 1, 4 do
     local i, this_sprite = packer:get(x, y)
     local shader = x > 1 and y == 1
-      and reflective(Vector.up)
-      or reflective(Vector.left)
+      and shaders.reflective(Vector.up)
+      or shaders.reflective(Vector.left)
 
     solids[i] = function()
       return {
@@ -346,7 +346,7 @@ do
       codename = "pipe",
       name = "необычная труба",
       sprite = this_sprite,
-      shader = reflective(Vector.right),
+      shader = shaders.reflective(Vector.right),
     }
     interactive.mix_in(e)
     return e
@@ -358,7 +358,7 @@ for y = 1, 6 do
   for x = 5, 8 do
     if y == 2 and (x == 5 or x == 8) then goto continue end
     local i, this_sprite = packer:get(x, y)
-    local shader = y == 6 and x > 5 and reflective(Vector.down) or nil
+    local shader = y == 6 and x > 5 and shaders.reflective(Vector.down) or nil
     solids[i] = function()
       return {
         boring_flag = true,

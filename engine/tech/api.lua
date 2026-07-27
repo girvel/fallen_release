@@ -666,5 +666,15 @@ api.popup_check = function(ability, dc, success, failure)
   })
 end
 
+api.lock = function(entity)
+  assert(not State.level.locked_entities[entity])
+  State.level.locked_entities[entity] = true
+end
+
+api.unlock = function(entity)
+  assert(State.level.locked_entities[entity])
+  State.level.locked_entities[entity] = nil
+end
+
 Ldump.mark(api, {}, ...)
 return api

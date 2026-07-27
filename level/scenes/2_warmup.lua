@@ -1,3 +1,6 @@
+local async = require("engine.tech.async")
+local health = require("engine.mech.health")
+local shaders = require("level.shaders")
 local on_solids = require("level.palette.on_solids")
 local items = require("level.palette.items")
 local item = require("engine.tech.item")
@@ -120,6 +123,115 @@ return {
           sp:lines()
         end
       sp:finish_single_branch()
+    end,
+  },
+
+  loc_209 = cutscene.make {
+    enabled = true,
+    characters = {
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.mouse_check
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.line(nil, "Здесь повесилась мышь. Забавно.")
+      api.popup_check("nature", 14,
+        "Животные ощущают наш мир лучше, чем люди. Мышь, должно быть, предчувствовала что-то ужасное. Может, мне тоже начать бояться?",
+        "У меня нет объяснений этому явлению."
+      )
+    end,
+  },
+
+  _210_latrine_warning = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/210_latrine_warning.ms",
+    characters = {
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.exit_latrine
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+    end,
+  },
+
+  _211_latrine_enter = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/211_latrine_enter.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.enter_latrine
+        and not State.rails.in_latrine
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp)
+      State.rails.in_latrine = true
+      State.runner:cancel("_212_latrine_exit", true)
+
+      if self._first_time then
+        self._first_time = false
+        State.rails.tolerates_latrine = State.player:saving_throw("con", 14)
+        api.lock(State.player)
+          sp:start_single_branch(State.rails.tolerates_latrine and 1 or 2)
+            sp:lines()
+          sp:finish_single_branch()
+        api.unlock(State.player)
+      end
+
+      if State.rails.tolerates_latrine then
+        State.rails.player_last_fov = State.player.fov_r
+        State.player.fov_r = 1
+      else
+        State.shader = shaders.latrine
+      end
+    end,
+  },
+
+  _212_latrine_exit = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/212_latrine_exit.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.exit_latrine
+        and State.rails.in_latrine
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp)
+      State.rails.in_latrine = false
+      State.runner:cancel("_211_latrine_enter")
+
+      if State.rails.tolerates_latrine then
+        State.player.fov_r = assert(State.rails.player_last_fov)
+        State.rails.player_last_fov = nil
+      else
+        if self._first_time then
+          self._first_time = false
+          api.lock(State.player)
+            sp:lines()
+            health.damage(State.player, 1)
+            sp:lines()
+          api.unlock(State.player)
+        else
+          health.damage(State.player, 1)
+        end
+
+        async.sleep(10)
+        State.shader = nil
+      end
+    end,
+
+    _on_cancel = function()
+      State.shader = nil
     end,
   },
 }

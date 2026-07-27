@@ -8,6 +8,9 @@ local rails = {}
 --- @class rails
 --- @field quests stages
 --- @field intro_note_status "none"|"picked_up"|"read"
+--- @field tolerates_latrine boolean?
+--- @field player_last_fov number?
+--- @field in_latrine boolean
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -20,8 +23,9 @@ rails.new = function(checkpoint)
   local result = setmetatable({
     quests = quests.new(),
     intro_note_status = "none",
+    in_latrine = false,
   }, rails.mt)
-  State.runner:extend(require("level.scenes.1_intro"))
+  State.runner:extend(love.filesystem.load("level/scenes/1_intro.lua")())
 
   if Kernel.debug then init_debug() end
   if checkpoint then
@@ -72,7 +76,7 @@ methods.set_quest = function(self, questname, stage)
 end
 
 methods.transition_2_warmup = function(self)
-  State.runner:extend(require("level.scenes.2_warmup"))
+  State.runner:extend(love.filesystem.load("level/scenes/2_warmup.lua")())
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)

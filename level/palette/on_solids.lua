@@ -1,10 +1,10 @@
+local shaders = require("level.shaders")
 local level = require("engine.tech.level")
 local sound = require("engine.tech.sound")
 local health = require("engine.mech.health")
 local interactive = require("engine.tech.interactive")
 local animated = require("engine.tech.animated")
 local sprite = require("engine.tech.sprite")
-local reflective = require("level.shaders.reflective")
 local factoring = require("engine.tech.factoring")
 
 
@@ -26,7 +26,7 @@ do
       perspective_flag = true,
       codename = "mirror",
       sprite = this_sprite,
-      shader = reflective(Vector.down * 2),
+      shader = shaders.reflective(Vector.down * 2),
     }
   end
 end

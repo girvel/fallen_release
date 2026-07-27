@@ -1,3 +1,4 @@
+local shaders = require("level.shaders")
 local ui = require("engine.tech.ui")
 local stages = require("level.logic.stages")
 local interactive = require("engine.tech.interactive")
@@ -5,8 +6,6 @@ local item = require("engine.tech.item")
 local abilities = require("engine.mech.abilities")
 local on_solids = require("level.palette.on_solids")
 local xp = require("engine.mech.xp")
-local bwr = require("level.shaders.bwr")
-local bw = require("level.shaders.bw")
 local async = require("engine.tech.async")
 local api = require("engine.tech.api")
 local cutscene = require("engine.tech.cutscene")
@@ -84,9 +83,9 @@ return {
 
       local flash = State.runner:run_task(function()
         State.player.fov_r = prev_fov
-        State.shader = bw
+        State.shader = shaders.bw
         async.sleep(.2)
-        State.shader = bwr
+        State.shader = shaders.bwr
         async.sleep(.5)
         State.shader = nil
         api.travel_scripted(State.player, State.player.position + Vector.up)
