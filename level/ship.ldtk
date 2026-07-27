@@ -2864,7 +2864,11 @@
 				"averageColors": "38884888488838882888188818880000288838883888288828881888188800001ccc0000000000000000000000000000186428771cba1ccb1a98176400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 			}
 		}
-	], "enums": [{ "identifier": "layer", "uid": 52, "values": [ { "id": "on_solids", "tileRect": { "tilesetUid": 50, "x": 16, "y": 32, "w": 16, "h": 16 }, "color": 12470831 }, { "id": "solids", "tileRect": { "tilesetUid": 50, "x": 208, "y": 960, "w": 16, "h": 16 }, "color": 14120515 } ], "iconTilesetUid": 50, "externalRelPath": null, "externalFileChecksum": null, "tags": [] }], "externalEnums": [], "levelFields": [] },
+	], "enums": [{ "identifier": "layer", "uid": 52, "values": [
+		{ "id": "on_solids", "tileRect": { "tilesetUid": 50, "x": 16, "y": 32, "w": 16, "h": 16 }, "color": 12470831 },
+		{ "id": "solids", "tileRect": { "tilesetUid": 50, "x": 208, "y": 960, "w": 16, "h": 16 }, "color": 14120515 },
+		{ "id": "on_tiles", "tileRect": { "tilesetUid": 50, "x": 176, "y": 880, "w": 16, "h": 16 }, "color": 15389866 }
+	], "iconTilesetUid": 50, "externalRelPath": null, "externalFileChecksum": null, "tags": [] }], "externalEnums": [], "levelFields": [] },
 	"levels": [
 		{
 			"identifier": "Level_0",
@@ -3634,25 +3638,6 @@
 							}] }],
 							"__worldX": 448,
 							"__worldY": 2176
-						},
-						{
-							"__identifier": "position",
-							"__grid": [25,138],
-							"__pivot": [0,0],
-							"__tags": ["position"],
-							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
-							"__smartColor": "#3E2731",
-							"iid": "94064b70-6fc0-11f1-a7ee-3da3f42716b4",
-							"width": 16,
-							"height": 16,
-							"defUid": 87,
-							"px": [400,2208],
-							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "dirty_magazine", "__tile": null, "defUid": 88, "realEditorValues": [{
-								"id": "V_String",
-								"params": ["dirty_magazine"]
-							}] }],
-							"__worldX": 400,
-							"__worldY": 2208
 						},
 						{
 							"__identifier": "entity_capture",
@@ -4616,6 +4601,31 @@
 							}] }],
 							"__worldX": 224,
 							"__worldY": 1728
+						},
+						{
+							"__identifier": "entity_capture",
+							"__grid": [25,138],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 320, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#E4A672",
+							"iid": "597f33f0-6fc0-11f1-9d49-855dc8b9fc2e",
+							"width": 16,
+							"height": 16,
+							"defUid": 95,
+							"px": [400,2208],
+							"fieldInstances": [
+								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "on_tiles", "__tile": null, "defUid": 97, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["on_tiles"]
+								}] },
+								{ "__identifier": "capture_name", "__type": "String", "__value": "dirty_magazine", "__tile": null, "defUid": 98, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["dirty_magazine"]
+								}] }
+							],
+							"__worldX": 400,
+							"__worldY": 2208
 						}
 					]
 				},

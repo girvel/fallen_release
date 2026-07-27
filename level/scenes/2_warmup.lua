@@ -1,3 +1,4 @@
+local interactive = require("engine.tech.interactive")
 local async = require("engine.tech.async")
 local health = require("engine.mech.health")
 local shaders = require("level.shaders")
@@ -232,6 +233,34 @@ return {
 
     _on_cancel = function()
       State.shader = nil
+    end,
+  },
+
+  _213_dirty_magazine = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/213_dirty_magazine.ms",
+    characters = {
+      player = {},
+      dirty_magazine = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      Log.traces(123)
+      interactive.mix_in(ch.dirty_magazine)
+      item.set_cue(ch.dirty_magazine, "highlight", true)
+      ch.dirty_magazine.name = "Яркий журнал"
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.dirty_magazine.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.dirty_magazine.interact = nil
+      sp:lines()
+      sp:start_single_branch(State.player:ability_check("religion", 8) and 1 or 2)
+        sp:lines()
+      sp:finish_single_branch()
     end,
   },
 }
