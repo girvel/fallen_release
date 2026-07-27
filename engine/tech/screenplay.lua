@@ -85,6 +85,18 @@ methods.finish_option = function(self)
   assert(Table.last(self.stack).type == "options")
 end
 
+--- @return integer
+methods.start_single_option = function(self)
+  local n = api.options(self:start_options())
+  self:start_option(n)
+  return n
+end
+
+methods.finish_single_option = function(self)
+  self:finish_option()
+  self:finish_options()
+end
+
 methods.start_branches = function(self)
   local block = get_block(self, "branches")  --[[@as moonspeak_branches]]
   table.insert(self.stack, block)

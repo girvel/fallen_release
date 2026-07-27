@@ -3570,9 +3570,9 @@
 									"id": "V_String",
 									"params": ["solids"]
 								}] },
-								{ "__identifier": "capture_name", "__type": "String", "__value": "colroed_pipe", "__tile": null, "defUid": 98, "realEditorValues": [{
+								{ "__identifier": "capture_name", "__type": "String", "__value": "colored_pipe", "__tile": null, "defUid": 98, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["colroed_pipe"]
+									"params": ["colored_pipe"]
 								}] }
 							],
 							"__worldX": 432,

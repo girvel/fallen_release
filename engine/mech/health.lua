@@ -199,7 +199,7 @@ health.attack = function(source, target, attack_roll, damage_roll)
   return did_hit
 end
 
---- @param source entity
+--- @param source entity?
 --- @param target entity
 --- @param ability ability
 --- @param save_dc integer
@@ -214,7 +214,7 @@ health.attack_save_precog = function(source, target, ability, save_dc, damage)
   return fail, damage
 end
 
---- @param source entity
+--- @param source entity?
 --- @param target entity
 --- @param fail boolean
 --- @param damage integer
@@ -223,7 +223,7 @@ health.attack_save_enact = function(source, target, fail, damage)
 end
 
 --- Attacks through making the target roll the saving throw; halves the damage on success
---- @param source entity
+--- @param source entity?
 --- @param target entity
 --- @param ability ability
 --- @param save_dc integer

@@ -208,7 +208,7 @@ on_solids.pipe_valve = function(steam_source_pos)
     valve_rotation_sounds:play_at(self.position)
     self:animate("rotate"):next(function()
       if not self._steam_source then return end
-      self._steam_source:_burst()
+      on_solids.fs.burst(self._steam_source.position)
       self._steam_source._overflow = 0
     end)
   end)
@@ -218,26 +218,27 @@ end
 local pipe_overflow_sound = sound.new("assets/sounds/pipe_overflow.wav"):set_looping(true)
 local pipe_burst_sounds = sound.multiple("assets/sounds/steam_hissing", .8)
 
+--- @param pos vector
+on_solids.fs.burst = function(pos)
+  local fx = animated.add_fx("assets/animations/steam/", pos, "fx_over")
+  pipe_burst_sounds:play_at(pos)
+  State.runner:run_task(function()
+    local damaged = {}
+    while State:exists(fx) do
+      local e = State.grids.solids:slow_get(pos + Vector.right)
+      if fx.animation.frame > 2 and e and e.hp and not damaged[e] then
+        health.attack_save(nil, e, "dex", 15, 1)
+        damaged[e] = true
+      end
+      coroutine.yield()
+    end
+  end, "steam_damage")
+end
+
 on_solids.steam_source = function()
   return {
     codename = "steam_source",
     boring_flag = true,
-
-    _burst = function(self)
-      local fx = animated.add_fx("assets/animations/steam/", self.position, "fx_over")
-      pipe_burst_sounds:play_at(self.position)
-      State.runner:run_task(function()
-        local damaged = {}
-        while State:exists(fx) do
-          local e = State.grids.solids:slow_get(self.position + Vector.right)
-          if fx.animation.frame > 2 and e and e.hp and not damaged[e] then
-            health.attack_save(self, e, "dex", 15, 1)
-            damaged[e] = true
-          end
-          coroutine.yield()
-        end
-      end, "steam_damage")
-    end,
 
     _paused = false,
     _overflow = 0,
@@ -257,7 +258,7 @@ on_solids.steam_source = function()
           entity._overflow_leak = entity._overflow_leak + dt
           while entity._overflow_leak > 1 do
             entity._overflow_leak = entity._overflow_leak - 1
-            entity:_burst()
+            on_solids.fs.burst(entity.position)
           end
           return
         end
