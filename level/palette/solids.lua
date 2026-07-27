@@ -70,7 +70,7 @@ local make_open = function(factory, target_layer, soundname)
   local sounds = soundname and sound.multiple("assets/sounds/"..soundname.."/open", .8)
   return function(self)
     if self._locked then
-      api.popup(5, self, "Закрыто.")
+      api.popup("Закрыто.", self)
       return
     end
 
@@ -469,7 +469,7 @@ solids.cook = function()
       init = function(self, entity)
         self._sub = State.hostility:subscribe(function(attacker, target)
           if entity.hp <= 0 or target ~= entity then return end
-          api.popup(5, entity, Random.choice("Ааай", "Оой"))
+          api.popup(Random.choice("Ааай", "Оой"), entity)
           entity.interact = nil
         end)
       end,
@@ -681,7 +681,7 @@ for _, postfix in ipairs {"", "c"} do
       if is_interactive then
         interactive.mix_in(result, function(self, other)
           if self._locked then
-            api.popup(5, self, "Закрыто.")
+            api.popup("Закрыто.", self)
             return
           end
           for d = 0, 2 do

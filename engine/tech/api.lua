@@ -598,18 +598,21 @@ api.distance = function(a, b)
 end
 
 local SLOW_READING_SPEED = 10
+local get_time = function(text)
+  return math.max(5, text:utf_len() / SLOW_READING_SPEED + 2)
+end
 
---- @param target entity|vector
 --- @param text string|fun()
+--- @param target entity|vector|nil
 --- @param life_time? number
-api.popup = function(target, text, life_time)
-  target = api.to_vector(target)
+api.popup = function(text, target, life_time)
+  target = api.to_vector(target or State.player)
   local render_text, final_life_time
   if type(text) == "string" then
     render_text = function()
       ui.text(text)
     end
-    final_life_time = life_time or (text:utf_len() / SLOW_READING_SPEED + 2)
+    final_life_time = life_time or get_time(text)
   else
     render_text = text
     if life_time then
@@ -643,7 +646,7 @@ api.popup_check = function(ability, dc, success, failure)
         ui.text(success)
       ui.finish_line()
     end
-    life_time = success:utf_len() / SLOW_READING_SPEED + 2
+    life_time = get_time(success)
   else
     draw = function()
       ui.start_line()
@@ -653,7 +656,7 @@ api.popup_check = function(ability, dc, success, failure)
         ui.text(success)
       ui.finish_line()
     end
-    life_time = failure:utf_len() / SLOW_READING_SPEED + 2
+    life_time = get_time(failure)
   end
 
   table.insert(State.player.popups, {

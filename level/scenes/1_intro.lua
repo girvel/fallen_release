@@ -188,7 +188,7 @@ return {
 
     _run = function(self, ch, ps)
       self.triggered = false
-      api.popup(5, ch.neighbour.position + Vector.down * .5, Random.item(self.snores))
+      api.popup(Random.item(self.snores), ch.neighbour.position + Vector.down * .5)
     end,
   },
 
