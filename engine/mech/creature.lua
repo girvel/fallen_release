@@ -210,12 +210,13 @@ local FAILURE = sound.multiple("engine/assets/sounds/check_failed")
 --- @param dc integer difficulty class
 --- @return boolean
 creature.methods.ability_check_precog = function(self, to_check, dc)
-  local roll = D(20) + self:get_modifier(to_check)
-  local result = roll:roll()
-  Log.debug("%s rolls check %s: %s against %s",
-    Name.code(self), to_check, result, dc
+  local result = (D(20) + self:get_modifier(to_check)):roll()
+  local success = result >= dc
+  Log.debug(
+    "%s %s %s / %s | Ability check for %s",
+    to_check:utf_upper(), success and "+" or "-", result, dc, self
   )
-  return result >= dc
+  return success
 end
 
 --- @param self entity
@@ -245,8 +246,8 @@ creature.methods.saving_throw = function(self, to_check, dc)
   local success = result >= dc
 
   Log.debug(
-    "%s %s / %s %s | Saving throw for %s",
-    to_check:utf_upper(), result, dc, success and "" or "", self
+    "%s %s %s / %s | Saving throw for %s",
+    to_check:utf_upper(), success and "+" or "-", result, dc, self
   )
 
   local sounds = success and SUCCESS or FAILURE
