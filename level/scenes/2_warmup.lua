@@ -140,6 +140,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      api.rotate(State.player, ps.mouse_check)
       api.line(nil, "Здесь повесилась мышь. Забавно.")
       api.popup_check("nature", 14,
         "Животные ощущают наш мир лучше, чем люди. Мышь, должно быть, предчувствовала что-то ужасное. Может, мне тоже начать бояться?",
