@@ -465,7 +465,7 @@ end
 ui.start_canvas = function(canvas)
   local w, h = canvas:getDimensions()
   ui.stack_push("canvas", canvas)
-  ui.stack_push("alignment", "left")
+  ui.stack_push("alignment", {x = "left", y = "top"})
   ui.stack_push("frame", {
     x = 0, y = 0,
     w = w, h = h,
@@ -540,7 +540,6 @@ end
 ui.text = function(text, ...)
   text = format(text, ...)
 
-  local frame = context.frame
   local font = context.font
   local alignment = context.alignment
 
