@@ -1,3 +1,5 @@
+local colors = require("engine.tech.colors")
+local floater = require("engine.tech.floater")
 local interactive = require("engine.tech.interactive")
 local async = require("engine.tech.async")
 local health = require("engine.mech.health")
@@ -245,7 +247,6 @@ return {
     },
 
     _on_add = function(self, ch, ps)
-      Log.traces(123)
       interactive.mix_in(ch.dirty_magazine)
       item.set_cue(ch.dirty_magazine, "highlight", true)
       ch.dirty_magazine.name = "Яркий журнал"
@@ -261,6 +262,88 @@ return {
       sp:start_single_branch(State.player:ability_check("religion", 8) and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
+    end,
+  },
+
+  _220_kitchen_bucket = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/220_kitchen_bucket.ms",
+    characters = {
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ps.kitchen_bucket) == 1
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+      sp:start_single_branch(State.player:ability_check("history", 10) and 1 or 2)
+        sp:lines()
+      sp:finish_single_branch()
+    end,
+  },
+
+  _221_cook = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/221_cook.ms",
+    characters = {
+      player = {},
+      cook = {},
+      soup_cauldron = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      ch.cook:rotate(Vector.up)
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(ch.cook, ch.soup_cauldron) == 1
+        and ch.cook.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.cook.interact = nil
+
+      sp:lines()
+      api.rotate(ch.cook, State.player)
+      sp:lines()
+      local n = State.player:ability_check("cha", 14) and 1 or 2
+      sp:start_single_branch(n)
+      if n == 1 then
+        sp:lines()
+
+        local d = math.max(1, State.player:get_modifier("con"))
+        State:add(floater.new("+"..d, State.player.position, colors.light_green))
+        health.set_hp(State.player, State.player.hp + d)
+        ch.cook:rotate(Vector.up)
+        sp:lines()
+      else
+        ch.cook:rotate(Vector.up)
+        sp:lines()
+      end
+      sp:finish_single_branch()
+    end,
+  },
+
+  _222_cauldron = cutscene.make {
+    enabled = true,
+    characters = {
+      soup_cauldron = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      interactive.mix_in(ch.soup_cauldron)
+      ch.soup_cauldron.name = "котелок"
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.soup_cauldron.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.soup_cauldron.interact = nil
+      api.popup("Кажется, у меня пропал аппетит", ch.soup_cauldron)
     end,
   },
 }
