@@ -326,6 +326,8 @@ base_attack = function(entity, slot)
     if not State:exists(target) then return end
     health.attack_enact(entity, target, did_hit, is_crit, damage)
     if not did_hit then return end
+    local dirname = Vector.name_from_direction((target.position - entity.position):normalized2())
+    target:animate_opt("hit_"..dirname)
 
     if target.sounds and target.sounds.hit then
       target.sounds.hit:play_at(target.position)

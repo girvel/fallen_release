@@ -89,6 +89,19 @@ local set_current = function(self, animation_name)
 end
 
 --- @param self entity
+--- @param animation_name string|animation_name
+--- @param looped? boolean
+--- @return promise?
+methods.animate_opt = function(self, animation_name, looped)
+  if self.animation.pack[animation_name]
+    or self.direction
+    and self.animation.pack[animation_name.."_"..Vector.name_from_direction(self.direction)]
+  then
+    return self:animate(animation_name, true, looped)
+  end
+end
+
+--- @param self entity
 --- @param animation_name? string|animation_name
 --- @param assertive? boolean whether to assert that animation exists
 --- @param looped? boolean
