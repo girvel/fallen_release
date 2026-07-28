@@ -152,6 +152,8 @@ local give_to_hands, give_to_a_hand
 --- @param this_item item item to give
 --- @return boolean success did item make it to the entity's inventory
 item.give = function(entity, this_item)
+  State:add(this_item)
+
   local is_free
   local slot = this_item.slot
   if slot == "hands" then
