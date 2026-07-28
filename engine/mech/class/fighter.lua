@@ -128,7 +128,7 @@ fighter.fighting_spirit = Table.extend({
 fighter.fighting_styles = {}
 
 fighter.fighting_styles.two_weapon_fighting = {
-  name = "Бой двумя оружиями",
+  name = "Два оружия",
   description = "Удар оружием во второй руке наносит больше урона",
   codename = "two_weapon_fighting",
 
@@ -182,7 +182,7 @@ fighter.fighting_styles.duelist = {
 }
 
 fighter.fighting_styles.great_weapon_master = {
-  name = "Бой двуручным оружием",
+  name = "Двуручное оружие",
   description = "Увеличенный средний урон двуручным оружием",
   codename = "great_weapon_master",
 
