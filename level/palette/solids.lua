@@ -496,6 +496,7 @@ solids.combat_dreamer = function(params)
       other_hand = items.small_shield(),
     },
     level = 3,
+    xp_reward = 150,
   }
   creature.mix_in(e)
   humanoid.mix_in(e)
@@ -649,6 +650,7 @@ solids.protected_dreamer = function()
   local e = solids.dreamer {
     inventory = {body = items.protective_robe()},
     faction = "protected_dreamers",
+    xp_reward = 50,
   }
   interactive.mix_in(e)
   return e

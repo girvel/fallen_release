@@ -249,4 +249,33 @@ return {
       State.rails:set_quest("warmup", stages.warmup._0030_left)
     end,
   },
+
+  player_damaged = cutscene.make {
+    enabled = true,
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.hp < State.player:get_max_hp()
+        and not State.level.locked_entities[State.player]
+        and (State.player.resources.hit_dice or 0) > 0
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.player.suggestion = "Нажмите [H] чтобы перевязать раны"
+      local timeout = 15
+      local prev_hp = State.player.hp
+      while
+        timeout > 0
+        and State.player.hp == prev_hp
+        and not State.level.locked_entities[State.player]
+        and (State.player.resources.hit_dice or 0) > 0
+      do
+        timeout = timeout - coroutine.yield()
+      end
+      State.player.suggestion = nil
+    end,
+
+    _on_cancel = function()
+      State.player.suggestion = nil
+    end,
+  },
 }
