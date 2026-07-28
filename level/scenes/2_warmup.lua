@@ -1,3 +1,5 @@
+local sound = require("engine.tech.sound")
+local animated = require("engine.tech.animated")
 local colors = require("engine.tech.colors")
 local floater = require("engine.tech.floater")
 local interactive = require("engine.tech.interactive")
@@ -345,6 +347,24 @@ return {
     _run = function(self, ch, ps, sp)
       ch.soup_cauldron.interact = nil
       api.popup("Кажется, у меня пропал аппетит", ch.soup_cauldron)
+    end,
+  },
+
+  _230_disappearing_dude = cutscene.make {
+    enabled = true,
+    characters = {
+      dining_room_door_1 = {optional = true},
+      dining_room_door_2 = {optional = true},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return not State:exists(ch.dining_room_door_1)
+        or not State:exists(ch.dining_room_door_2)
+    end,
+
+    _run = function(self, ch, ps, sp)
+      animated.add_fx("assets/animations/disappearing_dude", ps.possessed_image, "on2_solids")
+      sound.new("assets/sounds/creepy.mp3", .1):play()
     end,
   },
 }

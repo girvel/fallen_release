@@ -4626,6 +4626,56 @@
 							],
 							"__worldX": 400,
 							"__worldY": 2208
+						},
+						{
+							"__identifier": "entity_capture",
+							"__grid": [24,132],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 320, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#E4A672",
+							"iid": "b83f28c0-6fc0-11f1-bc05-fbf15ef9efea",
+							"width": 16,
+							"height": 16,
+							"defUid": 95,
+							"px": [384,2112],
+							"fieldInstances": [
+								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "solids", "__tile": null, "defUid": 97, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["solids"]
+								}] },
+								{ "__identifier": "capture_name", "__type": "String", "__value": "dining_room_door_1", "__tile": null, "defUid": 98, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["dining_room_door_1"]
+								}] }
+							],
+							"__worldX": 384,
+							"__worldY": 2112
+						},
+						{
+							"__identifier": "entity_capture",
+							"__grid": [26,129],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 320, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#E4A672",
+							"iid": "be1c9fc0-6fc0-11f1-bc05-ffb4057db239",
+							"width": 16,
+							"height": 16,
+							"defUid": 95,
+							"px": [416,2064],
+							"fieldInstances": [
+								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "solids", "__tile": null, "defUid": 97, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["solids"]
+								}] },
+								{ "__identifier": "capture_name", "__type": "String", "__value": "dining_room_door_2", "__tile": null, "defUid": 98, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["dining_room_door_2"]
+								}] }
+							],
+							"__worldX": 416,
+							"__worldY": 2064
 						}
 					]
 				},
