@@ -133,11 +133,15 @@ end
 
 tk.delegate(methods, "draw_entity", "preprocess", "postprocess")
 
+local is_compact
+
 methods.draw_gui = function(self, dt)
+  is_compact = love.graphics.getHeight() < 850
+
   local ok_button
-  tk.start_window("center", "center", 780, 700)
+  tk.start_window("center", "center", 780, is_compact and 700 or 800)
     ui.h1("Персонаж")
-    ui.start_font(24)
+    ui.start_font(is_compact and 21 or 24)
       ui.start_line()
         if ui.selector() then
           if ui.keyboard("left") then
@@ -174,7 +178,7 @@ methods.draw_gui = function(self, dt)
       end
 
       ui.start_alignment("center", "bottom")
-      ui.start_font(36)
+      ui.start_font(is_compact and 30 or 36)
         ok_button = ui.choice({"ОК"})
       ui.finish_font()
       ui.finish_alignment()
