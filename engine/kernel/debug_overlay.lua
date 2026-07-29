@@ -33,12 +33,13 @@ end
 local draw_points, report_fps, report_ai, report_scenes, report_rails, report_console
 
 methods.draw = function(self, dt)
-  self._show_points   = self._show_points   ~= ui.keyboard("f1")
-  self._show_fps      = self._show_fps      ~= ui.keyboard("f2")
-  self._show_ai       = self._show_ai       ~= ui.keyboard("f3")
-  self._show_scenes   = self._show_scenes   ~= ui.keyboard("f4")
-  self._show_rails    = self._show_rails    ~= ui.keyboard("f5")
-  self._show_console  = self._show_console  ~= ui.keyboard("f6")
+  self._show_points = self._show_points ~= ui.keyboard("f1")
+  self._show_fps = self._show_fps ~= ui.keyboard("f2")
+  self._show_ai = self._show_ai ~= ui.keyboard("f3")
+  self._show_scenes = self._show_scenes ~= ui.keyboard("f4")
+  self._show_rails = self._show_rails ~= ui.keyboard("f5")
+  self._show_console = self._show_console ~= ui.keyboard("f6")
+  ui.trace_frames = ui.trace_frames ~= ui.keyboard("f7")
 
   if State and self._show_points then draw_points(self.points) end
   if self._show_fps then report_fps() end

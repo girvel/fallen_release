@@ -219,6 +219,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 ui.SCALE = 4  -- has its own scale constant
+ui.trace_frames = false
 
 --- @return ui.context
 --- @nodiscard
@@ -400,6 +401,12 @@ ui.start_frame = function(x, y, w, h, scroll_id)
   ui.stack_push("max_x", frame.x)
   ui.stack_push("max_y", frame.y)
   ui.stack_push("scroll_id", scroll_id or false)
+
+  if ui.trace_frames then
+    ui.start_color(Vector.red)
+      love.graphics.rectangle("line", frame.x, frame.y, frame.w, frame.h)
+    ui.finish_color()
+  end
   love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
 end
 
