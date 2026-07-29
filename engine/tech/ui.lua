@@ -369,12 +369,13 @@ end
 --- @param scroll_id? table
 ui.start_frame = function(x, y, w, h, scroll_id)
   x, y, w, h = ui.frame_coords(x, y, w, h)
+  x = context.cursor_x + x
+  y = context.cursor_y + y
 
   local frame = {
-    x = context.cursor_x + x,
-    y = context.cursor_y + y,
-    w = w,
-    h = h,
+    y = y, x = x,
+    w = Math.median(0, w, context.frame.w - (x - context.frame.x)),
+    h = Math.median(0, h, context.frame.h - (y - context.frame.y)),
   }
 
   local cursor_x = frame.x

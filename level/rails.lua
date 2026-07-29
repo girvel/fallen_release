@@ -44,7 +44,6 @@ rails.new = function(checkpoint)
 end
 
 init_debug = function()
-  State.player.max_hp = 100
 end
 
 local skip_intro = function(self)
