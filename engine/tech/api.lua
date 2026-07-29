@@ -455,19 +455,23 @@ api.rotate = function(entity, target)
 end
 
 local ORDER_SOUND = sound.multiple("engine/assets/sounds/electricity", .08)
+local last_order_scene
 
 -- TODO queue
 --- @param text string
 --- @return promise
 api.order = function(text)
+  Log.debug("ORDER: %s", text)
   ORDER_SOUND:play()
-  local promise, scene = State.runner:run_task(function()
+  State.runner:cancel(last_order_scene, true)
+  local promise
+  promise, last_order_scene = State.runner:run_task(function()
     State.player.order = text
     async.sleep(4)
     State.player.order = nil
   end)
 
-  scene.on_cancel = function()
+  last_order_scene.on_cancel = function()
     if State.player.order == text then
       State.player.order = nil
     end

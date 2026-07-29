@@ -41,10 +41,6 @@ health.damage = function(target, amount, source, is_critical)
   amount = math.max(0, amount)
   Log.debug("%s damage to %s", amount, Name.code(target))
 
-  if source then
-    State.hostility:register(source, target)
-  end
-
   local repr = tostring(amount)
   if is_critical then
     repr = repr .. "!"
@@ -53,14 +49,17 @@ health.damage = function(target, amount, source, is_critical)
   State:add(floater.new(repr, target.position, health.COLOR_DAMAGE))
 
   local did_kill = health.set_hp(target, target.hp - amount)
-  if did_kill then
+  if did_kill and source then
     source:modify("on_kill", nil, target)
-    if source
-      and source.xp
+    if source.xp
       and target.xp_reward
     then
       source.xp = source.xp + target.xp_reward
     end
+  end
+
+  if source then
+    State.hostility:register(source, target)
   end
 end
 

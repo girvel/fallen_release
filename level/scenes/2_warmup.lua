@@ -1,3 +1,4 @@
+local async = require("engine.tech.async")
 local stages = require("level.logic.stages")
 local sound = require("engine.tech.sound")
 local animated = require("engine.tech.animated")
@@ -415,16 +416,83 @@ return {
     end,
   },
 
+  -- mannequin_safety = {
+  --   condition = function(self, name, dt)
+  --     if State.rails.quests.warmup >= stages.warmup._0060_practiced then
+  --       State:remove(self)
+  --       return false
+  --     end
+  --     return not State:exists(State.level.entities.mannequin)
+  --   end,
+
+  --   run = function(self, name)
+  --     State.rails:set_quest("warmup", stages.warmup._0060_practiced)
+  --   end,
+  -- },
+
   _242_weapon_picked_up = cutscene.make {
     enabled = true,
     screenplay = "assets/screenplay/242_weapon_picked_up.ms",
+    characters = {
+      mannequin = {},
+    },
 
     _condition = function(self, dt, ch, ps)
       return State.player.inventory.hand
     end,
 
     _run = function(self, ch, ps, sp)
-      
+      local old_hp = ch.mannequin.hp
+      api.order(sp:literal())
+
+      local suggestion = sp:literal()
+      local _, suggestion_scene = State.runner:run_task(function()
+        while State.rails.quests.warmup < stages.warmup._0060_practiced
+          and State:exists(ch.mannequin)
+        do
+          if api.distance(State.player, ch.mannequin) == 1
+            and State.player.direction == ch.mannequin.position - State.player.position
+          then
+            State.player.suggestion = suggestion
+          else
+            State.player.suggestion = nil
+          end
+          coroutine.yield()
+        end
+        State.player.suggestion = nil
+      end, "mannequin_suggestion")
+      suggestion_scene.on_cancel = function()
+        State.player.suggestion = nil
+      end
+
+      local miss_remark = sp:literal()
+      local remarks = {
+        sp:literal(),
+        sp:literal(),
+        sp:literal(),
+      }
+
+      local miss_remarked = false
+      local sub = State.hostility:subscribe(function(source, target)
+        if source == State.player and target == ch.mannequin then
+          if ch.mannequin.hp < old_hp then
+            old_hp = ch.mannequin.hp
+            api.order(table.remove(remarks, 1))
+          elseif not miss_remarked then
+            miss_remarked = true
+            api.order(miss_remark)
+          end
+        end
+      end)
+
+      while State:exists(ch.mannequin) and #remarks > 0 do
+        coroutine.yield()
+      end
+      State.runner:cancel(suggestion_scene)
+
+      async.sleep(3)
+      api.order(sp:literal())
+      State.rails:set_quest("warmup", stages.warmup._0060_practiced)
     end,
   },
 }

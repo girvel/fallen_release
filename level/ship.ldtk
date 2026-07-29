@@ -11,7 +11,7 @@
 	"iid": "7cebdd80-6fc0-11f1-b298-23dcb58a5112",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 99,
+	"nextUid": 100,
 	"identifierStyle": "Free",
 	"toc": [],
 	"worldLayout": "Free",
@@ -1526,7 +1526,45 @@
 			"limitBehavior": "MoveLastOne",
 			"pivotX": 0,
 			"pivotY": 0,
-			"fieldDefs": []
+			"fieldDefs": [
+				{
+					"identifier": "capture_name",
+					"doc": null,
+					"__type": "String",
+					"uid": 99,
+					"type": "F_String",
+					"isArray": false,
+					"canBeNull": true,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"exportToToc": false,
+					"searchable": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": null,
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				}
+			]
 		},
 		{
 			"identifier": "megadoor1",
@@ -3051,25 +3089,6 @@
 							],
 							"__worldX": 304,
 							"__worldY": 1760
-						},
-						{
-							"__identifier": "position",
-							"__grid": [34,130],
-							"__pivot": [0,0],
-							"__tags": ["position"],
-							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
-							"__smartColor": "#3E2731",
-							"iid": "478b0eb0-6fc0-11f1-a7ee-056af5517bc5",
-							"width": 16,
-							"height": 16,
-							"defUid": 87,
-							"px": [544,2080],
-							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "cp2", "__tile": null, "defUid": 88, "realEditorValues": [{
-								"id": "V_String",
-								"params": ["cp2"]
-							}] }],
-							"__worldX": 544,
-							"__worldY": 2080
 						},
 						{
 							"__identifier": "position",
@@ -5139,7 +5158,10 @@
 							"height": 16,
 							"defUid": 36,
 							"px": [592,2048],
-							"fieldInstances": [],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "mannequin", "__tile": null, "defUid": 99, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["mannequin"]
+							}] }],
 							"__worldX": 592,
 							"__worldY": 2048
 						},
