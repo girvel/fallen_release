@@ -371,8 +371,8 @@ end
 --- @param scroll_id? any
 ui.start_frame = function(x, y, w, h, scroll_id)
   x, y, w, h = ui.frame_coords(x, y, w, h)
-  x = math.max(context.frame.x, context.cursor_x + x)
-  y = math.max(context.frame.y, context.cursor_y + y)
+  x = context.cursor_x + x
+  y = context.cursor_y + y
 
   local frame = {
     y = y, x = x,
@@ -392,7 +392,7 @@ ui.start_frame = function(x, y, w, h, scroll_id)
     end
 
     local dy = input.mouse.wheel_dy
-    local SCROLL_K = 10
+    local SCROLL_K = 20
     if dy ~= 0 then
       state.scrolls[scroll_id] = state.scrolls[scroll_id] + dy * SCROLL_K
     end
