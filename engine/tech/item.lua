@@ -25,6 +25,19 @@ item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "bod
 --- @alias inventory_slot "hand"|"offhand"|"head"|"right_pocket"|"hair"|"skin"|"body"|"bag"|cue_slot
 --- @alias item_slot "hands"|inventory_slot
 
+--- @alias inventory inventory_strict|table
+--- @class inventory_strict
+--- @field hand item?
+--- @field offhand item?
+--- @field head item?
+--- @field right_pocket item?
+--- @field hair item?
+--- @field skin item?
+--- @field body item?
+--- @field bag item?
+--- @field highlight item?
+--- @field blood item?
+
 --- @param entity table
 --- @param animation_path string
 item.mix_in = function(entity, animation_path)
