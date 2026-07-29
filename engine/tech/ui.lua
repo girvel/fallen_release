@@ -58,6 +58,7 @@ local context
 --- @field styles ui_styles
 --- @field color vector
 --- @field canvas love.Canvas
+--- @field scroll_id any
 
 --- @class ui_styles
 --- @field link_color vector
@@ -284,6 +285,7 @@ ui.start = function()
     },
     color = V(love.graphics.getColor()),
     canvas = love.graphics.getCanvas(),
+    scroll_id = false,
   }
 
   stack = {}
@@ -366,11 +368,11 @@ end
 --- @param y? integer|"center"
 --- @param w? integer|"read_max"
 --- @param h? integer?
---- @param scroll_id? table
+--- @param scroll_id? any
 ui.start_frame = function(x, y, w, h, scroll_id)
   x, y, w, h = ui.frame_coords(x, y, w, h)
-  x = context.cursor_x + x
-  y = context.cursor_y + y
+  x = math.max(context.frame.x, context.cursor_x + x)
+  y = math.max(context.frame.y, context.cursor_y + y)
 
   local frame = {
     y = y, x = x,
@@ -394,6 +396,8 @@ ui.start_frame = function(x, y, w, h, scroll_id)
     if dy ~= 0 then
       state.scrolls[scroll_id] = state.scrolls[scroll_id] + dy * SCROLL_K
     end
+
+    love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
   end
 
   ui.stack_push("frame", frame)
@@ -408,7 +412,6 @@ ui.start_frame = function(x, y, w, h, scroll_id)
       love.graphics.rectangle("line", frame.x, frame.y, frame.w, frame.h)
     ui.finish_color()
   end
-  love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
 end
 
 --- @param push_y? "push_frame"|"push_cursor"
@@ -428,14 +431,18 @@ ui.finish_frame = function(push_y)
     state.scroll_maxs[scroll_id] = max_y - prev_frame.y
   end
 
+  if context.scroll_id then
+    local frame = context.frame
+    love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
+  else
+    love.graphics.setScissor()
+  end
+
   if push_y == "push_frame" then
     context.cursor_y = prev_frame.y + prev_frame.h
   elseif push_y == "push_cursor" then
     context.cursor_y = prev_cursor_y
   end
-
-  local frame = context.frame
-  love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
 
   return prev_frame
 end

@@ -402,7 +402,7 @@ return {
     _on_add = function(self, ch, ps)
       item.set_cue(ch.fighting_guide, "highlight", true)
       interactive.mix_in(ch.fighting_guide)
-      ch.fighting_guide.name = "Брошюра"
+      ch.fighting_guide.name = "брошюра"
     end,
 
     _condition = function(self, dt, ch, ps)

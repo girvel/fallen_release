@@ -1,0 +1,4 @@
+**/*.ldtk
+/engine/lib/fun.lua
+/engine/lib/tiny.lua
+/engine/lib/argparse.lua
