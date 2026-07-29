@@ -384,12 +384,8 @@ ui.start_frame = function(x, y, w, h, scroll_id)
   local cursor_y = frame.y
 
   if scroll_id then
-    local scroll = state.scrolls[scroll_id]
-    if scroll then
-      cursor_y = cursor_y + scroll
-    else
-      state.scrolls[scroll_id] = 0
-    end
+    state.scrolls[scroll_id] = state.scrolls[scroll_id] or 0
+    state.scroll_maxs[scroll_id] = state.scroll_maxs[scroll_id] or 0
 
     local dy = input.mouse.wheel_dy
     local SCROLL_K = 20
@@ -397,6 +393,10 @@ ui.start_frame = function(x, y, w, h, scroll_id)
       state.scrolls[scroll_id] = state.scrolls[scroll_id] + dy * SCROLL_K
     end
 
+    state.scrolls[scroll_id] = Math.median(
+      0, state.scrolls[scroll_id], -state.scroll_maxs[scroll_id]
+    )
+    cursor_y = cursor_y + state.scrolls[scroll_id]
     love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
   end
 
@@ -428,7 +428,9 @@ ui.finish_frame = function(push_y)
 
   local scroll_id = ui.stack_pop("scroll_id")
   if scroll_id then
-    state.scroll_maxs[scroll_id] = max_y - prev_frame.y
+    state.scroll_maxs[scroll_id] = math.max(
+      0, max_y - prev_frame.y - state.scrolls[scroll_id] - prev_frame.h
+    )
   end
 
   if context.scroll_id then
