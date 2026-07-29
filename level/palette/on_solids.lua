@@ -73,6 +73,7 @@ for _, tuple in ipairs {
   {28, "vines"},
   {29, "vines"},
   {30, "note"},
+  {31, "booklet"},
   {33, "vines"},
   {34, "vines"},
   {35, "vines"},

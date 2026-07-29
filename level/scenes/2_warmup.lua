@@ -1,3 +1,4 @@
+local stages = require("level.logic.stages")
 local sound = require("engine.tech.sound")
 local animated = require("engine.tech.animated")
 local colors = require("engine.tech.colors")
@@ -14,6 +15,11 @@ local api = require("engine.tech.api")
 
 
 return {
+
+----------------------------------------------------------------------------------------------------
+-- [SECTION] Location scenes
+----------------------------------------------------------------------------------------------------
+
   loc_201 = cutscene.make {
     enabled = true,
 
@@ -365,6 +371,60 @@ return {
     _run = function(self, ch, ps, sp)
       animated.add_fx("assets/animations/disappearing_dude", ps.possessed_image, "on2_solids")
       sound.new("assets/sounds/creepy.mp3", .1):play()
+    end,
+  },
+
+----------------------------------------------------------------------------------------------------
+-- [SECTION] Story scenes
+----------------------------------------------------------------------------------------------------
+
+  _240_entering_officer_room = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/240_entering_officer_room.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.officer_room_enter
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.order(sp:literal())
+      State.rails:set_quest("warmup", stages.warmup._0040_in_room)
+      State.rails.fighting_guide_status = "seen"
+    end,
+  },
+
+  _241_note_picked_up = cutscene.make {
+    enabled = true,
+    characters = {
+      fighting_guide = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      item.set_cue(ch.fighting_guide, "highlight", true)
+      interactive.mix_in(ch.fighting_guide)
+      ch.fighting_guide.name = "Брошюра"
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.fighting_guide.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State:remove(ch.fighting_guide)
+      State.rails.fighting_guide_status = "picked_up"
+    end,
+  },
+
+  _242_weapon_picked_up = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/242_weapon_picked_up.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.inventory.hand
+    end,
+
+    _run = function(self, ch, ps, sp)
+      
     end,
   },
 }

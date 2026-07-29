@@ -8,6 +8,7 @@ local rails = {}
 --- @class rails
 --- @field quests stages
 --- @field intro_note_status "none"|"picked_up"|"read"
+--- @field fighting_guide_status "seen"|"picked_up"|"read"?
 --- @field tolerates_latrine boolean?
 --- @field player_last_fov number?
 --- @field in_latrine boolean
@@ -64,7 +65,7 @@ end
 checkpoints.cp2 = function(self)
   skip_intro(self)
   self:transition_2_warmup()
-  level.unsafe_move(State.player, State.level.positions.cp2)
+  level.unsafe_move(State.player, State.level.positions.officer_room_enter)
 end
 
 --- @param questname stages.keys
@@ -72,8 +73,8 @@ end
 methods.set_quest = function(self, questname, stage)
   if self.quests[questname] < stage then
     State.player.has_new_task = true
+    self.quests[questname] = stage
   end
-  self.quests[questname] = stage
 end
 
 methods.transition_2_warmup = function(self)
