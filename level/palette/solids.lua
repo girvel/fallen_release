@@ -650,8 +650,8 @@ solids.protected_dreamer = function()
   local e = solids.dreamer {
     inventory = {body = items.protective_robe()},
     faction = "protected_dreamers",
-    xp_reward = 50,
   }
+  e.xp_reward = 50
   interactive.mix_in(e)
   return e
 end

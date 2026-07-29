@@ -72,6 +72,7 @@ items.protective_robe = function()
     perks = {
       gear.heavy_armor,
     },
+    no_drop_flag = true,
   }
   item.mix_in(e, "assets/animations/protective_robe")
   return e
