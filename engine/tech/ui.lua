@@ -15,6 +15,8 @@ local input = {
     y = 0,
     button_pressed = {},
     button_released = {},
+    wheel_dx = 0,
+    wheel_dy = 0,
   },
   keyboard = {
     pressed = {},
@@ -32,6 +34,8 @@ local state = {
 
   active_frames_t = CompositeMap.new("weak"),
   are_pressed = CompositeMap.new("weak"),
+  scrolls = setmetatable({}, {__mode = "k"}),
+  scroll_maxs = setmetatable({}, {__mode = "k"}),
 }
 
 --- @type table<string, table>
@@ -303,6 +307,8 @@ ui.finish = function()
   state.selection.is_pressed = false
   input.mouse.button_pressed = {}
   input.mouse.button_released = {}
+  input.mouse.wheel_dx = 0
+  input.mouse.wheel_dy = 0
   input.keyboard.pressed = {}
   input.keyboard.input = ""
   local cursor = CURSORS[state.cursor]
@@ -359,7 +365,8 @@ end
 --- @param y? integer|"center"
 --- @param w? integer|"read_max"
 --- @param h? integer?
-ui.start_frame = function(x, y, w, h)
+--- @param scroll_id? table
+ui.start_frame = function(x, y, w, h, scroll_id)
   x, y, w, h = ui.frame_coords(x, y, w, h)
 
   local frame = {
@@ -369,12 +376,31 @@ ui.start_frame = function(x, y, w, h)
     h = h,
   }
 
+  local cursor_x = frame.x
+  local cursor_y = frame.y
+
+  if scroll_id then
+    local scroll = state.scrolls[scroll_id]
+    if scroll then
+      cursor_y = cursor_y + scroll
+    else
+      state.scrolls[scroll_id] = 0
+    end
+
+    local dy = input.mouse.wheel_dy
+    local SCROLL_K = 10
+    if dy ~= 0 then
+      state.scrolls[scroll_id] = state.scrolls[scroll_id] + dy * SCROLL_K
+    end
+  end
+
   ui.stack_push("frame", frame)
-  ui.stack_push("cursor_x", frame.x)
-  ui.stack_push("cursor_y", frame.y)
+  ui.stack_push("cursor_x", cursor_x)
+  ui.stack_push("cursor_y", cursor_y)
   ui.stack_push("max_x", frame.x)
   ui.stack_push("max_y", frame.y)
-  -- love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
+  ui.stack_push("scroll_id", scroll_id or false)
+  love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
 end
 
 --- @param push_y? "push_frame"|"push_cursor"
@@ -383,15 +409,26 @@ ui.finish_frame = function(push_y)
   local prev_frame = ui.stack_pop("frame")
   ui.stack_pop("cursor_x")
   local prev_cursor_y = ui.stack_pop("cursor_y")
-  context.max_x = math.max(context.max_x, ui.stack_pop("max_x"))
-  context.max_y = math.max(context.max_y, ui.stack_pop("max_y"))
+  local max_x = ui.stack_pop("max_x")
+  local max_y = ui.stack_pop("max_y")
+
+  context.max_x = math.max(context.max_x, max_x)
+  context.max_y = math.max(context.max_y, max_y)
+
+  local scroll_id = ui.stack_pop("scroll_id")
+  if scroll_id then
+    state.scroll_maxs[scroll_id] = max_y - prev_frame.y
+  end
 
   if push_y == "push_frame" then
     context.cursor_y = prev_frame.y + prev_frame.h
   elseif push_y == "push_cursor" then
     context.cursor_y = prev_cursor_y
   end
-  -- love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
+
+  local frame = context.frame
+  love.graphics.setScissor(frame.x, frame.y, frame.w, frame.h)
+
   return prev_frame
 end
 
@@ -1091,6 +1128,11 @@ end
 
 ui.handle_mouserelease = function(button_i)
   table.insert(input.mouse.button_released, button_i)
+end
+
+ui.handle_wheelmove = function(dx, dy)
+  input.mouse.wheel_dx = dx
+  input.mouse.wheel_dy = dy
 end
 
 ui.handle_update = function(dt)

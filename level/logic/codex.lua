@@ -30,6 +30,8 @@ end
 --- @type table<string, fun(codex: codex)>
 local pages = {}
 
+local codex_scroll = {}
+
 methods.draw = function(self, dt)
   tk.start_window("center", "center", "read_max", 700)
     ui.start_font(40)
@@ -62,7 +64,9 @@ methods.draw = function(self, dt)
     ui.finish_font()
 
     first_header = true
-    pages[self.history[self.history_i]](self)
+    ui.start_frame(nil, nil, nil, nil, codex_scroll)
+      pages[self.history[self.history_i]](self)
+    ui.finish_frame()
   tk.finish_window()
 end
 

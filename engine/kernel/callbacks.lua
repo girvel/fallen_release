@@ -97,6 +97,8 @@ local handle_event = function(event, a,b,c,d,e,f)
     ui.handle_mousepress(c)
   elseif event == "mousereleased" then
     ui.handle_mouserelease(c)
+  elseif event == "wheelmoved" then
+    ui.handle_wheelmove(a, b)
   elseif event == "update" then
     ui.handle_update(a)
   end
