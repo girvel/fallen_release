@@ -95,10 +95,22 @@ health.set_hp = function(target, value)
       State.runner:run_task(function()
         local api = require("engine.tech.api")
         local async = require("engine.tech.async")
+
         api.lock(State.player)
-        async.sleep(5)
+        State.player:animate("lying", false, true)
+
+        local max_fov = State.player.fov_r
+        local max_timeout = 3
+        local timeout = max_timeout
+
+        while timeout > 0 do
+          State.player.fov_r = math.ceil(timeout/max_timeout * max_fov)
+          timeout = timeout - coroutine.yield()
+        end
+        async.sleep(1)
+
         Kernel.gui:player_has_died()
-      end)
+      end, "player_death")
       return false
     end
   else

@@ -50,7 +50,7 @@ base.mix_in = function(entity)
   creature.mix_in(entity)
   entity.codename = "player"
   entity.player_flag = true
-  entity.fov_r = 16
+  entity.fov_r = 15
   entity.curtain_color = Vector.transparent
   entity.bag = {money = 0, bird_food = 0}
 
