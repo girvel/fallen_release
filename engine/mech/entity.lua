@@ -34,11 +34,11 @@
 --- @field conditions table[] like .perks, but temporary
 ---
 --- @field was_interacted_by entity?
---- @field on_interact fun(entity, entity)?
+--- @field on_interact fun(self: entity, other: entity)?
 ---
---- @field on_add fun(entity)
---- @field on_remove fun(entity)
---- @field on_death fun(entity)
+--- @field on_add fun(self: entity)
+--- @field on_remove fun(self: entity)
+--- @field on_death fun(self: entity)
 --- @field on_half_hp fun(self: entity) called when HP becomes less than 1/2
 ---
 --- @field player_flag true? marks player character for level loading
