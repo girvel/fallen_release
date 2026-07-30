@@ -52,7 +52,6 @@ init_debug = function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
   end)
-  api.autosave()
 end
 
 init_factions = function()

@@ -138,9 +138,6 @@ love.run = function()
       local path = Kernel._load  --[[@as string]]
       serialization_coroutine = coroutine.create(function()
         State = saves.read(path)  --[[@as state]]
-        if Kernel.gui._mode.type == "escape_menu" then
-          Kernel.gui:close_menu()
-        end
         State.runner:handle_loading()
       end)
 

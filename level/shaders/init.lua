@@ -55,7 +55,7 @@ end
 --- @param d vector
 --- @return shader
 shaders.reflective = Memoize(function(d)
-  return {
+  local result = {
     love_shader = load_shader("reflective"),
 
     preprocess = function(self, entity)
@@ -66,11 +66,20 @@ shaders.reflective = Memoize(function(d)
       end
     end,
   }
+
+  Ldump.serializer.handlers[result] = function()
+    return shaders.reflective(d)
+  end
+  return result
 end)
 
 shaders.latrine = {
   love_shader = load_shader("latrine"),
 }
 
-Ldump.mark(shaders, "const", ...)
+Ldump.mark(shaders, {
+  bw = "const",
+  bwr = "const",
+  latrine = "const",
+}, ...)
 return shaders

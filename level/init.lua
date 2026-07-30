@@ -5,7 +5,7 @@ local animated = require("engine.tech.animated")
 --- @type level_definition
 return {
   ldtk_path = "level/ship.ldtk",
-  palette = Table.do_folder("level/palette"),
+  palette = Table.require_folder("level.palette"),
   rails_new = require("level.rails").new,
   bg_new = function()
     local e = {

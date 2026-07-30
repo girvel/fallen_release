@@ -70,7 +70,7 @@ local CLASSES = {
   warlock,
 }
 
-local CREATOR_CLASSES = Table.do_folder("engine/gui/creator_classes")
+local CREATOR_CLASSES = Table.require_folder("engine.gui.creator_classes")
 
 local draw_base_pane, draw_pane, reassign_model
 

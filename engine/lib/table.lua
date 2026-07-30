@@ -319,6 +319,22 @@ _table.do_folder = function(path) -- map
   return result
 end
 
+--- @param path string
+--- @return table<string, any>
+_table.require_folder = function(path)
+  local result = {}
+  local posix_path = path:gsub("%.", "/")
+  for _, filename in ipairs(love.filesystem.getDirectoryItems(posix_path)) do
+    if love.filesystem.getInfo(posix_path.."/"..filename, "directory") then
+      result[filename] = _table.require_folder(path.."."..filename)
+    elseif filename:ends_with(".lua") then
+      local luaname = filename:sub(1, -5)
+      result[luaname] = require(path.."."..luaname)
+    end
+  end
+  return result
+end
+
 --- @generic T: table
 --- @param t T
 --- @param item_name string?
