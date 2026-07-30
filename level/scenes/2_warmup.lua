@@ -1,3 +1,4 @@
+local stages = require("level.logic.stages")
 local solids = require("level.palette.solids")
 local stages = require("level.logic.stages")
 local sound = require("engine.tech.sound")
@@ -619,6 +620,32 @@ return {
       State.player.suggestion = nil
       State.hostility:unsubscribe(sub)
       State:remove(attack_suggestion_sc)
+    end,
+  },
+
+  _246_crate = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/246_crate.ms",
+    characters = {
+      player = {},
+      bird_food = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.rails.quests.warmup == stages.warmup._0070_mirage_defeated
+        and ch.bird_food.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+      local n = api.options(sp:start_options())
+      sp:finish_options()
+      if n == 1 then
+        State.runner:remove(self)
+        State.player.bag.bird_food = 1
+        ch.bird_food.interact = nil
+      end
     end,
   },
 }

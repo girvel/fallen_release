@@ -20,6 +20,7 @@ local translation = {
   },
   bag = {
     money = "Ценности",
+    bird_food = "Корм",
   },
 
   abilities = {
