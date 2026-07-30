@@ -150,11 +150,10 @@ methods.on_cancel = function(self, name)
   local _, ch = select_characters(self, name)
   if self._on_cancel then
     self:_on_cancel(ch, State.level.positions)
+  else
+    Log.warn("Canceling %s; it has no _on_cancel defined", name)
   end
   finish(self, name, ch)
-  if not self.boring_flag then
-    Log.info("%s:on_cancel()", name)
-  end
 end
 
 --- @param name string

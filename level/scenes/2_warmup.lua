@@ -510,6 +510,7 @@ return {
       if self._sub then
         State.hostility:unsubscribe(self._sub)
       end
+      State.rails:set_quest("warmup", stages.warmup._0060_practiced)
     end,
   },
 
@@ -734,6 +735,7 @@ return {
       api.rotate(ch.possessed, State.player)
       sp:lines()
       State:start_combat({State.player, ch.possessed})
+      ch.possessed.ai.starts_no_fights = false
     end,
   },
 }

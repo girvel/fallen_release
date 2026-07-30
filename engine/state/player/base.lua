@@ -65,6 +65,7 @@ base.mix_in = function(entity)
       State.level.grid_size * sprite.cell_size * State.camera.scale
     ))
   end
+  entity.on_death = false
   entity.has_new_task = false
 
   entity.creator_model = nil
