@@ -15,7 +15,7 @@ local rails = {}
 local methods = {}
 rails.mt = {__index = methods}
 
-local init_debug
+local init_debug, init_factions
 local checkpoints = {}
 
 --- @param checkpoint string?
@@ -29,6 +29,7 @@ rails.new = function(checkpoint)
   State.runner:extend(love.filesystem.load("level/scenes/1_intro.lua")())
 
   if Kernel.debug then init_debug() end
+  init_factions()
   if checkpoint then
     local init_checkpoint = checkpoints[checkpoint]
     if init_checkpoint then
@@ -44,6 +45,10 @@ rails.new = function(checkpoint)
 end
 
 init_debug = function()
+end
+
+init_factions = function()
+  State.hostility:set("monsters", "player", "enemy")
 end
 
 local skip_intro = function(self)

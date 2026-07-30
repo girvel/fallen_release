@@ -423,6 +423,10 @@ solids.player = function()
   return result
 end
 
+local mannequin_sounds = {
+  hit = sound.multiple("assets/sounds/hits_body", 0.3),
+}
+
 solids.mannequin = function()
   local e = {
     name = "манекен",
@@ -431,7 +435,7 @@ solids.mannequin = function()
     armor = 5,
     transparent_flag = true,
     boring_flag = true,
-    sounds = sound.multiple("assets/sounds/hits_body", 0.3),
+    sounds = mannequin_sounds,
   }
   animated.mix_in(e, "assets/animations/mannequin", "no_atlas")
   return e
@@ -653,6 +657,32 @@ solids.protected_dreamer = function()
   }
   e.xp_reward = 50
   interactive.mix_in(e)
+  return e
+end
+
+solids.phantom = function()
+  local e = {
+    ai = combat_ai.new(),
+    name = "Фантом",
+    codename = "phantom",
+    race = races.phantom,
+    max_hp = 12,
+    base_abilities = abilities.new(0, 14, 0, 0, 0, 0),
+    faction = "monsters",
+    perks = {
+      {
+        modify_initiative_roll = function(self, entity, roll)
+          return roll - 30
+        end,
+      }
+    },
+    on_death = function() end,  -- disabling blood marks
+    on_half_hp = function() end,
+    xp_reward = 10,
+    level = 1,
+  }
+  humanoid.mix_in(e)
+  creature.mix_in(e)
   return e
 end
 

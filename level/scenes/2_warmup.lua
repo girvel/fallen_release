@@ -1,4 +1,4 @@
-local async = require("engine.tech.async")
+local solids = require("level.palette.solids")
 local stages = require("level.logic.stages")
 local sound = require("engine.tech.sound")
 local animated = require("engine.tech.animated")
@@ -435,10 +435,12 @@ return {
     screenplay = "assets/screenplay/242_weapon_picked_up.ms",
     characters = {
       mannequin = {},
+      mirage_block = {},
     },
 
     _condition = function(self, dt, ch, ps)
       return State.player.inventory.hand
+        and State.rails.quests.warmup < stages.warmup._0050_weapon_picked_up
     end,
 
     _run = function(self, ch, ps, sp)
@@ -493,6 +495,130 @@ return {
       async.sleep(3)
       api.order(sp:literal())
       State.rails:set_quest("warmup", stages.warmup._0060_practiced)
+      item.set_cue(ch.mirage_block, "highlight", true)
+      State.hostility:unsubscribe(sub)
+    end,
+  },
+
+  _244_phantom = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/244_phantom.ms",
+    characters = {
+      player = {},
+      mirage_block = {},
+      bird_cage = {},
+      bird_food = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      interactive.mix_in(ch.mirage_block)
+      ch.mirage_block.name = "Блок миража"
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.mirage_block.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.runner:remove("_242_weapon_picked_up")
+      sp:lines()
+
+      local phantom
+      local options = sp:start_options()
+      local running = true
+      while running do
+        local n = api.options(options)
+        sp:start_option(n)
+          if n == 1 then
+            sp:lines()
+          elseif n == 2 then
+            sp:lines()
+
+            animated.add_fx("assets/animations/mirage_spawn", ps.officer_room_enter, "fx_under")
+            async.sleep(.5)
+            sound.new("assets/sounds/phantom_appearing.mp3", .1):play()
+            phantom = State:add_at(solids.phantom(), ps.officer_room_enter, "solids")
+            sp:lines()
+
+            sp:start_single_branch(State.player:ability_check("arcana", 10) and 1 or 2)
+              sp:lines()
+            sp:finish_single_branch()
+            State.runner:remove(self)
+            running = false
+          else
+            return
+          end
+        sp:finish_option()
+      end
+      sp:finish_options()
+
+      api.unlock(State.player)
+      State:start_combat({State.player, phantom})
+
+      while not State.combat do coroutine.yield() end
+      api.popup(sp:literal())
+
+      local move_order = sp:literal()
+      State.runner:run_task(function()
+        async.sleep(2)
+        api.order(move_order)
+      end)
+
+      local pass_turn_suggestion = sp:literal()
+      while State.combat:get_current() == State.player do
+        if State.player.resources.movement == 0 then
+          State.player.suggestion = pass_turn_suggestion
+        else
+          State.player.suggestion = nil
+        end
+        coroutine.yield()
+      end
+      State.player.suggestion = nil
+
+      local attack_suggestion = sp:literal()
+      local _, attack_suggestion_sc = State.runner:run_task(function()
+        while State.combat do
+          if api.distance(State.player, phantom) == 1
+            and State.player.resources.actions > 0
+            and State.combat:get_current() == State.player
+          then
+            State.player.suggestion = attack_suggestion
+          else
+            State.player.suggestion = nil
+          end
+          coroutine.yield()
+        end
+      end, "attack_suggestion")
+
+      local illusion_popup = sp:literal()
+      local kill_order = sp:literal()
+      local sub
+      sub = State.hostility:subscribe(function(source, target)
+        if source == phantom and target == State.player then
+          State.hostility:unsubscribe(sub)
+          api.popup(illusion_popup)
+          State.runner:run_task(function()
+            async.sleep(5)
+            api.order(kill_order)
+          end)
+        end
+      end)
+
+      while State.combat do coroutine.yield() end
+      api.order(sp:literal())
+      State.rails:set_quest("warmup", stages.warmup._0070_mirage_defeated)
+
+      interactive.mix_in(ch.bird_cage)
+      ch.bird_cage.name = "клетка"
+      item.set_cue(ch.bird_cage, "highlight", true)
+
+      interactive.mix_in(ch.bird_food)
+      item.set_cue(ch.bird_food, "highlight", true)
+
+      State.player.suggestion = nil
+      State.hostility:unsubscribe(sub)
+      State:remove(attack_suggestion_sc)
     end,
   },
 }

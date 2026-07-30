@@ -217,7 +217,7 @@ pages.index = function(codex)
       )
     end
 
-    if warmup >= stages.warmup._1000_bird_fed then
+    if warmup >= stages.warmup._0070_mirage_defeated then
       codex:li(
         "Покормить какую-то птицу в клетке. Корм должен быть в ящике.",
         warmup >= stages.warmup._1000_bird_fed

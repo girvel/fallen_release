@@ -185,7 +185,7 @@ methods.draw_gui = function(self, dt)
     ui.finish_font()
   tk.finish_window()
 
-  if State.player.level > 0 then
+  if State.player.level > 0 or self.is_disabled then
     if ui.keyboard("escape") or ui.keyboard("n") or self.is_disabled and ok_button then
       Kernel.gui:close_menu()
     end

@@ -170,7 +170,7 @@ methods.remove = function(self, scene)
     scene_itself = self.scenes[key]
   end
 
-  if not key then return end
+  if not key or not self.scenes[key] then return end
   self.scenes[key] = nil
 
   if scene_itself.on_remove then

@@ -27,7 +27,7 @@ local skeleton_base = function()
     armor = 13,
     level = 1,
     ai = combat_ai.new({follow_range = 30}),
-    faction = "predators",
+    faction = "monsters",
     on_death = add_bones,
     _is_a_skeleton = true,
     blind_sight_flag = true,
@@ -57,7 +57,7 @@ monsters.bat = function()
     ai = combat_ai.new(),
     speed = 8,
     max_hp = 1,
-    faction = "predators",
+    faction = "monsters",
     inventory = {
       hand = item.natural_weapon(D.new({}, 3)),
     },
