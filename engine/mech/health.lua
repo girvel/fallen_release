@@ -86,13 +86,25 @@ health.set_hp = function(target, value)
     return false
   end
 
-  if before and before > 0 and target.on_death then
-    target:on_death()
-  end
+  if before and before > 0 then
+    if target.on_death then
+      target:on_death()
+    end
 
-  if target.player_flag then
-    Kernel.gui:player_has_died()
-    return false
+    if target.player_flag then
+      State.runner:run_task(function()
+        local api = require("engine.tech.api")
+        local async = require("engine.tech.async")
+        api.lock(State.player)
+        async.sleep(5)
+        Kernel.gui:player_has_died()
+      end)
+      return false
+    end
+  else
+    if target.player_flag then
+      return false
+    end
   end
 
   if target.essential_flag then
