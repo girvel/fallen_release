@@ -735,5 +735,5 @@ return {
       sp:lines()
       State:start_combat({State.player, ch.possessed})
     end,
-  }
+  },
 }

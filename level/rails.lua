@@ -1,3 +1,4 @@
+local api = require("engine.tech.api")
 local humanoid = require("engine.mech.humanoid")
 local solids = require("level.palette.solids")
 local stages = require("level.logic.stages")
@@ -51,6 +52,7 @@ init_debug = function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
   end)
+  api.autosave()
 end
 
 init_factions = function()

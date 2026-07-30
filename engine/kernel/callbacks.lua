@@ -166,7 +166,7 @@ love.run = function()
         love.graphics.print(coroutine_type:utf_capitalize() .. "." * math.floor((love.timer.getTime() * 4) % 4), 100, 100)
       love.graphics.present()
 
-      coroutine.resume(serialization_coroutine)
+      async.resume(serialization_coroutine)
       love.timer.step()
       if coroutine.status(serialization_coroutine) == "dead" then
         serialization_coroutine = nil
