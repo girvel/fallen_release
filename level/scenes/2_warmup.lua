@@ -367,7 +367,7 @@ return {
 
     _condition = function(self, dt, ch, ps)
       if State.rails.quests.warmup >= stages.warmup._1000_bird_fed then
-        State:remove(self)
+        State.runner:remove(self)
         return false
       end
 
@@ -519,7 +519,7 @@ return {
     screenplay = "assets/screenplay/244_phantom.ms",
     characters = {
       player = {},
-      mirage_block = {non_locking = true},
+      mirage_block = {},
       bird_cage = {},
       bird_food = {},
     },
@@ -644,6 +644,11 @@ return {
       bird_food = {},
     },
 
+    _on_add = function(self, ch, ps)
+      ch.bird_food.interact = nil
+        -- disables default crate's interact
+    end,
+
     _condition = function(self, dt, ch, ps)
       return State.rails.quests.warmup == stages.warmup._0070_mirage_defeated
         and ch.bird_food.was_interacted_by == State.player
@@ -708,6 +713,27 @@ return {
 
       api.order(sp:literal())
       api.autosave(sp:literal())
+    end,
+  },
+
+  _250_possessed = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/250_possessed.ms",
+    characters = {
+      possessed = {dynamic = true},
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ch.possessed) < 5
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+      sound.new("assets/sounds/possessed_turns_around.mp3", .15):play()
+      api.rotate(ch.possessed, State.player)
+      sp:lines()
+      State:start_combat({State.player, ch.possessed})
     end,
   }
 }

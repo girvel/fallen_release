@@ -52,7 +52,7 @@ base.mix_in = function(entity)
   entity.player_flag = true
   entity.fov_r = 15
   entity.curtain_color = Vector.transparent
-  entity.bag = {money = 0, bird_food = 0}
+  entity.bag = {money = 0, bird_food = 0, bird_remains = 0}
 
   entity.ai = ai.new()
   entity.immovable_flag = true

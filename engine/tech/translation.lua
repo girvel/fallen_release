@@ -21,6 +21,7 @@ local translation = {
   bag = {
     money = "Ценности",
     bird_food = "Корм",
+    bird_remains = "Останки птицы",
   },
 
   abilities = {
