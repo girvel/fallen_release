@@ -1,3 +1,4 @@
+local item = require("engine.tech.item")
 local shaders = require("level.shaders")
 local on_tiles = require("level.palette.on_tiles")
 local health = require("engine.mech.health")
@@ -99,12 +100,14 @@ for index = 25, 26 do
       codename = "door",
       name = "дверь",
       sprite = this_sprite,
-      _locked = params.locked,
+      _locked = params and params.locked,
     }
     interactive.mix_in(e, open)
     return e
   end
 end
+
+solids.door = solids[packer.offset + 25]
 
 packer.offset = 32
 for _, tuple in ipairs {
@@ -444,16 +447,24 @@ end
 local dreamer_races = {races.dwarf, races.human, races.half_elf, races.half_orc, races.halfling}
 
 solids.dreamer = function(params)
+  local race, blood, faction, inventory
+  if params then
+    race = params.race
+    blood = params.blood
+    faction = params.faction
+    inventory = params.inventory
+  end
+
   local e = {
     name = "...",
     codename = "dreamer",
-    race = params.race and races[params.race] or Random.item(dreamer_races),
+    race = race and races[race] or Random.item(dreamer_races),
     max_hp = 15,
-    hp = params.blood and 6 or nil,
+    hp = blood and 6 or nil,
     base_abilities = abilities.new(12, 10, 10, 10, 10, 10),
-    ai = params.faction and combat_ai.new(),
-    faction = params.faction,
-    inventory = params.inventory,
+    ai = faction and combat_ai.new(),
+    faction = faction,
+    inventory = inventory,
     level = 1,
   }
   creature.mix_in(e)
@@ -485,7 +496,7 @@ solids.cook = function()
   return e
 end
 
-solids.combat_dreamer = function(params)
+solids.combat_dreamer = function()
   local e = {
     name = "...",
     codename = "combat_dreamer",
@@ -663,7 +674,7 @@ end
 solids.phantom = function()
   local e = {
     ai = combat_ai.new(),
-    name = "Фантом",
+    name = "фантом",
     codename = "phantom",
     race = races.phantom,
     max_hp = 12,
@@ -681,6 +692,34 @@ solids.phantom = function()
     xp_reward = 10,
     level = 1,
   }
+  humanoid.mix_in(e)
+  creature.mix_in(e)
+  return e
+end
+
+solids.possessed = function()
+  local e = {
+    ai = combat_ai.new(nil, true),
+    name = "потрясённый",
+    codename = "possessed",
+    race = Random.item(dreamer_races),
+    max_hp = 18,
+    level = 2,
+    xp_reward = 50,
+    base_abilities = abilities.new(14, 13, 12, 9, 11, 10),
+    faction = "monsters",
+    inventory = {
+      hand = item.natural_weapon(D(8)),
+    },
+    perks = {
+      {
+        modify_initiative_roll = function(self, entity, roll)
+          return roll + 10
+        end,
+      },
+    },
+  }
+
   humanoid.mix_in(e)
   creature.mix_in(e)
   return e

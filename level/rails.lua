@@ -1,3 +1,5 @@
+local humanoid = require("engine.mech.humanoid")
+local solids = require("level.palette.solids")
 local stages = require("level.logic.stages")
 local level = require("engine.tech.level")
 local quests = require("level.logic.stages")
@@ -45,6 +47,10 @@ rails.new = function(checkpoint)
 end
 
 init_debug = function()
+  State.runner:run_task(function()
+    Kernel.gui:open_menu("creator")
+    Kernel.gui._mode:submit()
+  end)
 end
 
 init_factions = function()
@@ -83,6 +89,28 @@ end
 
 methods.transition_2_warmup = function(self)
   State.runner:extend(love.filesystem.load("level/scenes/2_warmup.lua")())
+end
+
+methods.transition_3_detective = function(self)
+  State.runner:extend(love.filesystem.load("level/scenes/3_detective.lua")())
+
+  local ch = State.level.entities
+  local ps = State.level.positions
+  ch.detective_door._locked = false
+  ch.left_megadoor._locked = false
+  ch.left_megadoor:on_interact(State.player)  -- opening
+
+  for i = 1, 2 do
+    local e = ch["dining_room_door_"..i]
+    if not State:exists(e) then
+      State:remove(State.grids.on_solids[e.position])
+      State:add_at(solids.door(), e.position, "solids")
+    end
+  end
+
+  ch.possessed = State:add_at(solids.possessed(), ps.possessed_spawn, "solids")
+  ch.possessed:rotate(Vector.left)
+  humanoid.add_blood_mark(ch.possessed)
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)

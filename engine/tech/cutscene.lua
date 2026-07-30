@@ -2,8 +2,9 @@ local screenplay = require("engine.tech.screenplay")
 local cutscene = {}
 
 --- @class cutscene.characters_def
---- @field dynamic? boolean Does not trigger error if the character is missing (nil)
---- @field optional? boolean Allows the scene to run without this character
+--- @field dynamic? boolean Does not trigger error if the character is not defined (nil)
+--- @field optional? boolean Allows the scene to run if the character not State:exists
+--- @field non_locking? boolean Does not lock the character, does not require a lock
 
 --- @alias cutscene cutscene_strict|table
 --- @class cutscene_strict: scene_strict
@@ -30,7 +31,7 @@ cutscene.make = function(t)
   return setmetatable(t, cutscene.mt)
 end
 
---- @param scene scene
+--- @param scene cutscene
 --- @param scene_name string
 --- @return boolean, ch
 local select_characters = function(scene, scene_name)
@@ -47,7 +48,7 @@ local select_characters = function(scene, scene_name)
       end
 
       if not opts.optional and not State:exists(e)
-        or State.level.locked_entities[e]
+        or State.level.locked_entities[e] and not opts.non_locking
       then
         ok = false
       end
@@ -59,12 +60,14 @@ local select_characters = function(scene, scene_name)
   return ok, Table.strict(characters, ("scene %q's character"):format(scene_name))
 end
 
---- @param scene scene
+--- @param scene cutscene
 --- @param key string
 --- @param ch ch
 local finish = function(scene, key, ch)
-  for _, character in pairs(ch) do
-    State.level.locked_entities[character] = nil
+  for capture_name, character in pairs(ch) do
+    if not scene.characters or not scene.characters[capture_name].non_locking then
+      State.level.locked_entities[character] = nil
+    end
   end
 
   if Table.key_of(ch, State.player) then
@@ -104,8 +107,10 @@ methods.condition = function(self, name, dt)
 
   if ok then
     -- done in condition to prevent the next condition possibly triggering
-    for _, character in pairs(ch) do
-      State.level.locked_entities[character] = true
+    for capture_name, character in pairs(ch) do
+      if not self.characters or not self.characters[capture_name].non_locking then
+        State.level.locked_entities[character] = true
+      end
     end
   end
   return ok, ch, State.level.positions, unpack(condition_return)

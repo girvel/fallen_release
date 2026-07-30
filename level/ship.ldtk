@@ -3000,9 +3000,9 @@
 									"id": "V_String",
 									"params": ["solids"]
 								}] },
-								{ "__identifier": "capture_name", "__type": "String", "__value": "black_door", "__tile": null, "defUid": 59, "realEditorValues": [{
+								{ "__identifier": "capture_name", "__type": "String", "__value": "detective_door", "__tile": null, "defUid": 59, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["black_door"]
+									"params": ["detective_door"]
 								}] }
 							],
 							"__worldX": 336,
@@ -4720,6 +4720,31 @@
 							],
 							"__worldX": 496,
 							"__worldY": 2048
+						},
+						{
+							"__identifier": "entity_capture",
+							"__grid": [15,87],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 320, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#E4A672",
+							"iid": "c4f36160-6fc0-11f1-a3ff-139b08cb20f1",
+							"width": 16,
+							"height": 16,
+							"defUid": 95,
+							"px": [240,1392],
+							"fieldInstances": [
+								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "solids", "__tile": null, "defUid": 97, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["solids"]
+								}] },
+								{ "__identifier": "capture_name", "__type": "String", "__value": "left_megadoor", "__tile": null, "defUid": 98, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["left_megadoor"]
+								}] }
+							],
+							"__worldX": 240,
+							"__worldY": 1392
 						}
 					]
 				},

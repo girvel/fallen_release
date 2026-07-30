@@ -158,6 +158,7 @@ return {
       ch.intro_note.name = "записка"
 
       State.rails:set_quest("warmup", stages.warmup._0010_intro_heard)
+      api.autosave(sp:literal())
     end,
   },
 

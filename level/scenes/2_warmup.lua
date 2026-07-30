@@ -366,6 +366,11 @@ return {
     },
 
     _condition = function(self, dt, ch, ps)
+      if State.rails.quests.warmup >= stages.warmup._1000_bird_fed then
+        State:remove(self)
+        return false
+      end
+
       return not State:exists(ch.dining_room_door_1)
         or not State:exists(ch.dining_room_door_2)
     end,
@@ -436,7 +441,7 @@ return {
     screenplay = "assets/screenplay/242_weapon_picked_up.ms",
     characters = {
       mannequin = {},
-      mirage_block = {},
+      mirage_block = {non_locking = true},
     },
 
     _condition = function(self, dt, ch, ps)
@@ -447,6 +452,7 @@ return {
     _run = function(self, ch, ps, sp)
       local old_hp = ch.mannequin.hp
       api.order(sp:literal())
+      State.rails:set_quest("warmup", stages.warmup._0050_weapon_picked_up)
 
       local suggestion = sp:literal()
       local _, suggestion_scene = State.runner:run_task(function()
@@ -476,7 +482,7 @@ return {
       }
 
       local miss_remarked = false
-      local sub = State.hostility:subscribe(function(source, target)
+      self._sub = State.hostility:subscribe(function(source, target)
         if source == State.player and target == ch.mannequin then
           if ch.mannequin.hp < old_hp then
             old_hp = ch.mannequin.hp
@@ -497,7 +503,13 @@ return {
       api.order(sp:literal())
       State.rails:set_quest("warmup", stages.warmup._0060_practiced)
       item.set_cue(ch.mirage_block, "highlight", true)
-      State.hostility:unsubscribe(sub)
+      State.hostility:unsubscribe(self._sub)
+    end,
+
+    _on_cancel = function(self)
+      if self._sub then
+        State.hostility:unsubscribe(self._sub)
+      end
     end,
   },
 
@@ -507,7 +519,7 @@ return {
     screenplay = "assets/screenplay/244_phantom.ms",
     characters = {
       player = {},
-      mirage_block = {},
+      mirage_block = {non_locking = true},
       bird_cage = {},
       bird_food = {},
     },
@@ -639,13 +651,63 @@ return {
 
     _run = function(self, ch, ps, sp)
       sp:lines()
-      local n = api.options(sp:start_options())
-      sp:finish_options()
-      if n == 1 then
-        State.runner:remove(self)
-        State.player.bag.bird_food = 1
-        ch.bird_food.interact = nil
+      local options = sp:start_options()
+      while true do
+        local n = api.options(options, true)
+        if n == 1 then
+          State.runner:remove(self)
+          State.player.bag.bird_food = 1
+          ch.bird_food.interact = nil
+        else
+          break
+        end
       end
+      sp:finish_options()
     end,
   },
+
+  _248_cage = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/248_cage.ms",
+    characters = {
+      player = {},
+      bird_cage = {},
+      detective_door = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.rails.quests.warmup == stages.warmup._0070_mirage_defeated
+        and ch.bird_cage.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+
+      local options = sp:start_options()
+      if State.player.bag.bird_food == 0 then
+        options[1] = nil
+      end
+      while true do
+        local n = api.options(options, true)
+        if n == 1 then
+          State:remove(self)
+          ch.bird_cage.interact = nil
+          State.player.bag.bird_food = 0
+          State.rails:set_quest("warmup", stages.warmup._1000_bird_fed)
+          State.rails:transition_3_detective()
+        else
+          break
+        end
+      end
+      sp:finish_options()
+
+      if State.rails.quests.warmup < stages.warmup._1000_bird_fed then return end
+
+      sp:lines()
+
+      api.order(sp:literal())
+      api.autosave(sp:literal())
+    end,
+  }
 }

@@ -72,7 +72,7 @@ local CLASSES = {
 
 local CREATOR_CLASSES = Table.do_folder("engine/gui/creator_classes")
 
-local draw_base_pane, draw_pane, submit, reassign_model
+local draw_base_pane, draw_pane, reassign_model
 
 --- @param prev gui_game
 --- @return gui_creator
@@ -204,7 +204,7 @@ methods.draw_gui = function(self, dt)
     else
       Kernel.gui:confirm(
         "Закончить создание персонажа?",
-        function() submit(self) end
+        function() self:submit() end
       )
     end
   end
@@ -411,8 +411,7 @@ draw_pane = function(self, dt)
   CREATOR_CLASSES[data.class.codename].draw_pane(self, dt, data)
 end
 
---- @param self gui_creator
-submit = function(self)
+methods.submit = function(self)
   local perks do
     local data = self.model[0]
     perks = {
