@@ -133,17 +133,6 @@ love.run = function()
       coroutine_type = "сохранение"
       Kernel._save = nil
       Kernel._delays = {}
-
-    elseif Kernel._load then
-      local path = Kernel._load  --[[@as string]]
-      serialization_coroutine = coroutine.create(function()
-        State = saves.read(path)  --[[@as state]]
-        State.runner:handle_loading()
-      end)
-
-      coroutine_type = "загрузка"
-      Kernel._load = nil
-      Kernel._delays = {}
     end
 
     if serialization_coroutine then

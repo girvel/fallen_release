@@ -3,6 +3,7 @@ local ui = require("engine.tech.ui")
 local animated = require("engine.tech.animated")
 local level    = require("engine.tech.level")
 local sound    = require("engine.tech.sound")
+local saves = require("engine.kernel.saves")
 
 local gui = {}
 
@@ -98,6 +99,16 @@ methods.load_level = function(self)
   }
 
   self:_set_mode(STATES.loading_screen.new(load_co, stages))
+end
+
+methods.load_save = function(self, save)
+  local load_co = coroutine.create(function()
+    State = saves.read("saves/"..save..".ldump.gz")  --[[@as state]]
+    State.runner:handle_loading()
+    Kernel.gui:start_game()
+  end)
+
+  Kernel.gui:_set_mode(STATES.loading_screen.new(load_co))
 end
 
 methods.start_game = function(self)

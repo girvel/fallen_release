@@ -1,5 +1,3 @@
-local saves = require("engine.kernel.saves")
-local loading_screen = require("engine.gui.loading_screen")
 local tk = require("engine.gui.tk")
 local ui = require("engine.tech.ui")
 
@@ -32,15 +30,7 @@ methods.draw_gui = function(self, dt)
     local escape_pressed = ui.keyboard("escape")
 
     if save then
-      local load_co = coroutine.create(function()
-        State = saves.read("saves/"..save..".ldump.gz")  --[[@as state]]
-        State.runner:handle_loading()
-        Kernel.gui:start_game()
-      end)
-
-      -- NEXT gui method
-
-      Kernel.gui:_set_mode(loading_screen.new(load_co))
+      Kernel.gui:load_save(save)
     else if escape_pressed then
       ui.reset_selection()
       Kernel.gui:close_menu()

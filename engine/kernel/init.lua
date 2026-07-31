@@ -11,7 +11,6 @@ local kernel = {}
 --- @field start_time number
 --- @field screenshot love.Canvas
 --- @field _save? string
---- @field _load? string
 --- @field _specific_key_rates table<love.KeyConstant, number>
 --- @field _delays table<love.KeyConstant, number>
 --- @field _is_active boolean
@@ -40,11 +39,6 @@ end
 --- @param name string
 methods.plan_save = function(self, name)
   self._save = "saves/" .. name .. ".ldump.gz"
-end
-
---- @param name string
-methods.plan_load = function(self, name)
-  self._load = "saves/" .. name .. ".ldump.gz"
 end
 
 --- @param key love.KeyConstant
