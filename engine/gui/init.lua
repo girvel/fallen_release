@@ -81,14 +81,15 @@ end
 methods.load_level = function(self)
   -- TODO switch modes between frames, not in the middle
   assert(self._mode.type == "start_menu")
-  Log.info("Starting new game...")
-  self:_set_mode(STATES.loading_screen.new(
-    coroutine.create(function()
-      State = state.new(assert(love.filesystem.load("engine/systems/init.lua"))())
-      State:load_level("level")
-    end),
-    function() return self:start_game() end
-  ))
+  Log.info("Kernel.gui:load_level")
+
+  local load_co = coroutine.create(function()
+    State = state.new(assert(love.filesystem.load("engine/systems/init.lua"))())
+    State:load_level("level")
+    self:start_game()
+  end)
+
+  self:_set_mode(STATES.loading_screen.new(load_co))
 end
 
 methods.start_game = function(self)

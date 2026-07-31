@@ -32,18 +32,15 @@ methods.draw_gui = function(self, dt)
     local escape_pressed = ui.keyboard("escape")
 
     if save then
-      local load_f = function()
+      local load_co = coroutine.create(function()
         State = saves.read("saves/"..save..".ldump.gz")  --[[@as state]]
         State.runner:handle_loading()
-      end
-
-      -- NEXT remove this argument
-      -- NEXT gui method
-      local final_f = function()
         Kernel.gui:start_game()
-      end
+      end)
 
-      Kernel.gui:_set_mode(loading_screen.new(coroutine.create(load_f), final_f))
+      -- NEXT gui method
+
+      Kernel.gui:_set_mode(loading_screen.new(load_co))
     else if escape_pressed then
       ui.reset_selection()
       Kernel.gui:close_menu()

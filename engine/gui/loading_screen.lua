@@ -5,23 +5,27 @@ local ui = require("engine.tech.ui")
 
 local loading_screen = {}
 
---- @class gui_loading_screen
+--- @class interval
+--- @field start number
+--- @field finish number
+
+--- @class mode.loading_screen
 --- @field type "loading_screen"
+--- @field _stages table<string, interval>
 --- @field _loading_coroutine thread
---- @field _next_state fun()
 local methods = {}
 local mt = {__index = methods}
 
 --- @param loading_coroutine thread
---- @param next_state fun()
-loading_screen.new = function(loading_coroutine, next_state)
+----- @field _stages table<string, interval>
+loading_screen.new = function(loading_coroutine)
   return setmetatable({
     type = "loading_screen",
     _loading_coroutine = loading_coroutine,
-    _next_state = next_state,
   }, mt)
 end
 
+-- NEXT parametrize
 local STAGES = {
   json = {start = 0, finish = .4},
   preload = {start = .4, finish = .5},
@@ -58,10 +62,6 @@ methods.draw_gui = function(self)
       ui.image(bar_animation[frame].image)
     ui.finish_frame()
   ui.finish_alignment()
-
-  if coroutine.status(self._loading_coroutine) == "dead" then
-    self._next_state()
-  end
 end
 
 Ldump.mark(loading_screen, {}, ...)
