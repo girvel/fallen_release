@@ -78,7 +78,7 @@ methods.postprocess = function(self, dt)
   Error("No Kernel.gui._mode is set")
 end
 
-methods.start_game = function(self)
+methods.load_level = function(self)
   -- TODO switch modes between frames, not in the middle
   assert(self._mode.type == "start_menu")
   Log.info("Starting new game...")
@@ -87,11 +87,11 @@ methods.start_game = function(self)
       State = state.new(assert(love.filesystem.load("engine/systems/init.lua"))())
       State:load_level("level")
     end),
-    function() return self:start_game_finish() end
+    function() return self:start_game() end
   ))
 end
 
-methods.start_game_finish = function(self)
+methods.start_game = function(self)
   assert(self._mode.type == "loading_screen")
   Log.info("Game started")
   self:_set_mode(STATES.game.new())

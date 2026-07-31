@@ -49,7 +49,7 @@ methods.draw_gui = function()
     end
 
     if choice == 1 then
-      Kernel.gui:start_game()
+      Kernel.gui:load_level()
     elseif choice == 2 then
       Kernel.gui:open_menu("load_menu")
     elseif choice == 3 then
