@@ -738,4 +738,64 @@ return {
       ch.possessed.ai.starts_no_fights = false
     end,
   },
+
+  _252_possessed_killed = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/252_possessed_killed.ms",
+    characters = {
+      player = {},
+      possessed = {dynamic = true, optional = true},
+      bird_cage = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      local possessed = rawget(ch, "possessed")
+      return possessed and possessed.hp <= 0
+        and State.rails.quests.detective < stages.detective._1000_completed
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+      local options = sp:start_options()
+      local loop = true
+      while loop do
+        local n = api.options(options, true)
+        sp:start_option(n)
+        if n == 1 then
+          sp:start_single_branch(State.player:ability_check("medicine", 12) and 1 or 2)
+            sp:lines()
+          sp:finish_single_branch()
+        elseif n == 2 then
+          State.player.bag.bird_remains = 1
+          interactive.mix_in(ch.bird_cage)
+          item.set_cue(ch.bird_cage, "highlight", true)
+        else
+          loop = false
+        end
+        sp:finish_option()
+      end
+      sp:finish_options()
+    end,
+  },
+
+  _254_bird_remains = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/254_bird_remains.ms",
+    characters = {
+      player = {},
+      bird_cage = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.bird_cage.was_interacted_by == State.player
+        and State.player.bag.bird_remains > 0
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+      State.player.bag.bird_remains = 0
+      ch.bird_cage.interact = nil
+      -- NEXT reward XP
+    end,
+  }
 }
