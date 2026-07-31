@@ -135,6 +135,7 @@ love.run = function()
       Kernel._delays = {}
     end
 
+    -- TODO this has to be a GUI mode
     if serialization_coroutine then
       love.event.pump()
       for name in love.event.poll() do

@@ -100,7 +100,6 @@ return {
       State.runner.scenes._102_snoring.triggered = true
       sp:lines()
 
-      State.player.xp = xp.for_level[2]
       State.level.locked_entities[State.player] = nil
       Kernel.gui:open_menu("creator")
       while Kernel.gui:is_opened("creator") do

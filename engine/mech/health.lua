@@ -1,3 +1,4 @@
+local xp = require("engine.mech.xp")
 local colors = require("engine.tech.colors")
 local floater = require("engine.tech.floater")
 local item   = require "engine.tech.item"
@@ -51,10 +52,8 @@ health.damage = function(target, amount, source, is_critical)
   local did_kill = health.set_hp(target, target.hp - amount)
   if did_kill and source then
     source:modify("on_kill", nil, target)
-    if source.xp
-      and target.xp_reward
-    then
-      source.xp = source.xp + target.xp_reward
+    if source.xp and target.xp_reward then
+      xp.reward(source, target.xp_reward)
     end
   end
 

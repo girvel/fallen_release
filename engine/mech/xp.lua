@@ -1,3 +1,5 @@
+local colors = require("engine.tech.colors")
+local floater = require("engine.tech.floater")
 local xp = {}
 
 --- @param level integer
@@ -27,6 +29,13 @@ xp.point_buy = {
   [14] = 7,
   [15] = 9,
 }
+
+--- @param target entity
+--- @param amount number
+xp.reward = function(target, amount)
+  State:add(floater.new("+"..amount, target.position, colors.yellow))
+  target.xp = target.xp + amount
+end
 
 Ldump.mark(xp, {}, ...)
 return xp
