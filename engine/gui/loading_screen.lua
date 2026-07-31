@@ -17,22 +17,14 @@ local methods = {}
 local mt = {__index = methods}
 
 --- @param loading_coroutine thread
------ @field _stages table<string, interval>
-loading_screen.new = function(loading_coroutine)
+--- @param stages? table<string, interval>
+loading_screen.new = function(loading_coroutine, stages)
   return setmetatable({
     type = "loading_screen",
     _loading_coroutine = loading_coroutine,
+    _stages = stages,
   }, mt)
 end
-
--- NEXT parametrize
-local STAGES = {
-  json = {start = 0, finish = .4},
-  preload = {start = .4, finish = .5},
-  generate = {start = .5, finish = .8},
-  add = {start = .8, finish = .95},
-  rails_init = {start = .95, finish = 1},
-}
 
 local bar_animation do
   local result = {}
@@ -44,7 +36,7 @@ methods.draw_gui = function(self)
   local frame do
     local stage_id, value = async.resume(self._loading_coroutine)
     if stage_id then
-      local stage = STAGES[stage_id]
+      local stage = self._stages[stage_id]
       value = stage.start + (stage.finish - stage.start) * value
     else
       value = 1

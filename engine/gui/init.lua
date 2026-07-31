@@ -89,7 +89,15 @@ methods.load_level = function(self)
     self:start_game()
   end)
 
-  self:_set_mode(STATES.loading_screen.new(load_co))
+  local stages = {
+    json = {start = 0, finish = .4},
+    preload = {start = .4, finish = .5},
+    generate = {start = .5, finish = .8},
+    add = {start = .8, finish = .95},
+    rails_init = {start = .95, finish = 1},
+  }
+
+  self:_set_mode(STATES.loading_screen.new(load_co, stages))
 end
 
 methods.start_game = function(self)
