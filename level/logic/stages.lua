@@ -31,6 +31,8 @@ stages.warmup = {
 
 --- @enum stages.detective
 stages.detective = {
+  _0010_black_door = 10,
+  _0020_investigate = 20,
   _1000_completed = stages.COMPLETED,
 }
 

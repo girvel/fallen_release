@@ -1,3 +1,4 @@
+local xp = require("engine.mech.xp")
 local solids = require("level.palette.solids")
 local stages = require("level.logic.stages")
 local sound = require("engine.tech.sound")
@@ -711,6 +712,7 @@ return {
 
       sp:lines()
 
+      State.rails:set_quest("detective", stages.detective._0010_black_door)
       api.order(sp:literal())
       api.autosave(sp:literal())
     end,
@@ -794,7 +796,7 @@ return {
       sp:lines()
       State.player.bag.bird_remains = 0
       ch.bird_cage.interact = nil
-      -- NEXT reward XP
+      xp.reward(State.player, 10)
     end,
   }
 }

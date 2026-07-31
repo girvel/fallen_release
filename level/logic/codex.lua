@@ -155,6 +155,23 @@ end
 ----------------------------------------------------------------------------------------------------
 
 pages.index = function(codex)
+  local detective = State.rails.quests.detective
+  if detective > 0 then
+    codex:header(
+      detective >= stages.detective._0020_investigate and "Рыцари и лжец" or "???",
+      detective >= stages.COMPLETED
+    )
+
+    codex:li("Найти комнату с чёрной дверью.", detective >= stages.detective._0020_investigate)
+
+    if detective >= stages.detective._0020_investigate then
+      codex:li(
+        "Провести расследование в Машинном Отделении. Опросить свидетелей, осмотреть помещение. Затем устранить подозреваемого.",
+        detective >= stages.detective._1000_completed
+      )
+    end
+  end
+
   local warmup = State.rails.quests.warmup
   if warmup > 0 then
     codex:header(
