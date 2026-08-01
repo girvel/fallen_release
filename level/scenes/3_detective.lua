@@ -112,7 +112,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      async.sleep(1)
+      async.sleep(.5)
       ch.engineer_3:rotate(Vector.down)
       async.sleep(2)
       ch.engineer_3:rotate(Vector.up)
@@ -188,6 +188,42 @@ return {
         sp:finish_option()
       end
       sp:finish_options()
+    end,
+  },
+
+  _307_interrogation_halfling = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/307_interrogation_halfling.ms",
+    characters = {
+      player = {},
+      engineer_2 = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      interactive.mix_in(ch.engineer_2)
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.engineer_2.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      local prev_direction = ch.engineer_2.direction
+      api.rotate(ch.engineer_2, State.player)
+
+      sp:lines()
+      local options = sp:start_options()
+      while true do
+        local n = api.options(options)
+        if n == 4 then break end
+        sp:start_option(n)
+          sp:lines()
+        sp:finish_option()
+      end
+      sp:finish_options()
+
+      ch.engineer_2:rotate(prev_direction)
     end,
   },
 }
