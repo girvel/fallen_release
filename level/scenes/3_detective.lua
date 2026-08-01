@@ -1,3 +1,4 @@
+local actions = require("engine.mech.actions")
 local stages = require("level.logic.stages")
 local api = require("engine.tech.api")
 local cutscene = require("engine.tech.cutscene")
@@ -19,6 +20,7 @@ return {
   },
 
   _302_half_elf = cutscene.make {
+    boring_flag = true,
     enabled = true,
     mode = "sequential",
     screenplay = "assets/screenplay/302_half_elf.ms",
@@ -33,12 +35,17 @@ return {
 
     _condition_t = 5,
     _condition = function(self, dt, ch, ps)
-      self._condition_t = self._condition_t - dt
-      local trigger = self._condition_t <= 0
-      if trigger then
-        self._condition_t = Random.float(30, 40)
+      if ch.engineer_1.position ~= ps.engineer_1 then
+        State.runner:remove(self)
+        return false
       end
-      return trigger
+
+      self._condition_t = self._condition_t - dt
+      if self._condition_t <= 0 then
+        self._condition_t = Random.float(30, 40)
+        return true
+      end
+      return false
     end,
 
     _run = function(self, ch, ps, sp)
@@ -58,6 +65,35 @@ return {
 
       local text = choices[n]:gsub("{[^}]*}", suffix)
       api.popup(text, ch.engineer_1)
+    end,
+  },
+
+  _engineer_2_rotates_valve = cutscene.make {
+    boring_flag = true,
+    enabled = true,
+    mode = "sequential",
+    characters = {
+      engineer_2 = {},
+    },
+
+    _condition_t = 3,
+    _condition = function(self, dt, ch, ps)
+      if ch.engineer_2.position ~= ps.engineer_2 then
+        State.runner:remove(self)
+        return false
+      end
+
+      self._condition_t = self._condition_t - dt
+      if self._condition_t <= 0 then
+        self._condition_t = 30
+        return true
+      end
+      return false
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.engineer_2:rotate(Vector.down)
+      actions.interact:act(ch.engineer_2)
     end,
   },
 

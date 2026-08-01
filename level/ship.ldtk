@@ -4764,6 +4764,25 @@
 							}] }],
 							"__worldX": 304,
 							"__worldY": 1424
+						},
+						{
+							"__identifier": "position",
+							"__grid": [22,86],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "829a2630-6fc0-11f1-8381-e513a23dc640",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [352,1376],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "engineer_1", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["engineer_1"]
+							}] }],
+							"__worldX": 352,
+							"__worldY": 1376
 						}
 					]
 				},
