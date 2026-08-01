@@ -1,3 +1,4 @@
+local interactive = require("engine.tech.interactive")
 local on_solids = require("level.palette.on_solids")
 local screenplay = require("engine.tech.screenplay")
 local async = require("engine.tech.async")
@@ -137,6 +138,38 @@ return {
       sp:lines()
 
       api.autosave()
+    end,
+  },
+
+  _306_interrogation_half_elf = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/306_interrogation_half_elf.ms",
+    characters = {
+      player = {},
+      engineer_1 = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      interactive.mix_in(ch.engineer_1)
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.engineer_1.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+
+      local options = sp:start_options()
+      while true do
+        local n = api.options(options)
+        if n == 4 then break end
+        sp:start_option(n)
+          sp:lines()
+        sp:finish_option()
+      end
+      sp:finish_options()
     end,
   },
 }

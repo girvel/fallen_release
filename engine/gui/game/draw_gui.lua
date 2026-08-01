@@ -684,7 +684,7 @@ draw_line = function(this_line)
     if this_line.source then
       local name = Name.game(this_line.source)
       ui.start_color(this_line.source.sprite.color)
-        ui.text(name)
+        ui.text(name:utf_capitalize())
       ui.finish_color()
       ui.text(": ")
     end

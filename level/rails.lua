@@ -14,6 +14,7 @@ local rails = {}
 --- @field tolerates_latrine boolean?
 --- @field player_last_fov number?
 --- @field in_latrine boolean
+--- @field dreamers_talked_to table<integer, boolean>
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -27,6 +28,7 @@ rails.new = function(checkpoint)
     quests = quests.new(),
     intro_note_status = "none",
     in_latrine = false,
+    dreamers_talked_to = {},
   }, rails.mt)
   State.runner:extend(love.filesystem.load("level/scenes/1_intro.lua")())
 
