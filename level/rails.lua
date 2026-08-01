@@ -66,16 +66,28 @@ local skip_intro = function(self)
   self:set_quest("warmup", stages.warmup._0010_intro_heard)
 end
 
-checkpoints.cp1 = function(self)
-  skip_intro(self)
-  self:transition_2_warmup()
+--- @param rails rails
+checkpoints.cp1 = function(rails)
+  skip_intro(rails)
+  rails:transition_2_warmup()
   level.unsafe_move(State.player, State.level.positions.cp1)
 end
 
-checkpoints.cp2 = function(self)
-  skip_intro(self)
-  self:transition_2_warmup()
+--- @param rails rails
+checkpoints.cp2 = function(rails)
+  skip_intro(rails)
+  rails:transition_2_warmup()
   level.unsafe_move(State.player, State.level.positions.officer_room_enter)
+end
+
+--- @param rails rails
+checkpoints.cp3 = function(rails)
+  skip_intro(rails)
+  rails:transition_2_warmup()
+  rails:transition_3_detective()
+  level.unsafe_move(State.player, State.level.positions.cp3)
+  rails:set_quest("warmup", stages.warmup._1000_bird_fed)
+  rails:set_quest("detective", stages.detective._0010_black_door)
 end
 
 --- @param questname stages.keys
