@@ -66,7 +66,7 @@ races.halfling = {
 
 races.dwarf = {
   codename = "dwarf",
-  skin_color = Vector.hex("8ed3dc"),
+  skin_color = Vector.hex("dd8a5b"),
 }
 
 races.furry = {

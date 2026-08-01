@@ -177,6 +177,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      State.rails.dreamers_talked_to[1] = true
       sp:lines()
 
       local options = sp:start_options()
@@ -209,6 +210,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      State.rails.dreamers_talked_to[2] = true
       local prev_direction = ch.engineer_2.direction
       api.rotate(ch.engineer_2, State.player)
 
@@ -224,6 +226,37 @@ return {
       sp:finish_options()
 
       ch.engineer_2:rotate(prev_direction)
+    end,
+  },
+
+  _308_interrogation_half_orc = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/308_interrogation_half_orc.ms",
+    characters = {
+      player = {},
+      engineer_3 = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      interactive.mix_in(ch.engineer_3)
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.engineer_3.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.rails.dreamers_talked_to[3] = true
+      sp:lines()
+      local options = sp:start_options()
+      while true do
+        local n = api.options(options)
+        if n == 4 then break end
+        sp:start_option(n)
+          sp:lines()
+        sp:finish_option()
+      end
+      sp:finish_options()
     end,
   },
 }
