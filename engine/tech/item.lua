@@ -37,6 +37,7 @@ item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "bod
 --- @field bag item?
 --- @field highlight item?
 --- @field blood item?
+--- @field gloves item?
 
 --- @param entity table
 --- @param animation_path string

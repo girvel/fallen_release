@@ -259,4 +259,49 @@ return {
       sp:finish_options()
     end,
   },
+
+  _309_interrogation_dwarf = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/309_interrogation_dwarf.ms",
+    characters = {
+      player = {},
+      engineer_4 = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      interactive.mix_in(ch.engineer_4)
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.engineer_4.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.rails.dreamers_talked_to[4] = true
+      local prev_direction = ch.engineer_4.direction
+      api.rotate(ch.engineer_4, State.player)
+
+      sp:lines()
+      local options = sp:start_options()
+      if not State.player.inventory.gloves then
+        options[4] = nil
+      end
+
+      while true do
+        local n = api.options(options)
+        if n == 5 then break end
+        sp:start_option(n)
+          if n == 4 then
+            ch.engineer_4.inventory.gloves = State.player.inventory.gloves
+            State.player.inventory.gloves = nil
+            State.rails.given_up_gloves = true
+          end
+          sp:lines()
+        sp:finish_option()
+      end
+      sp:finish_options()
+
+      ch.engineer_4:rotate(prev_direction)
+    end,
+  },
 }

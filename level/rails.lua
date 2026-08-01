@@ -15,6 +15,7 @@ local rails = {}
 --- @field player_last_fov number?
 --- @field in_latrine boolean
 --- @field dreamers_talked_to table<integer, boolean>
+--- @field given_up_gloves boolean
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -66,7 +67,6 @@ local skip_intro = function(self)
   self.intro_note_status = "picked_up"
   State:remove(State.level.entities.intro_note)
   self:set_quest("warmup", stages.warmup._0010_intro_heard)
-  State.runner:remove("_304_room_description")
 end
 
 --- @param rails rails
@@ -91,6 +91,7 @@ checkpoints.cp3 = function(rails)
   level.unsafe_move(State.player, State.level.positions.cp3)
   rails:set_quest("warmup", stages.warmup._1000_bird_fed)
   rails:set_quest("detective", stages.detective._0020_investigate)
+  State.runner:remove("_304_room_description")
 end
 
 --- @param questname stages.keys
