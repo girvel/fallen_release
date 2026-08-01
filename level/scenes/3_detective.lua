@@ -1,5 +1,4 @@
 local interactive = require("engine.tech.interactive")
-local on_solids = require("level.palette.on_solids")
 local screenplay = require("engine.tech.screenplay")
 local async = require("engine.tech.async")
 local actions = require("engine.mech.actions")
@@ -98,6 +97,25 @@ return {
     _run = function(self, ch, ps, sp)
       ch.engineer_2:rotate(Vector.down)
       actions.interact:act(ch.engineer_2)
+    end,
+  },
+
+  _detective_experiment = cutscene.make {
+    enabled = true,
+    characters = {
+      engineer_3 = {},
+      device_panel = {optional = true},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return not State:exists(ch.device_panel)
+    end,
+
+    _run = function(self, ch, ps, sp)
+      async.sleep(1)
+      ch.engineer_3:rotate(Vector.down)
+      async.sleep(2)
+      ch.engineer_3:rotate(Vector.up)
     end,
   },
 

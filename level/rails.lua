@@ -66,6 +66,7 @@ local skip_intro = function(self)
   self.intro_note_status = "picked_up"
   State:remove(State.level.entities.intro_note)
   self:set_quest("warmup", stages.warmup._0010_intro_heard)
+  State.runner:remove("_304_room_description")
 end
 
 --- @param rails rails
@@ -89,7 +90,7 @@ checkpoints.cp3 = function(rails)
   rails:transition_3_detective()
   level.unsafe_move(State.player, State.level.positions.cp3)
   rails:set_quest("warmup", stages.warmup._1000_bird_fed)
-  rails:set_quest("detective", stages.detective._0010_black_door)
+  rails:set_quest("detective", stages.detective._0020_investigate)
 end
 
 --- @param questname stages.keys
