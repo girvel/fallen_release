@@ -1,3 +1,6 @@
+local on_solids = require("level.palette.on_solids")
+local screenplay = require("engine.tech.screenplay")
+local async = require("engine.tech.async")
 local actions = require("engine.mech.actions")
 local stages = require("level.logic.stages")
 local api = require("engine.tech.api")
@@ -101,15 +104,39 @@ return {
     enabled = true,
     screenplay = "assets/screenplay/304_room_description.ms",
     characters = {
-      
+      player = {},
+      engineer_1 = {},
+      engineer_2 = {},
+      engineer_3 = {},
+      engineer_4 = {},
+      steam_source = {},
     },
 
     _condition = function(self, dt, ch, ps)
-      return 
+      return State.player.position == ps.detective_exit
     end,
 
     _run = function(self, ch, ps, sp)
-      
+      sp:lines()
+
+      State.runner:run_task(function()
+        ch.engineer_3:rotate(Vector.down)
+        ch.engineer_4:rotate(Vector.down)
+        async.sleep(2)
+        ch.engineer_3:rotate(Vector.up)
+        ch.engineer_4:rotate(Vector.up)
+      end)
+      sp:lines()
+
+      local sc = State.runner.scenes._302_half_elf
+      sc:_run(ch, ps, screenplay.new(sc.screenplay, ch))
+      sp:lines()
+
+      sc = State.runner.scenes._engineer_2_rotates_valve
+      sc:_run(ch, ps)
+      sp:lines()
+
+      api.autosave()
     end,
   },
 }

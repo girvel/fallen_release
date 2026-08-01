@@ -3998,13 +3998,13 @@
 							"defUid": 95,
 							"px": [352,1392],
 							"fieldInstances": [
-								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "solids", "__tile": null, "defUid": 97, "realEditorValues": [{
+								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "on_solids", "__tile": null, "defUid": 97, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["solids"]
+									"params": ["on_solids"]
 								}] },
-								{ "__identifier": "capture_name", "__type": "String", "__value": "leaking_valve", "__tile": null, "defUid": 98, "realEditorValues": [{
+								{ "__identifier": "capture_name", "__type": "String", "__value": "steam_source", "__tile": null, "defUid": 98, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["leaking_valve"]
+									"params": ["steam_source"]
 								}] }
 							],
 							"__worldX": 352,

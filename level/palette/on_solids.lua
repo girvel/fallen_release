@@ -241,13 +241,11 @@ on_solids.steam_source = function()
     codename = "steam_source",
     boring_flag = true,
 
-    _paused = false,
     _overflow = 0,
     _overflow_leak = 0,
 
     ai = {
       observe = function(self, entity, dt)
-        if entity._paused then return end
         entity._overflow = entity._overflow + dt
         if entity._overflow >= 60 then
           if not self._overflow_sound then
