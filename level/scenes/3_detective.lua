@@ -64,6 +64,8 @@ return {
         suffix = ("%.2f"):format(Random.float(2.6, 5.2))
       elseif n == 4 then
         suffix = math.random(197, 310)
+      else
+        suffix = ""
       end
 
       local text = choices[n]:gsub("{[^}]*}", suffix)
