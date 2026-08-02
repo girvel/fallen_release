@@ -462,16 +462,16 @@ return {
           if api.distance(State.player, ch.mannequin) == 1
             and State.player.direction == ch.mannequin.position - State.player.position
           then
-            State.player.suggestion = suggestion
+            State.model.suggestion = suggestion
           else
-            State.player.suggestion = nil
+            State.model.suggestion = nil
           end
           coroutine.yield()
         end
-        State.player.suggestion = nil
+        State.model.suggestion = nil
       end, "mannequin_suggestion")
       suggestion_scene.on_cancel = function()
-        State.player.suggestion = nil
+        State.model.suggestion = nil
       end
 
       local miss_remark = sp:literal()
@@ -582,13 +582,13 @@ return {
       local pass_turn_suggestion = sp:literal()
       while State.combat:get_current() == State.player do
         if State.player.resources.movement == 0 then
-          State.player.suggestion = pass_turn_suggestion
+          State.model.suggestion = pass_turn_suggestion
         else
-          State.player.suggestion = nil
+          State.model.suggestion = nil
         end
         coroutine.yield()
       end
-      State.player.suggestion = nil
+      State.model.suggestion = nil
 
       local attack_suggestion = sp:literal()
       local _, attack_suggestion_sc = State.runner:run_task(function()
@@ -597,9 +597,9 @@ return {
             and State.player.resources.actions > 0
             and State.combat:get_current() == State.player
           then
-            State.player.suggestion = attack_suggestion
+            State.model.suggestion = attack_suggestion
           else
-            State.player.suggestion = nil
+            State.model.suggestion = nil
           end
           coroutine.yield()
         end
@@ -630,7 +630,7 @@ return {
       interactive.mix_in(ch.bird_food)
       item.set_cue(ch.bird_food, "highlight", true)
 
-      State.player.suggestion = nil
+      State.model.suggestion = nil
       State.hostility:unsubscribe(sub)
       State:remove(attack_suggestion_sc)
     end,

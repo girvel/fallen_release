@@ -19,6 +19,7 @@ local state = {}
 --- @field period state_period
 --- @field uid state_uid
 --- @field stats state_stats
+--- @field model state.model
 --- @field shadow state_shadow
 --- @field shader shader?
 --- @field rails rails
@@ -48,6 +49,7 @@ state.new = function(systems)
     period = require("engine.state.period").new(),
     uid = require("engine.state.uid").new(),
     stats = require("engine.state.stats").new(),
+    model = require("engine.state.model").new(),
 
     _world = Tiny.world(unpack(systems)),
     _entities = {},
@@ -209,6 +211,10 @@ methods.load_level = function(self, path)
     if #self._entities_to_add + #self._entities_to_remove == 0 then break end
     self:flush()
   end
+
+  State.model.memory = love.graphics.newCanvas(unpack(
+    State.level.grid_size * sprite.cell_size * State.camera.scale
+  ))
 
   if not self.player then
     Error("There's no player in the level")

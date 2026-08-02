@@ -192,14 +192,14 @@ draw_gui = function(self, dt)
 end
 
 draw_curtain = function()
-  if State.player.curtain_color == Vector.transparent then return end
+  if State.model.curtain_color == Vector.transparent then return end
   local w, h = love.graphics.getDimensions()
-  ui.start_color(State.player.curtain_color)
+  ui.start_color(State.model.curtain_color)
     love.graphics.rectangle("fill", 0, 0, w, h)
   ui.finish_color()
 
-  if State.player.curtain_draw then
-    State.player.curtain_draw()
+  if State.model.curtain_draw then
+    State.model.curtain_draw()
   end
 end
 
@@ -341,9 +341,9 @@ draw_keyboard_action_grid = function(self)
     ui.offset(4)
 
     do
-      local journal_image = State.player.has_new_task and gui.journal or gui.journal_inactive
+      local journal_image = State.model.has_new_task and gui.journal or gui.journal_inactive
       local button = ui.key_button(journal_image, "j")
-      if State.quests.has_new_content then
+      if State.model.has_new_task then
         ui.offset(-64)
         tk.highlight()
       end
@@ -644,7 +644,7 @@ draw_dialogue = function()
   local FONT_SIZE = is_compact and 26 or 32
   dialogue_y = love.graphics.getHeight() - H - BOTTOM_GAP
 
-  local this_line = State.player.hears
+  local this_line = State.model.hears
   if not this_line then
     return
   end
@@ -743,7 +743,7 @@ draw_line = function(this_line)
   ui.finish_frame()
 
   if ui.keyboard("space") or ui.mousedown_anywhere(1) then
-    State.player.hears = nil
+    State.model.hears = nil
     SKIP_SOUNDS:play()
   end
 end
@@ -767,15 +767,15 @@ draw_options = function(this_line)
     end
   end
   if n then
-    State.player.speaks = sorted[n][1]
-    State.player.hears = nil
+    State.model.speaks = sorted[n][1]
+    State.model.hears = nil
   end
 end
 
 local start_t, prev
 
 draw_notification = function()
-  local text = State.player.notification
+  local text = State.model.notification
   if not text then
     prev = text
     return
@@ -820,7 +820,7 @@ local order_animation = {
 animated.mix_in(order_animation, "assets/animations/notification_fx", "no_atlas")
 
 draw_order = function()
-  local text = State.player.order
+  local text = State.model.order
   if not text then
     prev_order = text
     return
@@ -856,7 +856,7 @@ draw_suggestion = function()
   ui.start_line()
   ui.start_font(32)
   do
-    local override = State.player.suggestion
+    local override = State.model.suggestion
     if override then
       ui.text(override)
       goto proceed
@@ -1155,7 +1155,7 @@ local popup_canvas = love.graphics.newCanvas(POPUP_MAX_W, 1000)
 
 draw_popups = function(dt)
   local next_popups = {}
-  for _, popup in ipairs(State.player.popups) do
+  for _, popup in ipairs(State.model.popups) do
     ui.start_canvas(popup_canvas)
     ui.start_font(18)
     ui.start_frame(POPUP_PADDING, POPUP_PADDING)
@@ -1182,7 +1182,7 @@ draw_popups = function(dt)
       table.insert(next_popups, popup)
     end
   end
-  State.player.popups = next_popups
+  State.model.popups = next_popups
 end
 
 Ldump.mark(draw_gui, {}, ...)

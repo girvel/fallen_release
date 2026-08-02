@@ -292,13 +292,13 @@ api.line = function(source, text)
     source = source,
     text = text,
   }
-  State.player.hears = t
+  State.model.hears = t
 
   if source then
     State:add(animated.fx("engine/assets/animations/underfoot_circle", source.position))
   end
 
-  while State.player.hears == t do
+  while State.model.hears == t do
     coroutine.yield()
   end
 end
@@ -307,19 +307,19 @@ end
 --- @param remove_picked? boolean
 --- @return integer
 api.options = function(options, remove_picked)
-  State.player.hears = {
+  State.model.hears = {
     type = "options",
     options = options,
   }
 
   ui.reset_selection()
 
-  while not State.player.speaks do
+  while not State.model.speaks do
     coroutine.yield()
   end
 
-  local result = State.player.speaks  --[[@as integer]]
-  State.player.speaks = nil
+  local result = State.model.speaks  --[[@as integer]]
+  State.model.speaks = nil
   if remove_picked then
     options[result] = nil
   end
@@ -338,7 +338,7 @@ api.fade_out = function(duration)
   end
 
   duration = duration or FADE_DURATION
-  State.player.is_memory_enabled = false
+  State.model.is_memory_enabled = false
 
   local promise, scene = State.runner:run_task(function()
     prev_fov = State.player.fov_r
@@ -351,7 +351,7 @@ api.fade_out = function(duration)
   end, "fade_out")
 
   scene.on_cancel = function()
-    State.player.is_memory_enabled = true
+    State.model.is_memory_enabled = true
     State.player.fov_r = prev_fov
     prev_fov = nil
   end
@@ -376,11 +376,11 @@ api.fade_in = function(duration)
       end
     end
     prev_fov = nil
-    State.player.is_memory_enabled = true
+    State.model.is_memory_enabled = true
   end, "fade_in")
 
   scene.on_cancel = function()
-    State.player.is_memory_enabled = true
+    State.model.is_memory_enabled = true
     State.player.fov_r = prev_fov
     prev_fov = nil
   end
@@ -466,14 +466,14 @@ api.order = function(text)
   State.runner:cancel(last_order_scene, true)
   local promise
   promise, last_order_scene = State.runner:run_task(function()
-    State.player.order = text
+    State.model.order = text
     async.sleep(4)
-    State.player.order = nil
+    State.model.order = nil
   end)
 
   last_order_scene.on_cancel = function()
-    if State.player.order == text then
-      State.player.order = nil
+    if State.model.order == text then
+      State.model.order = nil
     end
   end
 
@@ -487,14 +487,14 @@ local NOTIFICATION_SOUND = sound.multiple("engine/assets/sounds/notification", .
 api.notification = function(text)
   NOTIFICATION_SOUND:play()
   local _, scene = State.runner:run_task(function()
-    State.player.notification = text
+    State.model.notification = text
     async.sleep(5)
-    State.player.notification = nil
+    State.model.notification = nil
   end, "notification")
 
   scene.on_cancel = function()
-    if State.player.notification == text then
-      State.player.notification = nil
+    if State.model.notification == text then
+      State.model.notification = nil
     end
   end
 end
@@ -519,17 +519,17 @@ end
 api.curtain = function(duration, color)
   return State.runner:run_task(function()
     local start_time = love.timer.getTime()
-    local start_color = State.player.curtain_color
+    local start_color = State.model.curtain_color
     local dcolor = color - start_color
     while true do
       local dt = love.timer.getTime() - start_time
       if dt >= duration then
         break
       end
-      State.player.curtain_color = start_color + dcolor * (dt / duration)
+      State.model.curtain_color = start_color + dcolor * (dt / duration)
       coroutine.yield()
     end
-    State.player.curtain_color = color
+    State.model.curtain_color = color
   end, "curtain")
 end
 
@@ -627,7 +627,7 @@ api.popup = function(text, target, life_time)
     end
   end
 
-  table.insert(State.player.popups, {
+  table.insert(State.model.popups, {
     position = target,
     draw = render_text,
     life_time = final_life_time,
@@ -663,7 +663,7 @@ api.popup_check = function(ability, dc, success, failure)
     life_time = get_time(failure)
   end
 
-  table.insert(State.player.popups, {
+  table.insert(State.model.popups, {
     position = State.player.position,
     draw = draw,
     life_time = life_time,

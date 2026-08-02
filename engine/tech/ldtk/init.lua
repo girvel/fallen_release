@@ -54,7 +54,7 @@ ldtk.load = function(path)
   local preload_data = preload(json)
   coroutine.yield("preload", 1)
   local generation_data = generate_entities(definition.palette, preload_data.entities)
-  State.player.journal_new = definition.journal_new
+  State.model.journal_new = definition.journal_new
 
   local bg
   if definition.bg_new then

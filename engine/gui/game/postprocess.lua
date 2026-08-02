@@ -9,15 +9,15 @@ local postprocess = function(self, dt)
     State.shader:deactivate()
   end
 
-  if State.player.is_memory_enabled then
-    love.graphics.setCanvas(State.player.memory)
+  if State.model.is_memory_enabled then
+    love.graphics.setCanvas(State.model.memory)
     love.graphics.draw(self._main_canvas, unpack(State.camera.offset))
   end
 
   love.graphics.setCanvas(Kernel.screenshot)
-  if State.player.is_memory_enabled then
+  if State.model.is_memory_enabled then
     love.graphics.setShader(memory_shader.love_shader)
-    love.graphics.draw(State.player.memory, unpack(-State.camera.offset))
+    love.graphics.draw(State.model.memory, unpack(-State.camera.offset))
   end
   love.graphics.setShader()
   love.graphics.draw(self._main_canvas)

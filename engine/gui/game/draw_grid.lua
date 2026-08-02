@@ -1,10 +1,11 @@
 local sprite = require("engine.tech.sprite")
-local is_blind_for = function(x, y)
-  local player = State.player
-  if not player.is_blind then return false end
 
-  local dx, dy = unpack(player.direction)
-  local px, py = unpack(player.position)
+
+local is_blind_for = function(x, y)
+  if not State.model.is_blind then return false end
+
+  local dx, dy = unpack(State.player.direction)
+  local px, py = unpack(State.player.position)
   x = x - px
   y = y - py
   if dx == 0 then

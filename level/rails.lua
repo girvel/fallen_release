@@ -98,7 +98,7 @@ end
 --- @param stage integer
 methods.set_quest = function(self, questname, stage)
   if self.quests[questname] < stage then
-    State.player.has_new_task = true
+    State.model.has_new_task = true
     self.quests[questname] = stage
   end
 end

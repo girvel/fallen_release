@@ -73,7 +73,7 @@ local finish = function(scene, key, ch)
   if Table.key_of(ch, State.player) then
     State.camera.target_override = nil
     State.camera.is_camera_following = true
-    State.player.curtain_color = Vector.transparent
+    State.model.curtain_color = Vector.transparent
   end
 end
 

@@ -11,39 +11,9 @@ local base = {}
 --- @class player_base: entity_strict
 --- @field fov_r integer
 --- @field ai player_ai
---- @field bag table<string, integer>
---- @field hears? dialogue_line
---- @field speaks? integer
---- @field notification? string
---- @field order? string
---- @field suggestion? string
---- @field popups popup[]
---- @field curtain_color vector
---- @field curtain_draw fun()?
---- @field memory love.Canvas
---- @field is_memory_enabled boolean
---- @field is_blind boolean
---- @field is_deaf boolean
 --- @field creator_model table?
 --- @field appearance_model table?
---- @field journal_new fun(): table
---- @field has_new_task boolean
-
---- @alias dialogue_line plain_dialogue_line | dialogue_options
-
---- @class plain_dialogue_line
---- @field type "plain_line"
---- @field source entity?
---- @field text string
-
---- @class dialogue_options
---- @field type "options"
---- @field options table<integer, string>
-
---- @class popup
---- @field draw fun()
---- @field position vector
---- @field life_time number
+--- @field bag table<string, integer>
 
 --- @param entity table
 base.mix_in = function(entity)
@@ -51,25 +21,14 @@ base.mix_in = function(entity)
   entity.codename = "player"
   entity.player_flag = true
   entity.fov_r = 15
-  entity.curtain_color = Vector.transparent
   entity.bag = {money = 0, bird_food = 0, bird_remains = 0}
 
   entity.ai = ai.new()
   entity.immovable_flag = true
 
-  entity.is_memory_enabled = true
-  entity.is_blind = false
-  entity.is_deaf = false
-  entity.on_add = function(self)
-    self.memory = love.graphics.newCanvas(unpack(
-      State.level.grid_size * sprite.cell_size * State.camera.scale
-    ))
-  end
   entity.on_death = false
-  entity.has_new_task = false
 
   entity.creator_model = nil
-  entity.popups = {}
 end
 
 --- @type action

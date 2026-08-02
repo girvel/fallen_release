@@ -14,9 +14,9 @@ local mt = {__index = methods}
 --- @param prev gui_game
 --- @return gui_journal
 journal.new = function(prev)
-  local journal_new = State.player.journal_new
+  local journal_new = State.model.journal_new
   if not journal_new then
-    Error("No State.player.journal_new")
+    Error("No State.model.journal_new")
     State.runner:run_task(function() Kernel.gui:close_menu() end)
   end
 
@@ -30,7 +30,7 @@ end
 tk.delegate(methods, "draw_entity", "preprocess", "postprocess")
 
 methods.draw_gui = function(self, dt)
-  State.player.has_new_task = false
+  State.model.has_new_task = false
 
   if ui.keyboard("escape") or ui.keyboard("j") then
     Kernel.gui:close_menu()

@@ -21,14 +21,14 @@ return {
     },
 
     _run = function(self, ch, ps, sp)
-      State.player.curtain_color = Vector.black
+      State.model.curtain_color = Vector.black
       State.player:rotate(Vector.down)
       local prev_fov = State.player.fov_r
       State.player.fov_r = 0
       async.sleep(1)
 
       local logo_alpha = 0
-      State.player.curtain_draw = function()
+      State.model.curtain_draw = function()
         ui.start_color(V(1, 1, 1, logo_alpha))
           ui.start_alignment("center", "center")
           ui.start_font(100)
@@ -60,17 +60,17 @@ return {
       while timeout > 0 do
         local v = timeout / max_timeout
         logo_alpha = v
-        State.player.curtain_color = V(0, 0, 0, v)
+        State.model.curtain_color = V(0, 0, 0, v)
         timeout = timeout - coroutine.yield()
       end
 
       async.sleep(2)
 
       State.player.incapacitated = true
-      State.player.suggestion = sp:literal()
+      State.model.suggestion = sp:literal()
       sp:lines()
 
-      State.player.suggestion = nil
+      State.model.suggestion = nil
       sp:lines()
 
       State.player.incapacitated = false
@@ -141,7 +141,7 @@ return {
       api.scale():next(function()
       -- memory glitches with api.scale, remove this when it's fixed
         local prev_canvas = love.graphics.getCanvas()
-        love.graphics.setCanvas(State.player.memory)
+        love.graphics.setCanvas(State.model.memory)
         love.graphics.clear()
         love.graphics.setCanvas(prev_canvas)
       end)
@@ -204,17 +204,17 @@ return {
     _run = function(self, ch, ps, sp)
       State:remove(ch.intro_note)
       State.rails.intro_note_status = "picked_up"
-      State.player.suggestion = "Нажмите [J] чтобы открыть журнал"
+      State.model.suggestion = "Нажмите [J] чтобы открыть журнал"
       local timeout = 10
       while not Kernel.gui:is_opened("journal") and timeout > 0 do
         local dt = coroutine.yield()
         timeout = timeout - dt
       end
-      State.player.suggestion = nil
+      State.model.suggestion = nil
     end,
 
     _on_cancel = function(self)
-      State.player.suggestion = nil
+      State.model.suggestion = nil
     end,
   },
 
@@ -260,7 +260,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      State.player.suggestion = "Нажмите [H] чтобы перевязать раны"
+      State.model.suggestion = "Нажмите [H] чтобы перевязать раны"
       local timeout = 15
       local prev_hp = State.player.hp
       while
@@ -271,11 +271,11 @@ return {
       do
         timeout = timeout - coroutine.yield()
       end
-      State.player.suggestion = nil
+      State.model.suggestion = nil
     end,
 
     _on_cancel = function()
-      State.player.suggestion = nil
+      State.model.suggestion = nil
     end,
   },
 }
