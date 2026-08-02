@@ -31,7 +31,6 @@ fighter.draw_pane = function(creator, dt, data)
       ui.text("Боевой стиль:")
       creator:switch(FIGHTING_STYLES, "fighting_style")
     creator:finish_ability(data.fighting_style.description)
-    -- TODO description is shifted wrong
 
     creator:start_ability(gui_elements.second_wind)
       ui.text("Способность: Второе дыхание")

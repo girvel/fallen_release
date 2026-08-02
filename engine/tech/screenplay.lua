@@ -142,17 +142,16 @@ methods.literal = function(self)
 end
 
 methods.finish = function(self)
-  -- TODO redo with Error & self.cursor
-  -- assert(#self.stack == 1, "Screenplay contains %s unclosed scopes;\nstack = %s" % {
-  --   #self.stack - 1, Inspect(self.stack)
-  -- })
-  -- assert(
-  --   #self.stack[1] == 0
-  --   or #self.stack[1] == 1 and self.stack[1][1].type == "code",
-  --   ("Expected script to end, got %s more entries;\nstack[1] = %s"):format(
-  --     #self.stack[1], Inspect(self.stack[1])
-  --   )
-  -- )
+  assert(#self.stack == 1, "Screenplay contains %s unclosed scopes;\nstack = %s" % {
+    #self.stack - 1, Inspect(self.stack)
+  })
+  assert(
+    #self.stack[1] == 0
+    or #self.stack[1] == 1 and self.stack[1][1].type == "code",
+    ("Expected script to end, got %s more entries;\nstack[1] = %s"):format(
+      #self.stack[1], Inspect(self.stack[1])
+    )
+  )
 end
 
 get_block = function(player, type)

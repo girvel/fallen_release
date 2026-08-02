@@ -242,20 +242,17 @@ return Tiny.processingSystem {
   end,
 
   _update_conditions = function(self, entity, dt)
-    if not entity.conditions then return end
+    if not entity.conditions or #entity.conditions == 0 then return end
 
-    local indexes_to_remove = {}
+    local next_conditions = {}
     for i, condition in ipairs(entity.conditions) do
-      if condition.update then
-        condition:update(entity, dt)
-      end
+      if condition.update then condition:update(entity, dt) end
       condition.life_time = condition.life_time - dt
-      if condition.life_time <= 0 then
-        table.insert(indexes_to_remove, i)
+      if condition.life_time > 0 then
+        table.insert(next_conditions, i)
       end
     end
 
-    -- TODO just remove_in_bulk
-    Table.remove_breaking_in_bulk(entity.conditions, indexes_to_remove)
+    entity.conditions = next_conditions
   end,
 }

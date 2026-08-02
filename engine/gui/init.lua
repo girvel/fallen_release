@@ -115,8 +115,6 @@ methods.start_game = function(self)
   assert(self._mode.type == "loading_screen")
   Log.info("Game started")
   self:_set_mode(STATES.game.new())
-  -- TODO .new() for states not needed, they should be static like draw_gui.lua, and history
-  --   preserved here
 end
 
 --- @param kind "escape_menu"|"journal"|"creator"|"save_menu"|"load_menu"|"appearance_editor"
