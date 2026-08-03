@@ -4,13 +4,33 @@ local actions = require("engine.mech.actions")
 local api = require("engine.tech.api")
 
 
-local tk = {}
+--- @alias ai ai_strict|table
+--- @class ai_strict
+--- @field _control_coroutine? thread
+local sample_methods = {}
+
+--- @param entity entity
+sample_methods.init = function(self, entity) end
+
+--- @param entity entity
+sample_methods.deinit = function(self, entity) end
+
+--- @async
+--- @param entity entity
+sample_methods.control = function(self, entity) end
+
+--- @param entity entity
+--- @param dt number
+sample_methods.observe = function(self, entity, dt) end
+
+
+local ai = {}
 
 --- @param entity entity
 --- @param r number
 --- @param vision_map tcod_map
 --- @return entity?
-tk.find_target = function(entity, r, vision_map, sane_traveling_distance)
+ai.find_target = function(entity, r, vision_map, sane_traveling_distance)
   vision_map:refresh_fov(entity.position, r)
   local bfs = State.grids.solids:bfs(entity.position)
   bfs()
@@ -36,7 +56,7 @@ end
 --- @param r number
 --- @param vision_map tcod_map
 --- @return boolean
-tk.sees_enemies = function(entity, r, vision_map, sane_traveling_distance)
+ai.sees_enemies = function(entity, r, vision_map, sane_traveling_distance)
   vision_map:refresh_fov(entity.position, r)
   for d in Iteration.rhombus(r) do
     local e = State.grids.solids:slow_get(entity.position + d)
@@ -55,7 +75,7 @@ end
 --- @param entity entity
 --- @param target entity
 --- @param vision_map tcod_map
-tk.preserve_line_of_fire = function(entity, target, vision_map, speed)
+ai.preserve_line_of_fire = function(entity, target, vision_map, speed)
   local best_p
   for d in Iteration.rhombus(entity.resources.movement) do
     local p = entity.position + d
@@ -80,7 +100,7 @@ end
 
 --- @async
 --- @param entity entity
-tk.heal = function(entity)
+ai.heal = function(entity)
   if entity.hp <= entity:get_max_hp() / 2 and fighter.second_wind:act(entity) then
     async.sleep(.2)
   end
@@ -113,5 +133,5 @@ end
 --- @field sane_traveling_distance number max travel distance to select/follow a target
 --- @field support_range number radius in which to support members of the faction in combat
 
-Ldump.mark(tk, {}, ...)
-return tk
+Ldump.mark(ai, {}, ...)
+return ai

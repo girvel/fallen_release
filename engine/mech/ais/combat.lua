@@ -1,4 +1,4 @@
-local tk = require("engine.mech.ais.tk")
+local ai = require("engine.tech.ai")
 local async = require("engine.tech.async")
 local api = require("engine.tech.api")
 local tcod = require("engine.tech.tcod")
@@ -73,7 +73,7 @@ methods._target_search = function(self, entity)
     and api.traveling_distance(entity, self.target) >= self.targeting.sane_traveling_distance
   then return end
 
-  self.target = tk.find_target(entity, self.targeting.scan_range, self._vision_map)
+  self.target = ai.find_target(entity, self.targeting.scan_range, self._vision_map)
   if self.target then return end
 
   for _, e in ipairs(State.combat.list) do
@@ -82,12 +82,12 @@ methods._target_search = function(self, entity)
     then
       if not api.travel(entity, e.position, true, get_speed()) then break end
 
-      self.target = tk.find_target(entity, self.targeting.scan_range, self._vision_map)
+      self.target = ai.find_target(entity, self.targeting.scan_range, self._vision_map)
       if self.target then return end
     end
   end
 
-  if not tk.sees_enemies(entity, self.targeting.scan_range, self._vision_map) then
+  if not ai.sees_enemies(entity, self.targeting.scan_range, self._vision_map) then
     State:remove_from_combat(entity)
   end
 end
@@ -99,13 +99,13 @@ methods.control = function(self, entity)
     return
   end
 
-  tk.heal(entity)
+  ai.heal(entity)
   self:_target_search(entity)
   if not self.target then return end
 
   local bow = entity.inventory.offhand
   if bow and bow.tags.ranged then
-    tk.preserve_line_of_fire(entity, self.target, self._vision_map, get_speed())
+    ai.preserve_line_of_fire(entity, self.target, self._vision_map, get_speed())
     local bow_attack = actions.bow_attack(self.target)
     while bow_attack:act(entity) do
       async.sleep(.66)
@@ -134,7 +134,7 @@ methods.observe = function(self, entity, dt)
   end
 
   if not self.starts_no_fights then
-    local new_target = tk.find_target(entity, self.targeting.scan_range, self._vision_map)
+    local new_target = ai.find_target(entity, self.targeting.scan_range, self._vision_map)
     if new_target and not State:in_combat(new_target) then
       State:add(animated.fx("engine/assets/animations/aggression", entity.position))
       State:start_combat({new_target, entity})

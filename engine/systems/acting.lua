@@ -2,28 +2,6 @@ local async = require "engine.tech.async"
 local animated = require "engine.tech.animated"
 
 
---- @alias ai ai_strict|table
-
---- @class ai_strict
---- @field _control_coroutine? thread
-local sample_methods = {}
-
---- @param entity entity
-sample_methods.init = function(self, entity) end
-
---- @param entity entity
-sample_methods.deinit = function(self, entity) end
-
---- @async
---- @param entity entity
-sample_methods.control = function(self, entity) end
-
---- @async
---- @param entity entity
---- @param dt number
-sample_methods.observe = function(self, entity, dt) end
-
-
 local MOVE_TIMEOUT = 6
 local AI_RANGE = 50
 

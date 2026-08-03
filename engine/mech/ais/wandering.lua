@@ -1,5 +1,5 @@
 local tcod = require("engine.tech.tcod")
-local tk = require("engine.mech.ais.tk")
+local ai = require("engine.tech.ai")
 local async = require("engine.tech.async")
 local actions = require("engine.mech.actions")
 
@@ -60,7 +60,7 @@ methods.observe = function(self, entity, dt)
   if (not self._target or (self._target.position - entity.position):abs2() > self.targeting.follow_range)
     and State.period:absolute(self.targeting.scan_period, self, "target_scan")
   then
-    self._target = tk.find_target(entity, self.targeting.scan_range, self._vision_map)
+    self._target = ai.find_target(entity, self.targeting.scan_range, self._vision_map)
   end
 end
 

@@ -13,7 +13,7 @@ local gui = require("engine.gui.gui_elements")
 local fighter = require("engine.mech.class.fighter")
 local tk = require("engine.gui.tk")
 local interactive = require("engine.tech.interactive")
-local api         = require("engine.tech.api")
+local api = require("engine.tech.api")
 
 
 ----------------------------------------------------------------------------------------------------
