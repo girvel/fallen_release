@@ -6,6 +6,7 @@ local audio = {}
 --- @field _playlist_paused boolean
 --- @field _paused_delay number
 --- @field _current sound?
+--- @field _current_max_volume number?
 local methods = {}
 local mt = {__index = methods}
 
@@ -16,12 +17,14 @@ audio.new = function()
     _playlist_paused = false,
     _paused_delay = 0,
     _current = nil,
+    _current_max_volume = nil,
   }, mt)
 end
 
 --- @param playlist sound[]
 methods.set_playlist = function(self, playlist)
   self._current = nil
+  self._current_max_volume = nil
   self._playlist = playlist
 end
 
@@ -46,7 +49,7 @@ methods._update = function(self, dt)
       if not self._playlist_paused then
         volume = 1 - volume
       end
-      last_track.source:setVolume(volume)
+      last_track.source:setVolume(volume * self._current_max_volume)
       self._paused_delay = self._paused_delay - dt
       return
     elseif self._playlist_paused then
@@ -55,13 +58,13 @@ methods._update = function(self, dt)
 
     local position = last_track.source:tell()
     if position <= FADE_DURATION then
-      last_track.source:setVolume(position / FADE_DURATION)
+      last_track.source:setVolume(position / FADE_DURATION * self._current_max_volume)
       return
     end
 
     local position_from_end = last_track.source:getDuration() - position
     if position_from_end <= FADE_DURATION then
-      last_track.source:setVolume(position_from_end / FADE_DURATION)
+      last_track.source:setVolume(position_from_end / FADE_DURATION * self._current_max_volume)
       return
     end
 
@@ -74,6 +77,7 @@ methods._update = function(self, dt)
     self._current = Random.item(self._playlist)
     if #self._playlist == 1 or self._current ~= last_track then break end
   end
+  self._current_max_volume = self._current.source:getVolume()
   self._current:play()
 end
 

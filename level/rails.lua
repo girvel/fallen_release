@@ -1,3 +1,4 @@
+local sound = require("engine.tech.sound")
 local humanoid = require("engine.mech.humanoid")
 local solids = require("level.palette.solids")
 local stages = require("level.logic.stages")
@@ -19,7 +20,7 @@ local rails = {}
 local methods = {}
 rails.mt = {__index = methods}
 
-local init_debug, init_factions
+local init_debug, init_factions, init_audio
 local checkpoints = {}
 
 --- @param checkpoint string?
@@ -35,6 +36,7 @@ rails.new = function(checkpoint)
 
   if Kernel.debug then init_debug() end
   init_factions()
+  init_audio()
   if checkpoint then
     local init_checkpoint = checkpoints[checkpoint]
     if init_checkpoint then
@@ -58,6 +60,15 @@ end
 
 init_factions = function()
   State.hostility:set("monsters", "player", "enemy")
+end
+
+init_audio = function()
+  State.audio:set_playlist({
+    sound.new("assets/sounds/music/doom.mp3", .1),
+    sound.new("assets/sounds/music/drone_ambience.mp3", .5),
+    sound.new("assets/sounds/music/drone_1.mp3", .1),
+    sound.new("assets/sounds/music/drone_2.mp3", .1),
+  })
 end
 
 local skip_intro = function(self)
