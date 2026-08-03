@@ -248,6 +248,11 @@ end
 --- @param identifier string
 --- @return string
 local parse_layer_name = function(identifier)
+  local invisible_postfix = "_invisible"
+  if identifier:ends_with(invisible_postfix) then
+    return identifier:sub(1, -1 - #invisible_postfix)
+  end
+
   for _, candidate in ipairs(level.grid_layers) do
     if identifier:starts_with(candidate) then
       return candidate
