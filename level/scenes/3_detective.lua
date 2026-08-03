@@ -306,4 +306,18 @@ return {
       ch.engineer_4:rotate(prev_direction)
     end,
   },
+
+  _310_warning = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/310_warning.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.rails.quests.detective == stages.detective._0020_investigate
+        and State.player.position == ps.detective_exit_warning
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.order(sp:literal())
+    end,
+  },
 }
