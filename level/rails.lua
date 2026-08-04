@@ -1,3 +1,4 @@
+local xp = require("engine.mech.xp")
 local api = require("engine.tech.api")
 local sound = require("engine.tech.sound")
 local humanoid = require("engine.mech.humanoid")
@@ -105,6 +106,7 @@ checkpoints.cp3 = function(rails)
   rails:set_quest("warmup", stages.warmup._1000_bird_fed)
   rails:set_quest("detective", stages.detective._0020_investigate)
   State.runner:remove("_304_room_description")
+  State.player.xp = xp.for_level[3]
 end
 
 --- @param questname stages.keys

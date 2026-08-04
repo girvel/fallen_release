@@ -89,8 +89,10 @@ methods.move = function(self, offset)
 end
 
 --- @param text string
---- @param value integer
+--- @param value? integer
 methods.header = function(self, text, value)
+  value = value or 1
+
   ui.start_font(36)
     if first_header then
       first_header = false

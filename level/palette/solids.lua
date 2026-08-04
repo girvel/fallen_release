@@ -1,3 +1,4 @@
+local rront_ai = require("level.logic.rront_ai")
 local item = require("engine.tech.item")
 local shaders = require("level.shaders")
 local on_tiles = require("level.palette.on_tiles")
@@ -605,6 +606,7 @@ solids.engineer = function(n)
       race = races.half_elf,
       inventory = {hand = items.gas_key()},
       direction = Vector.down,
+      ai = combat_ai.new(),
     }
   elseif n == 2 then
     e = {
@@ -615,6 +617,7 @@ solids.engineer = function(n)
       name = "инженер-полурослик",
       race = races.halfling,
       direction = Vector.down,
+      ai = combat_ai.new(),
     }
   elseif n == 3 then
     e = {
@@ -640,6 +643,8 @@ solids.engineer = function(n)
       },
 
       direction = Vector.up,
+
+      ai = rront_ai.new(),
     }
   elseif n == 4 then
     e = {
@@ -650,6 +655,7 @@ solids.engineer = function(n)
       name = "инженер-дворф",
       race = races.dwarf,
       direction = Vector.up,
+      ai = combat_ai.new(),
     }
   else
     Error("Invalid n=%s parameter for solids.engineer, expected 1-4 integer", n)
