@@ -63,10 +63,12 @@ local context
 --- @class ui_styles
 --- @field link_color vector
 --- @field punctuation_color vector
+--- @field text_strikethrough boolean
 
 --- @class ui_styles_optional
 --- @field link_color? vector
 --- @field punctuation_color? vector
+--- @field text_strikethrough? boolean
 
 --- @class ui_frame
 --- @field x integer
@@ -282,6 +284,7 @@ ui.start = function()
     styles = {
       link_color = colors.blue_high,
       punctuation_color = colors.dark_red,
+      text_strikethrough = false,
     },
     color = V(love.graphics.getColor()),
     canvas = love.graphics.getCanvas(),
@@ -605,6 +608,9 @@ ui.text = function(text, ...)
     local x, y = align(w, h)
 
     love.graphics.print(line, x, y)
+    if context.styles.text_strikethrough then
+      love.graphics.rectangle("fill", x, y + h/2, w, math.ceil(context.font_size / 20))
+    end
 
     context.max_x = math.max(context.max_x, x + w)
     context.max_y = math.max(context.max_y, y + h)

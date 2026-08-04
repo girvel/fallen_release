@@ -99,7 +99,10 @@ methods.header = function(self, text, value)
       ui.start_color(colors.dark_red)
 
       if value >= stages.FAILED then
-        ui.text("F "..text)
+        ui.text("F ")
+        ui.start_styles({text_strikethrough = true})
+          ui.text(text)
+        ui.finish_styles()
         ui.finish_color()
       elseif value >= stages.COMPLETED then
         ui.text("X "..text)
