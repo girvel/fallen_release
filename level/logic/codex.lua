@@ -76,6 +76,9 @@ end
 
 --- @param destination string
 methods.go = function(self, destination)
+  while #self.history > self.history_i do
+    table.remove(self.history)
+  end
   table.insert(self.history, destination)
   self.history_i = self.history_i + 1
 end
