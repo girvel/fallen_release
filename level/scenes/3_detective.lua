@@ -332,4 +332,21 @@ return {
       State.rails:rront_runs_away()
     end,
   },
+
+  _rront_runs_away = cutscene.make {
+    enabled = true,
+    in_combat_flag = true,
+    characters = {
+      engineer_3 = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.engineer_3.position == ps.detective_exit
+    end,
+
+    _run = function(self, ch, ps, sp)
+      async.sleep(.5)
+      State.rails:rront_runs_away()
+    end,
+  },
 }
