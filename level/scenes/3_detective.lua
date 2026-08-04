@@ -98,7 +98,7 @@ return {
 
     _run = function(self, ch, ps, sp)
       ch.engineer_2:rotate(Vector.down)
-      actions.interact:act(ch.engineer_2)
+      actions.interact:_act(ch.engineer_2)
     end,
   },
 
