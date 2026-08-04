@@ -320,4 +320,16 @@ return {
       api.order(sp:literal())
     end,
   },
+
+  _detective_leaving = cutscene.make {
+    enabled = true,
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ps.detective_exit) > 20
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.rails:rront_runs_away()
+    end,
+  },
 }

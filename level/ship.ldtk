@@ -4929,6 +4929,25 @@
 							],
 							"__worldX": 480,
 							"__worldY": 912
+						},
+						{
+							"__identifier": "position",
+							"__grid": [44,92],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "deb8a200-6fc0-11f1-982d-252f251503b4",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [704,1472],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "rront_hideout", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["rront_hideout"]
+							}] }],
+							"__worldX": 704,
+							"__worldY": 1472
 						}
 					]
 				},

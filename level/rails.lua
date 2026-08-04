@@ -1,3 +1,4 @@
+local api = require("engine.tech.api")
 local sound = require("engine.tech.sound")
 local humanoid = require("engine.mech.humanoid")
 local solids = require("level.palette.solids")
@@ -17,6 +18,7 @@ local rails = {}
 --- @field in_latrine boolean
 --- @field dreamers_talked_to table<integer, boolean>
 --- @field given_up_gloves boolean
+--- @field rront_status "dead"|"ran_away"?
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -138,6 +140,21 @@ methods.transition_3_detective = function(self)
   ch.possessed = State:add_at(solids.possessed(), ps.possessed_spawn, "solids")
   ch.possessed:rotate(Vector.left)
   humanoid.add_blood_mark(ch.possessed)
+end
+
+methods.rront_runs_away = function(self)
+  local ch = State.level.entities
+  local ps = State.level.positions
+
+  assert(State:exists(ch.engineer_3))
+  api.assert_position(ch.engineer_3, ps.rront_hideout, true)
+  api.order("Задача выполнена неудовлетворительно")
+  self:set_quest("detective", stages.detective._2000_failed)
+  self:start_lunch()
+end
+
+methods.start_lunch = function(self)
+  Log.warn("TODO")
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)

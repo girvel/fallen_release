@@ -86,8 +86,8 @@ methods.move = function(self, offset)
 end
 
 --- @param text string
---- @param is_done boolean
-methods.header = function(self, text, is_done)
+--- @param value integer
+methods.header = function(self, text, value)
   ui.start_font(36)
     if first_header then
       first_header = false
@@ -98,9 +98,11 @@ methods.header = function(self, text, is_done)
     ui.start_line()
       ui.start_color(colors.dark_red)
 
-      if is_done then
-        ui.text("X ")
-        ui.text(text)
+      if value >= stages.FAILED then
+        ui.text("F "..text)
+        ui.finish_color()
+      elseif value >= stages.COMPLETED then
+        ui.text("X "..text)
         ui.finish_color()
       else
         ui.text("# ")
@@ -159,7 +161,7 @@ pages.index = function(codex)
   if detective > 0 then
     codex:header(
       detective >= stages.detective._0020_investigate and "Рыцари и лжец" or "???",
-      detective >= stages.COMPLETED
+      detective
     )
 
     codex:li("Найти комнату с чёрной дверью.", detective >= stages.detective._0020_investigate)
@@ -176,7 +178,7 @@ pages.index = function(codex)
   if warmup > 0 then
     codex:header(
       warmup < stages.warmup._0030_left and "???" or "Разминка",
-      warmup >= stages.COMPLETED
+      warmup
     )
 
     if warmup >= stages.warmup._0010_intro_heard then

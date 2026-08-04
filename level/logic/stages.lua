@@ -16,6 +16,7 @@ end
 
 stages.NONE = 0
 stages.COMPLETED = 1000
+stages.FAILED = 2000
 
 --- @enum stages.warmup
 stages.warmup = {
@@ -34,6 +35,7 @@ stages.detective = {
   _0010_black_door = 10,
   _0020_investigate = 20,
   _1000_completed = stages.COMPLETED,
+  _2000_failed = stages.FAILED,
 }
 
 Ldump.mark(stages, {mt = "const"}, ...)
