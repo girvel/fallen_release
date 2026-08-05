@@ -4,6 +4,8 @@ local rront_ai = {}
 
 --- @class rront_ai
 --- @field combat_module combat_ai
+--- @field mercy boolean
+--- @field _surrendered boolean
 local methods = {}
 rront_ai.mt = {__index = methods}
 
@@ -11,6 +13,8 @@ rront_ai.mt = {__index = methods}
 rront_ai.new = function()
   return setmetatable({
     combat_module = combat.new(),
+    mercy = false,
+    _surrendered = false,
   }, rront_ai.mt)
 end
 
@@ -24,10 +28,18 @@ end
 
 methods.control = function(self, entity)
   if State.hostility:get(entity, State.player) == "enemy" then
+    if State.combat and not self._surrendered and entity.hp <= entity:get_max_hp() / 2 then
+      Log.debug("Rront surrenders")
+      coroutine.yield()
+      self._surrendered = true
+      return
+    end
     return self.combat_module:control(entity)
   end
 
-  if State.hostility:get(State.level.entities.engineer_1, State.player) == "enemy" then
+  if State.hostility:get(State.level.entities.engineer_1, State.player) == "enemy"
+    or self.mercy
+  then
     api.travel(entity, State.level.positions.detective_exit)
   end
 end

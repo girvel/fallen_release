@@ -157,6 +157,14 @@ methods.rront_runs_away = function(self)
   api.order("Задача выполнена неудовлетворительно")
   self:set_quest("detective", stages.detective._2000_failed)
   self:start_lunch()
+  self.rront_status = "ran_away"
+end
+
+methods.rront_killed = function(self)
+  assert(not State:exists(State.level.entities.engineer_3))
+  State.rails:start_lunch()
+  State.rails:set_quest("detective", stages.detective._1000_completed)
+  api.autosave("Диверсант устранён")
 end
 
 methods.start_lunch = function(self)

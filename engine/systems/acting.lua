@@ -223,11 +223,11 @@ return Tiny.processingSystem {
     if not entity.conditions or #entity.conditions == 0 then return end
 
     local next_conditions = {}
-    for i, condition in ipairs(entity.conditions) do
+    for _, condition in ipairs(entity.conditions) do
       if condition.update then condition:update(entity, dt) end
       condition.life_time = condition.life_time - dt
       if condition.life_time > 0 then
-        table.insert(next_conditions, i)
+        table.insert(next_conditions, condition)
       end
     end
 

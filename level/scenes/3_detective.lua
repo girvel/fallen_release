@@ -326,6 +326,7 @@ return {
 
     _condition = function(self, dt, ch, ps)
       return api.distance(State.player, ps.detective_exit) > 20
+        and State.rails.quests.detective == stages.detective._0020_investigate
     end,
 
     _run = function(self, ch, ps, sp)
@@ -350,4 +351,143 @@ return {
     end,
   },
 
+  _320_rront_attacked = cutscene.make {
+    enabled = true,
+    in_combat_flag = true,
+    screenplay = "assets/screenplay/320_rront_attacked.ms",
+    characters = {
+      engineer_3 = {non_locking = true},
+      player = {non_locking = true},
+    },
+
+    _on_add = function(self, ch, ps)
+      self._sub = State.hostility:subscribe(function(source, target)
+        if source == State.player and target == ch.engineer_3 then
+          self._triggered = true
+          State.hostility:unsubscribe(self._sub)
+        end
+      end)
+    end,
+
+    on_remove = function(self)
+      State.hostility:unsubscribe(self._sub)
+    end,
+
+    _triggered = false,
+    _condition = function(self, dt, ch, ps)
+      if State.rails.rront_status then
+        State.runner:remove(self)
+        return false
+      end
+      return self._triggered
+    end,
+
+    _run = function(self, ch, ps, sp)
+      local order_1, order_2
+      sp:start_single_branch()
+        order_1 = sp:literal()
+        order_2 = sp:literal()
+      sp:finish_single_branch()
+
+      local wait_for_the_kill = function()
+        while State:exists(ch.engineer_3) do
+          coroutine.yield()
+        end
+        api.order(order_1)
+        async.sleep(3)
+        api.order(order_2)
+        State.rails:rront_killed()
+      end
+
+      api.order(sp:literal())
+
+      while ch.engineer_3.hp > ch.engineer_3:get_max_hp() / 2 do
+        coroutine.yield()
+      end
+
+      while State.combat:get_current() ~= ch.engineer_3 do
+        if not State:exists(ch.engineer_3) then
+          return wait_for_the_kill()
+        end
+        coroutine.yield()
+      end
+
+      api.lock(State.player)
+      sp:lines()
+      api.unlock(State.player)
+
+      api.lock(ch.engineer_3)
+
+      local kept_peace = true
+      local sub = State.hostility:subscribe(function(source, target)
+        if source == State.player and target == ch.engineer_3 then
+          kept_peace = false
+        end
+      end)
+
+      while State.combat:get_current() == State.player do
+        if not State:exists(ch.engineer_3) then
+          return wait_for_the_kill()
+        end
+        coroutine.yield()
+      end
+
+      State.hostility:unsubscribe(sub)
+
+      api.unlock(ch.engineer_3)
+      if not kept_peace then
+        return wait_for_the_kill()
+      end
+      State.hostility:set("half_orc", "player", nil)
+
+      api.rotate(ch.engineer_3, State.player)
+      api.lock(State.player)
+      sp:lines()
+
+      local options = sp:start_options()
+      local looped = true
+      while looped do
+        local n = api.options(options, true)
+        sp:start_option(n)
+          if n == 1 then
+            sp:lines()
+            sp:start_single_option()
+              sp:lines()
+            sp:finish_single_option()
+          elseif n == 2 then
+            sp:lines()
+            sp:start_single_option()
+              sp:lines()
+            sp:finish_single_option()
+          elseif n == 3 then
+            sp:lines()
+          elseif n == 4 then
+            sp:lines()
+          else
+            sp:lines()
+            local n = api.options(sp:start_options())
+            sp:finish_options()
+            api.unlock(State.player)
+
+            if n == 1 or n == 2 then
+              State.hostility:set("half_orc", "player", "enemy")
+              State:start_combat({State.player, ch.engineer_3})
+              coroutine.yield()
+              wait_for_the_kill()
+            else
+              ch.engineer_3.ai.mercy = true
+              while not State.rails.rront_status and State:exists(ch.engineer_3) do
+                coroutine.yield()
+              end
+              if not State:exists(ch.engineer_3) then
+                wait_for_the_kill()
+              end
+            end
+            looped = false
+          end
+        sp:finish_option()
+      end
+      sp:finish_options()
+    end,
+  },
 }
