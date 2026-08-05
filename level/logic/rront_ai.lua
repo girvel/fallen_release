@@ -23,13 +23,13 @@ methods.deinit = function(self, entity)
 end
 
 methods.control = function(self, entity)
-  if not State.combat then return end
-
   if State.hostility:get(entity, State.player) == "enemy" then
     return self.combat_module:control(entity)
   end
 
-  api.travel(entity, State.level.positions.detective_exit)
+  if State.hostility:get(State.level.entities.engineer_1, State.player) == "enemy" then
+    api.travel(entity, State.level.positions.detective_exit)
+  end
 end
 
 methods.observe = function(self, entity, dt)

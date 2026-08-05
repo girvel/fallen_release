@@ -1,3 +1,5 @@
+local items = require("level.palette.items")
+local item = require("engine.tech.item")
 local xp = require("engine.mech.xp")
 local api = require("engine.tech.api")
 local sound = require("engine.tech.sound")
@@ -107,6 +109,7 @@ checkpoints.cp3 = function(rails)
   rails:set_quest("detective", stages.detective._0020_investigate)
   State.runner:remove("_304_room_description")
   State.player.xp = xp.for_level[3]
+  item.give(State.player, items.greatsword())
 end
 
 --- @param questname stages.keys
