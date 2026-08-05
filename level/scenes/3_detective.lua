@@ -179,7 +179,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      State.rails.dreamers_talked_to[1] = true
+      State.rails:talk_to(1)
       sp:lines()
 
       local options = sp:start_options()
@@ -212,7 +212,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      State.rails.dreamers_talked_to[2] = true
+      State.rails:talk_to(2)
       local prev_direction = ch.engineer_2.direction
       api.rotate(ch.engineer_2, State.player)
 
@@ -248,7 +248,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      State.rails.dreamers_talked_to[3] = true
+      State.rails:talk_to(3)
       sp:lines()
       local options = sp:start_options()
       while true do
@@ -279,7 +279,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      State.rails.dreamers_talked_to[4] = true
+      State.rails:talk_to(4)
       local prev_direction = ch.engineer_4.direction
       api.rotate(ch.engineer_4, State.player)
 
@@ -349,4 +349,5 @@ return {
       State.rails:rront_runs_away()
     end,
   },
+
 }

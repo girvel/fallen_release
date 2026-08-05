@@ -177,6 +177,13 @@ pages.index = function(codex)
     if detective >= stages.detective._0020_investigate then
       codex:li(
         "Провести расследование в Машинном Отделении. Опросить свидетелей, осмотреть помещение. Затем устранить подозреваемого.",
+        detective >= stages.detective._1000_completed or State.rails.talked_to_everybody or false
+      )
+    end
+
+    if State.rails.talked_to_everybody then
+      codex:li(
+        "Все подозреваемые опрошены, теперь нужно решить, кто диверсант и устранить его.",
         detective >= stages.detective._1000_completed
       )
     end

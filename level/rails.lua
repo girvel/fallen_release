@@ -20,6 +20,7 @@ local rails = {}
 --- @field player_last_fov number?
 --- @field in_latrine boolean
 --- @field dreamers_talked_to table<integer, boolean>
+--- @field talked_to_everybody boolean?
 --- @field given_up_gloves boolean
 --- @field rront_status "dead"|"ran_away"?
 local methods = {}
@@ -160,6 +161,17 @@ end
 
 methods.start_lunch = function(self)
   Log.warn("TODO")
+end
+
+--- @param i number
+methods.talk_to = function(self, i)
+  local before = self.dreamers_talked_to[i]
+  self.dreamers_talked_to[i] = true
+  self.talked_to_everybody = Fun.range(4)
+    :all(function(j) return State.rails.dreamers_talked_to[j] end)
+  if not before and self.talked_to_everybody then
+    State.model.has_new_task = true
+  end
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)
