@@ -443,6 +443,7 @@ return {
         return wait_for_the_kill()
       end
       State.hostility:set("half_orc", "player", nil)
+      ch.engineer_3.portrait = sprite.image("assets/portraits/half_orc.png")
 
       api.rotate(ch.engineer_3, State.player)
       api.lock(State.player)
@@ -455,6 +456,7 @@ return {
         sp:start_option(n)
           if n == 1 then
             sp:lines()
+            ch.engineer_3.name = "Рронт"
             sp:start_single_option()
               sp:lines()
             sp:finish_single_option()

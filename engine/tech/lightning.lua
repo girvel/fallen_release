@@ -34,7 +34,7 @@ lightning.new = function(from, to)
   }
 end
 
---- @param self sprite_rendered
+--- @param self sprite.rendered
 --- @param entity lightning
 --- @param dt number
 --- @return love.Canvas

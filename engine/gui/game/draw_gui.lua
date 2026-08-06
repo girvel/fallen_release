@@ -640,18 +640,27 @@ end
 local draw_line, draw_options
 
 draw_dialogue = function()
-  local H = is_compact and 190 or 280
-  local BOTTOM_GAP = is_compact and 0 or 50
-  local FONT_SIZE = is_compact and 26 or 32
-  dialogue_y = love.graphics.getHeight() - H - BOTTOM_GAP
-
   local this_line = State.model.hears
   if not this_line then
     return
   end
 
+  local H = is_compact and 190 or 280
+  local BOTTOM_GAP = is_compact and 0 or 50
+  local FONT_SIZE = is_compact and 26 or 32
+  dialogue_y = love.graphics.getHeight() - H - BOTTOM_GAP
+
+  local x, y, w, h = ui.frame_coords("center", dialogue_y, "read_max", H)
+
+  local portrait = this_line.source and this_line.source.portrait
+  if portrait then
+    ui.start_frame(x - portrait.image:getWidth(), y)
+      ui.image(portrait.image, 1)
+    ui.finish_frame()
+  end
+
   local bg = State.player.incapacitated and "none" or nil
-  tk.start_window("center", dialogue_y, "read_max", H, bg)
+  tk.start_window(x, y, w, h, bg)
   ui.start_font(FONT_SIZE)
     if this_line.type == "plain_line" then
       draw_line(this_line)

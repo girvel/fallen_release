@@ -27,7 +27,7 @@ end
 --- @param x integer
 --- @param y integer
 --- @return integer i
---- @return sprite_atlas this_sprite
+--- @return sprite,atlas this_sprite
 packer_methods.get = function(self, x, y)
   local i = self.offset + x + (y - 1) * self._atlas_w
 
@@ -45,7 +45,7 @@ end
 
 --- @param local_i integer
 --- @return integer i
---- @return sprite_atlas this_sprite
+--- @return sprite,atlas this_sprite
 packer_methods.geti = function(self, local_i)
   local i = self.offset + local_i
 

@@ -8,13 +8,13 @@ local transform_colors, cut_out
 --- Width/height of a sprite fitting in a single grid cell
 sprite.cell_size = 16
 
---- @alias sprite sprite_image | sprite_atlas | sprite_text | sprite_grid | sprite_rendered
+--- @alias sprite sprite.image | sprite.atlas | sprite.text | sprite.grid | sprite.rendered
 
---- @class sprite_rendered
+--- @class sprite.rendered
 --- @field type "rendered"
---- @field render fun(self: sprite_rendered, entity: entity, dt: number): love.Drawable
+--- @field render fun(self: sprite.rendered, entity: entity, dt: number): love.Drawable
 
---- @class sprite_image
+--- @class sprite.image
 --- @field type "image"
 --- @field image love.Image
 --- @field anchors table<anchor, vector>
@@ -22,7 +22,7 @@ sprite.cell_size = 16
 
 --- @param base string|love.ImageData
 --- @param color vector?
---- @return sprite_image
+--- @return sprite.image
 sprite.image = Memoize(function(base, color)
   if type(base) == "string" then
     base = love.image.newImageData(base)
@@ -39,12 +39,12 @@ sprite.image = Memoize(function(base, color)
   }
 end)
 
---- @class sprite_atlas NOTICE shared pointer, do not mutate
+--- @class sprite.atlas NOTICE shared pointer, do not mutate
 --- @field type "atlas"
 --- @field quad love.Quad
 --- @field image love.Image
 
---- @return sprite_atlas
+--- @return sprite.atlas
 sprite.from_atlas = Memoize(function(index, cell_size, atlas_image)
   local quad = sprite.utility.get_atlas_quad(index, cell_size, atlas_image:getDimensions())
   local image_data = cut_out(atlas_image, quad)
@@ -58,7 +58,7 @@ sprite.from_atlas = Memoize(function(index, cell_size, atlas_image)
   }
 end)
 
---- @class sprite_text
+--- @class sprite.text
 --- @field type "text"
 --- @field text string
 --- @field font love.Font
@@ -67,7 +67,7 @@ end)
 --- @param text string
 --- @param size integer
 --- @param color vector
---- @return sprite_text
+--- @return sprite.text
 sprite.text = function(text, size, color)
   return {
     type = "text",
@@ -77,12 +77,12 @@ sprite.text = function(text, size, color)
   }
 end
 
---- @class sprite_grid
+--- @class sprite.grid
 --- @field type "grid"
 --- @field grid grid<entity>
 
 --- @param grid grid<entity>
---- @return sprite_grid
+--- @return sprite.grid
 sprite.grid = function(grid)
   return {
     type = "grid",
@@ -91,7 +91,7 @@ sprite.grid = function(grid)
 end
 
 --- @param path string
---- @return sprite_image[]
+--- @return sprite.image[]
 sprite.collection = function(path)
   local atlas = love.image.newImageData(path)
   local w, h = atlas:getDimensions()

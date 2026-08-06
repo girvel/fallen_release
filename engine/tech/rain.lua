@@ -58,7 +58,7 @@ local BUFFER_K = 2
 local DIRECTION = V(1, 1):normalized_mut()
 local IMAGE = love.graphics.newImage("assets/sprites/rain_particle.png")
 
---- @param self sprite_rendered
+--- @param self sprite.rendered
 --- @param entity rain
 --- @param dt number
 --- @return love.Canvas

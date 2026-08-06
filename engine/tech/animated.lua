@@ -3,7 +3,7 @@ local sprite = require("engine.tech.sprite")
 
 local animated = {}
 
---- @alias animation_pack table<string, sprite_image[]>
+--- @alias animation_pack table<string, sprite.image[]>
 
 --- @alias animation_name "idle"|"move"|"hand_attack"|"offhand_attack"|"gesture"|"fast_gesture"|"clap"|"lying"|"interact"|"throw"|"bow_attack"|"hanging"
 
