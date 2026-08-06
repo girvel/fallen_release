@@ -380,6 +380,8 @@ draw_pane = function(self, dt)
       if icon then
         ui.image(icon, 2)
         ui.offset(8)
+      else
+        ui.offset(40)
       end
       ui.text(Name.game(container.class):ljust(CLASSES_LEN))
       local pressed_right = ui.arrow_right(CLASSES, container, "class", self.is_disabled)

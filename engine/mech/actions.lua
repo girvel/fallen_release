@@ -295,6 +295,7 @@ actions.shove = action.plain {
     end
 
     entity:animate("offhand_attack"):next(function()
+      State.hostility:register(entity, target)
       if not ok then
         State:add(floater.new("-", target.position, health.COLOR_DAMAGE))
         return
