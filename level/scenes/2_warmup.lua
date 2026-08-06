@@ -559,6 +559,7 @@ return {
               sp:lines()
             sp:finish_single_branch()
             State.runner:remove(self)
+            ch.mirage_block.interact = nil
             running = false
           else
             return

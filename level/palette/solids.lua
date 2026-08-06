@@ -440,6 +440,7 @@ solids.mannequin = function()
     transparent_flag = true,
     boring_flag = true,
     sounds = mannequin_sounds,
+    faction = "monsters",
   }
   animated.mix_in(e, "assets/animations/mannequin", "no_atlas")
   return e

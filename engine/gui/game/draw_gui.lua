@@ -1,3 +1,4 @@
+local action = require("engine.tech.action")
 local level = require("engine.tech.level")
 local sprite = require("engine.tech.sprite")
 local class = require("engine.mech.class")
@@ -1018,8 +1019,25 @@ use_mouse = function(self)
 
       if interaction_target then
         ui.cursor("hand")
+        if lmb and (path or (position - State.player.position):abs2() <= 1) then
+          animated.add_fx("engine/assets/animations/underfoot_circle", position)
+          set_mouse_task(function()
+            local ok = not path or api.follow_path(State.player, path, false, 8)
+            api.rotate(State.player, position)
+            if ok then
+              actions.interact:act(State.player)
+            end
+          end, path)
+        end
       elseif not solid and path then
         ui.cursor("walk")
+        if rmb then
+          animated.add_fx("engine/assets/animations/underfoot_circle", position)
+          set_mouse_task(function()
+            api.follow_path(State.player, path, false, 8)
+            api.rotate(State.player, position)
+          end, path)
+        end
       end
 
       if State.combat then
@@ -1029,17 +1047,6 @@ use_mouse = function(self)
           -- TODO show only after moving a mouse, hide on WASD
           render_path(path, max_length)
         end
-      end
-
-      if path and (rmb and not solid or lmb and interaction_target) then
-        animated.add_fx("engine/assets/animations/underfoot_circle", position)
-        set_mouse_task(function()
-          local ok = api.follow_path(State.player, path, false, 8)
-          api.rotate(State.player, position)
-          if ok and interaction_target then
-            actions.interact:act(State.player)
-          end
-        end, path)
       end
 
       local is_a_potential_target
@@ -1063,8 +1070,7 @@ use_mouse = function(self)
         end
       end
 
-      local hand = State.player.inventory.hand
-      if hand and hand.damage_roll and is_a_potential_target then
+      if is_a_potential_target then
         ui.cursor("target_active")
         if rmb and (path or api.distance(position, State.player) == 1) then
           local potential_attacking_actions = {
@@ -1074,7 +1080,7 @@ use_mouse = function(self)
           }
 
           if Fun.iter(potential_attacking_actions)
-            :any(function(a) return a:enough_resources(State.player) end)
+            :any(function(a) return action.enough_resources(a, State.player) end)
           then
             set_mouse_task(function()
               animated.add_fx("engine/assets/animations/underfoot_circle", position)
