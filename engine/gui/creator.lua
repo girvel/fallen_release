@@ -70,6 +70,10 @@ local CLASSES = {
   warlock,
 }
 
+local CLASSES_LEN = Fun.iter(CLASSES)
+  :map(function(cl) return cl.name:utf_len() end)
+  :max()
+
 local CREATOR_CLASSES = Table.require_folder("engine.gui.creator_classes")
 
 local draw_base_pane, draw_pane, reassign_model
@@ -370,11 +374,21 @@ draw_pane = function(self, dt)
         ui.text("## ")
       ui.finish_color()
       ui.text("Класс: ")
-      if self:switch(CLASSES, "class") then
+      local container = self.model[self.pane_i]
+      local pressed_left = ui.arrow_left(CLASSES, container, "class", self.is_disabled)
+      local icon = gui_elements[container.class.codename]
+      if icon then
+        ui.image(icon, 2)
+        ui.offset(8)
+      end
+      ui.text(Name.game(container.class):ljust(CLASSES_LEN))
+      local pressed_right = ui.arrow_right(CLASSES, container, "class", self.is_disabled)
+      ui.text("(уровень %s)", data.class_level)
+
+      if pressed_left or pressed_right then
         reassign_model(self.model, data.class, self.pane_i, #self.model)
         data = self.model[self.pane_i]
       end
-      ui.text("(уровень %s)", data.class_level)
     ui.finish_font()
   ui.finish_line()
   ui.br()

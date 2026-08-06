@@ -963,52 +963,67 @@ end
 --- @param disabled? boolean
 --- @param ... string|table exceptions
 --- @return boolean did_change
+ui.arrow_left = function(possible_values, container, key, disabled, ...)
+  local is_scrollable = not disabled and #possible_values - select("#", ...) > 1
+  local did_change
+  if is_scrollable then
+    did_change = ui.text_button(" < ").is_clicked
+  else
+    ui.text("   ")
+  end
+  local is_selected = state.selection.i == state.selection.max_i
+  did_change = did_change or is_selected and ui.keyboard("left")
+  if did_change then
+    local index = Table.index_of(possible_values, container[key]) or 1
+    container[key] = possible_values[Math.loopmod(index - 1, #possible_values)]
+  end
+  return did_change
+end
+
+--- @param possible_values string[]|table[]
+--- @param container table
+--- @param key any
+--- @param disabled? boolean
+--- @param ... string|table exceptions
+--- @return boolean did_change
+ui.arrow_right = function(possible_values, container, key, disabled, ...)
+  if select("#", ...) > 0 then possible_values = Table.removed(possible_values, ...) end
+  local is_scrollable = not disabled and #possible_values > 1
+  local did_change
+  if is_scrollable then
+    did_change = ui.text_button(" > ").is_clicked
+  else
+    ui.text("   ")
+  end
+  local is_selected = state.selection.i == state.selection.max_i
+  did_change = did_change or is_selected and ui.keyboard("right")
+  if did_change then
+    local index = Table.index_of(possible_values, container[key]) or 1
+    container[key] = possible_values[Math.loopmod(index + 1, #possible_values)]
+  end
+  return did_change
+end
+
+--- @param possible_values string[]|table[]
+--- @param container table
+--- @param key any
+--- @param disabled? boolean
+--- @param ... string|table exceptions
+--- @return boolean did_change
 ui.switch = function(possible_values, container, key, disabled, ...)
   local value = container[key]
-  local is_scrollable = not disabled and #possible_values - select("#", ...) > 1
   local length = max_length(possible_values)
-  possible_values = Table.removed(possible_values, ...)
-  local index = Table.index_of(possible_values, value) or 1
   if type(value) == "table" then
     value = Name.game(value)
   else
     value = tostring(value)
   end
 
-  local left_button
-  if is_scrollable then
-    left_button = ui.text_button(" < ").is_clicked
-  else
-    ui.text("   ")
-  end
-
+  local left_button = ui.arrow_left(possible_values, container, key, disabled, ...)
   ui.text(value:cjust(length, " "))
+  local right_button = ui.arrow_right(possible_values, container, key, disabled, ...)
 
-  local right_button
-  if is_scrollable then
-    right_button = ui.text_button(" > ").is_clicked
-  else
-    ui.text("   ")
-  end
-
-  local is_selected = state.selection.i == state.selection.max_i
-
-  if is_scrollable then
-    local offset
-    if left_button or is_selected and ui.keyboard("left") then
-      offset = -1
-    end
-
-    if right_button or is_selected and ui.keyboard("right") then
-      offset = 1
-    end
-
-    if offset then
-      container[key] = possible_values[Math.loopmod(index + offset, #possible_values)]
-      return true
-    end
-  end
-  return false
+  return left_button or right_button
 end
 
 --- @param options string[]

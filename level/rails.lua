@@ -59,8 +59,9 @@ end
 
 init_debug = function()
   State.runner:run_task(function()
+    State.player.xp = xp.for_level[5]
     Kernel.gui:open_menu("creator")
-    Kernel.gui._mode:submit()
+    -- Kernel.gui._mode:submit()
   end)
 end
 
