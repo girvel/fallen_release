@@ -165,6 +165,7 @@ methods.rront_killed = function(self)
   State.rails:start_lunch()
   State.rails:set_quest("detective", stages.detective._1000_completed)
   api.autosave("Диверсант устранён")
+  self.rront_status = "dead"
 end
 
 methods.start_lunch = function(self)

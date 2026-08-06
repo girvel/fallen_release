@@ -1,3 +1,5 @@
+local item = require("engine.tech.item")
+local sprite = require("engine.tech.sprite")
 local interactive = require("engine.tech.interactive")
 local screenplay = require("engine.tech.screenplay")
 local async = require("engine.tech.async")
@@ -245,6 +247,7 @@ return {
 
     _condition = function(self, dt, ch, ps)
       return ch.engineer_3.was_interacted_by == State.player
+        and State.rails.quests.detective == stages.detective._0020_investigate
     end,
 
     _run = function(self, ch, ps, sp)
@@ -297,6 +300,7 @@ return {
             ch.engineer_4.inventory.gloves = State.player.inventory.gloves
             State.player.inventory.gloves = nil
             State.rails.given_up_gloves = true
+            options[4] = nil
           end
           sp:lines()
         sp:finish_option()
@@ -488,6 +492,79 @@ return {
         sp:finish_option()
       end
       sp:finish_options()
+    end,
+  },
+
+  _322_dwarf_start = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/322_dwarf_start.ms",
+    characters = {
+      player = {},
+      engineer_4 = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ch.engineer_4) >= 7 and (
+        State.rails.rront_status == "ran_away"
+        or ch.engineer_4.inventory.gloves
+      )
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.engineer_4.portrait = sprite.image("assets/portraits/dwarf.png")
+      api.rotate(ch.engineer_4, State.player)
+      api.move_camera(ch.engineer_4.position)
+      sp:lines()
+      api.free_camera()
+
+      api.unlock(State.player)
+      State.runner:remove("_309_interrogation_dwarf")
+      State.runner.scenes._324_dwarf.enabled = true
+      item.set_cue(ch.engineer_4, "highlight", true)
+    end,
+  },
+
+  _324_dwarf = cutscene.make {
+    enabled = false,
+    screenplay = "assets/screenplay/324_dwarf.ms",
+    characters = {
+      player = {},
+      engineer_4 = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.engineer_4.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.engineer_4.interact = nil
+      api.rotate(ch.engineer_4, State.player)
+      sp:lines()
+      sp:start_single_branch(State.player:ability_check("perception", 10) and 1 or 2)
+        sp:lines()
+      sp:finish_single_branch()
+
+      sp:lines()
+
+      local is_rront_dead = State.rails.rront_status == "dead"
+      sp:start_single_branch(is_rront_dead and 1 or 2)
+        sp:lines()
+        api.options(sp:start_options())
+        sp:finish_options()
+      sp:finish_single_branch()
+
+      sp:lines({STATUS = is_rront_dead and "убил" or "отпустил"})
+
+      sp:start_single_branch(State.player:ability_check("religion", 16) and 1 or 2)
+        sp:lines()
+      sp:finish_single_branch()
+
+      local n = api.options(sp:start_options())
+      sp:finish_options()
+
+      if n == 1 then
+        State.player.bag.amulet = 1
+      end
     end,
   },
 }

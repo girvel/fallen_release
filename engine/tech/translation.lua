@@ -19,7 +19,11 @@ local translation = {
     spell_slots_9 = "заклинания ур. 9",
   },
   bag = {
-    money = "Ценности",
+    money = "Финансы",
+    alcohol = "Бутылки с алкоголем",
+    valve = "Вентиль",
+    sigs = "Сигареты",
+    amulet = "Амулет",
     bird_food = "Корм",
     bird_remains = "Останки птицы",
   },

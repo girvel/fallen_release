@@ -411,7 +411,7 @@ end
 -- [SECTION] Entities
 ----------------------------------------------------------------------------------------------------
 
---- @class player: player_base
+--- @class player: player.base
 --- @field incapacitated boolean
 
 solids.player = function()

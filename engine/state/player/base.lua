@@ -1,4 +1,3 @@
-local sprite = require("engine.tech.sprite")
 local ai = require("engine.state.player.ai")
 local action = require("engine.tech.action")
 local creature = require "engine.mech.creature"
@@ -8,12 +7,21 @@ local base = {}
 
 -- TODO maybe .hears, .speaks etc. should go to State.gui, which is a game state for Kernel.gui
 
---- @class player_base: entity_strict
+--- @class player.base: entity_strict
 --- @field fov_r integer
 --- @field ai player_ai
 --- @field creator_model table?
 --- @field appearance_model table?
---- @field bag table<string, integer>
+--- @field bag player.bag
+
+--- @class player.bag
+--- @field money integer
+--- @field alcohol integer
+--- @field valve integer
+--- @field sigs integer
+--- @field amulet integer
+--- @field bird_food integer
+--- @field bird_remains integer
 
 --- @param entity table
 base.mix_in = function(entity)
@@ -21,7 +29,7 @@ base.mix_in = function(entity)
   entity.codename = "player"
   entity.player_flag = true
   entity.fov_r = 15
-  entity.bag = {money = 0, bird_food = 0, bird_remains = 0}
+  entity.bag = {money = 0, bird_food = 0, bird_remains = 0, amulet = 0}
 
   entity.ai = ai.new()
   entity.immovable_flag = true
