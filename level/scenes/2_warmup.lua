@@ -611,7 +611,7 @@ return {
       sub = State.hostility:subscribe(function(source, target)
         if source == phantom and target == State.player then
           State.hostility:unsubscribe(sub)
-          api.popup(illusion_popup)
+          api.popup(illusion_popup, phantom)
           State.runner:run_task(function()
             async.sleep(5)
             api.order(kill_order)
