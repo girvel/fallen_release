@@ -497,7 +497,9 @@ solids.cook = function()
   return e
 end
 
-solids.combat_dreamer = function()
+solids.combat_dreamer = function(params)
+  local has_valve = params and params.has_valve
+  local direction = params and params.direction or nil
   local e = {
     name = "...",
     codename = "combat_dreamer",
@@ -508,11 +510,12 @@ solids.combat_dreamer = function()
     max_hp = 32,
     base_abilities = abilities.new(15, 10, 14, 7, 12, 7),
     inventory = {
-      main_hand = items.mace(),
-      other_hand = items.small_shield(),
+      hand = items.mace(),
+      offhand = has_valve and items.large_valve() or items.small_shield(),
     },
     level = 3,
     xp_reward = 150,
+    direction = direction,
   }
   creature.mix_in(e)
   humanoid.mix_in(e)

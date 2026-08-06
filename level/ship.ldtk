@@ -5601,9 +5601,9 @@
 									"id": "V_String",
 									"params": ["guard_2"]
 								}] },
-								{ "__identifier": "args", "__type": "String", "__value": "{direction = Vector.down}", "__tile": null, "defUid": 69, "realEditorValues": [{
+								{ "__identifier": "args", "__type": "String", "__value": "{direction = Vector.down, has_valve = true}", "__tile": null, "defUid": 69, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["{direction = Vector.down}"]
+									"params": ["{direction = Vector.down, has_valve = true}"]
 								}] }
 							],
 							"__worldX": 624,
