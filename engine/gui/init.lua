@@ -4,6 +4,8 @@ local animated = require("engine.tech.animated")
 local level    = require("engine.tech.level")
 local sound    = require("engine.tech.sound")
 local saves = require("engine.kernel.saves")
+local api = require("engine.tech.api")
+local async = require("engine.tech.async")
 
 local gui = {}
 
@@ -32,6 +34,7 @@ local empty_f = function() end
 
 --- @class gui
 --- @field _mode table
+--- @field _player_dying promise
 local methods = {}
 gui.mt = {__index = methods}
 
@@ -135,10 +138,35 @@ methods.close_menu = function(self)
 end
 
 methods.player_has_died = function(self)
-  self:_set_mode(STATES.death.new())
-  level.remove(State.player)
-  State.player:rotate(Vector.left)
-  animated.change_pack(State.player, "engine/assets/animations/skeleton")
+  if self._player_dying and not self._player_dying.is_resolved then
+    return
+  end
+
+  Log.info("Player dies")
+  self._player_dying = State.runner:run_task(function()
+    api.lock(State.player)
+    State.player:animate("lying", false, true)
+    api.fade_out(3)
+
+    local fx
+    async.sleep(.5)
+    for i = 1, State.player.souls_n do
+      if i > 1 then async.sleep(2) end
+      fx = animated.add_fx("engine/assets/animations/angel_leaves", State.player.position, "fx_over")
+    end
+    coroutine.yield()
+
+    while State:exists(fx) do
+      coroutine.yield()
+    end
+
+    async.sleep(.5)
+
+    self:_set_mode(STATES.death.new())
+    level.remove(State.player)
+    State.player:rotate(Vector.left)
+    animated.change_pack(State.player, "engine/assets/animations/skeleton")
+  end, "player_death")
 end
 
 methods.to_start_screen = function(self)

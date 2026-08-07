@@ -421,6 +421,7 @@ solids.player = function()
     level = 0,
     faction = "player",
     incapacitated = false,
+    souls_n = 2,
   }
   player_base.mix_in(result)
   humanoid.mix_in(result)

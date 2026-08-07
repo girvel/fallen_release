@@ -13,6 +13,7 @@ local base = {}
 --- @field creator_model table?
 --- @field appearance_model table?
 --- @field bag player.bag
+--- @field souls_n integer
 
 --- @class player.bag
 --- @field money integer
@@ -30,13 +31,10 @@ base.mix_in = function(entity)
   entity.player_flag = true
   entity.fov_r = 15
   entity.bag = {money = 0, bird_food = 0, bird_remains = 0, amulet = 0}
-
   entity.ai = ai.new()
   entity.immovable_flag = true
-
   entity.on_death = false
-
-  entity.creator_model = nil
+  entity.souls_n = entity.souls_n or 1
 end
 
 --- @type action

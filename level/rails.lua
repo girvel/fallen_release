@@ -61,6 +61,8 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
+    State.player.hp = 1
+    level.unsafe_move(State.player, State.level.entities.guard_2.position + Vector.down)
   end)
 end
 
