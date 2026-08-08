@@ -515,8 +515,9 @@ return {
     _run = function(self, ch, ps, sp)
       ch.engineer_4.portrait = sprite.image("assets/portraits/dwarf.png")
       api.rotate(ch.engineer_4, State.player)
-      api.move_camera(ch.engineer_4.position)
+      local promise = api.move_camera(ch.engineer_4.position)
       sp:lines()
+      promise:wait()
       api.free_camera()
 
       api.unlock(State.player)

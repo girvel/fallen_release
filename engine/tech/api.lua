@@ -391,7 +391,7 @@ end
 --- @param position vector
 --- @return promise, scene
 api.move_camera = function(position)
-  return State.runner:run_task(function()
+  local promise, scene = State.runner:run_task(function()
     State.camera.is_camera_following = true
     --- @diagnostic disable-next-line
     State.camera.target_override = {position = position}
@@ -400,16 +400,31 @@ api.move_camera = function(position)
     State.camera.target_override = nil
     State.camera.is_camera_following = false
   end, "move_camera")
+
+  scene.on_cancel = function()
+    State.camera.target_override = nil
+    State.camera.is_camera_following = true
+  end
+
+  return promise, scene
 end
 
+--- @return promise, scene
 api.free_camera = function()
-  return State.runner:run_task(function()
+  local promise, scene = State.runner:run_task(function()
     --- @diagnostic disable-next-line
     State.camera.target_override = nil
     State.camera.is_camera_following = true
     coroutine.yield()
     while State.camera.is_moving do coroutine.yield() end
   end, "free_camera")
+
+  scene.on_cancel = function()
+    State.camera.target_override = nil
+    State.camera.is_camera_following = true
+  end
+
+  return promise, scene
 end
 
 --- @param name? string
