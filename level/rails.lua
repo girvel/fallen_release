@@ -61,8 +61,6 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-    State.player.hp = 1
-    level.unsafe_move(State.player, State.level.entities.guard_2.position + Vector.down)
   end)
 end
 
@@ -131,6 +129,7 @@ end
 
 methods.transition_3_detective = function(self)
   State.runner:extend(love.filesystem.load("level/scenes/3_detective.lua")())
+  State.runner:extend(love.filesystem.load("level/scenes/4_open.lua")())
 
   local ch = State.level.entities
   local ps = State.level.positions

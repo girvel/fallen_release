@@ -12,6 +12,7 @@ local cutscene = {}
 --- @field _condition? fun(self: scene, dt: number, ch: ch, ps: ps): boolean|any, ...
 --- @field _on_add? fun(self: scene, ch: ch, ps: ps) runs when the scene is added
 --- @field _on_cancel? fun(self: scene, ch: ch, ps: ps) runs when the scene run is cancelled (either through runner:stop or loading a save)
+--- @field _on_remove? fun(self: scene, ch: ch, ps: ps) runs when the scene is removed
 --- @field enabled? boolean
 --- @field mode? "sequential"|"parallel"|"once"|"disable"
 --- @field characters? table<string, cutscene.characters_def>
@@ -172,7 +173,12 @@ end
 --- @param name string
 methods.on_remove = function(self, name)
   if not self.boring_flag then
-    Log.info("Removed scene %s", name)
+    Log.info("Removed cutscene %s", name)
+  end
+
+  if self._on_remove then
+    local _, ch = select_characters(self, name)
+    self:_on_remove(ch, State.level.positions)
   end
 end
 

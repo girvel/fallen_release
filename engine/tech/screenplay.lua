@@ -141,18 +141,29 @@ methods.literal = function(self)
   return block.text
 end
 
-methods.finish = function(self)
-  assert(#self.stack == 1, "Screenplay contains %s unclosed scopes;\nstack = %s" % {
-    #self.stack - 1, Inspect(self.stack)
-  })
-  assert(
-    #self.stack[1] == 0
-    or #self.stack[1] == 1 and self.stack[1][1].type == "code",
-    ("Expected script to end, got %s more entries;\nstack[1] = %s"):format(
-      #self.stack[1], Inspect(self.stack[1])
-    )
-  )
+--- @return boolean
+methods.empty = function(self)
+  Log.traces(#self.stack, self.cursor, #self.stack[1], self.stack[1][1])
+  local last = self.stack[1]
+  local cursor = self.cursor[1]
+  return #self.stack == 1
+    and #self.cursor == 1
+    and #last == cursor or #last == cursor + 1 and last[#last].type == "code"
 end
+
+-- TODO does not rely on cursor, not really used
+-- methods.finish = function(self)
+--   assert(#self.stack == 1, "Screenplay contains %s unclosed scopes;\nstack = %s" % {
+--     #self.stack - 1, Inspect(self.stack)
+--   })
+--   assert(
+--     #self.stack[1] == 0
+--     or #self.stack[1] == 1 and self.stack[1][1].type == "code",
+--     ("Expected script to end, got %s more entries;\nstack[1] = %s"):format(
+--       #self.stack[1], Inspect(self.stack[1])
+--     )
+--   )
+-- end
 
 get_block = function(player, type)
   local branch = Table.last(player.stack)
