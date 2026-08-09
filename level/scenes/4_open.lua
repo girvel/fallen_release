@@ -163,6 +163,37 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
               sp:lines()
             end
             sp:finish_single_branch()
+
+          elseif n == 3 then
+            sp:lines()
+            -- SOUND horror SFX
+            sp:lines()
+            -- SOUND stop horror SFX
+            sp:lines()
+
+          elseif n == 4 then
+            sp:lines()
+
+          elseif n == 5 then
+            sp:lines()
+
+          elseif n == 6 then
+            sp:lines()
+            local m = sp:start_single_option()
+            if m == 1 then
+              sp:lines()
+            else
+              sp:start_single_branch(State.player:ability_check("intimidation", 12) and 1 or 2)
+                Log.warn("TODO")
+              sp:finish_single_branch()
+            end
+            sp:finish_single_option()
+
+          elseif n == 7 then
+            Log.warn("TODO")
+          
+          elseif n == 8 then
+            sp:lines()
           end
 
         ::out::

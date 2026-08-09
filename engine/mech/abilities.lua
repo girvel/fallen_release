@@ -34,9 +34,9 @@ abilities.skill_bases = {
   nature = "int",
   arcana = "int",
   persuasion = "cha",
+  intimidation = "cha",
   -- animal_handling = "wis",
   -- deception = "cha",
-  -- intimidation = "cha",
 }
 
 --- @param ability_score integer
