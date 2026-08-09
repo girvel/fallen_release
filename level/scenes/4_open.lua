@@ -14,11 +14,29 @@ return {
     },
 
     _condition = function(self, dt, ch, ps)
-      return 
+      return ch.markiss.was_interacted_by == State.player
     end,
 
+    _run_i = 0,
     _run = function(self, ch, ps, sp)
-      
+      self._run_i = self._run_i + 1
+      sp:start_branches()
+      sp:start_branch(math.min(sp:branches_n(), self._run_i))
+        if self._run_i == 1 then
+          self._first_time = false
+          sp:start_single_branch(ch.markiss.ai.point_i == 1 and 2 or 1)
+            sp:lines()
+          sp:finish_single_branch()
+          sp:lines()
+          self._nature_check = State.player:ability_check("nature", 18)
+          sp:start_single_branch(self._nature_check and 1 or 2)
+            sp:lines()
+          sp:finish_single_branch()
+        else
+          sp:lines()
+        end
+      sp:finish_branch()
+      sp:finish_branches()
     end,
   },
 

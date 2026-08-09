@@ -25,12 +25,12 @@ screenplay.new = function(path, characters)
   }, mt)
 end
 
-local get_block
+local push_block
 
 --- @async
 --- @param subs? table<string, string>
 methods.lines = function(self, subs)
-  local block = get_block(self, "lines")  --[[@as moonspeak_lines]]
+  local block = push_block(self, "lines")  --[[@as moonspeak_lines]]
 
   for _, line in ipairs(block.lines) do
     local character
@@ -50,7 +50,7 @@ end
 --- @nodiscard
 --- @return table<integer, string>
 methods.start_options = function(self)
-  local block = get_block(self, "options")  --[[@as moonspeak_options]]
+  local block = push_block(self, "options")  --[[@as moonspeak_options]]
   table.insert(self.stack, block)
   table.insert(self.cursor, 0)
 
@@ -98,7 +98,7 @@ methods.finish_single_option = function(self)
 end
 
 methods.start_branches = function(self)
-  local block = get_block(self, "branches")  --[[@as moonspeak_branches]]
+  local block = push_block(self, "branches")  --[[@as moonspeak_branches]]
   table.insert(self.stack, block)
   table.insert(self.cursor, 0)
 end
@@ -118,10 +118,20 @@ methods.start_branch = function(self, n)
 end
 
 methods.finish_branch = function(self)
-  assert(not Table.last(self.stack).type)
+  local item_type = Table.last(self.stack).type
+  if item_type then
+    Error("Expected to be closing a branch, got %q instead", item_type)
+  end
+
   table.remove(self.stack)
   table.remove(self.cursor)
   assert(Table.last(self.stack).type == "branches")
+end
+
+--- @return integer
+methods.branches_n = function(self)
+  local branches = Table.last(self.stack)
+  return #branches.branches
 end
 
 --- @param n? integer
@@ -137,7 +147,7 @@ end
 
 --- @return string
 methods.literal = function(self)
-  local block = get_block(self, "literal")  --[[@as moonspeak_literal]]
+  local block = push_block(self, "literal")  --[[@as moonspeak_literal]]
   return block.text
 end
 
@@ -165,7 +175,7 @@ end
 --   )
 -- end
 
-get_block = function(player, type)
+push_block = function(player, type)
   local branch = Table.last(player.stack)
   player.cursor[#player.cursor] = player.cursor[#player.cursor] + 1
   local block = branch[player.cursor[#player.cursor]]
