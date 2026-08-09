@@ -41,6 +41,16 @@ methods.draw = function(self, dt)
   self._show_console = self._show_console ~= ui.keyboard("f6")
   ui.trace_frames = ui.trace_frames ~= ui.keyboard("f7")
 
+  if ui.keyboard("f12") then
+    self._show_points = false
+    self._show_fps = false
+    self._show_ai = false
+    self._show_scenes = false
+    self._show_rails = false
+    self._show_console = false
+    ui.trace_frames = false
+  end
+
   if State and self._show_points then draw_points(self.points) end
   if self._show_fps then report_fps() end
   if State and self._show_ai then report_ai() end
