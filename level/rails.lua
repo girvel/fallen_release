@@ -23,6 +23,8 @@ local rails = {}
 --- @field talked_to_everybody boolean?
 --- @field given_up_gloves boolean
 --- @field rront_status "dead"|"ran_away"?
+--- @field met_son_mary boolean?
+--- @field did_markiss_help boolean?
 local methods = {}
 rails.mt = {__index = methods}
 

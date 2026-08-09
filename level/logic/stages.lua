@@ -3,6 +3,8 @@ local stages = {}
 --- @class stages
 --- @field warmup stages.warmup
 --- @field detective stages.detective
+--- @field sigi stages.sigi
+--- @field alcohol stages.alcohol
 
 --- @return stages
 stages.new = function()
@@ -10,6 +12,8 @@ stages.new = function()
   local result = {
     warmup = 0,
     detective = 0,
+    sigi = 0,
+    alcohol = 0,
   }
   return result
 end
@@ -36,6 +40,22 @@ stages.detective = {
   _0020_investigate = 20,
   _1000_completed = stages.COMPLETED,
   _2000_failed = stages.FAILED,
+}
+
+--- @enum stages.sigi
+stages.sigi = {
+  _0010_search = 10,
+  _0020_return = 20,
+  _1000_completed = stages.COMPLETED,
+  _2000_failed = stages.FAILED,
+}
+
+--- @enum stages.alcohol
+stages.alcohol = {
+  _0010_search = 10,
+  _0020_search_again = 20,
+  _0030_return = 30,
+  _1000_completed = 1000,
 }
 
 Ldump.mark(stages, {mt = "const"}, ...)

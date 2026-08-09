@@ -1,3 +1,5 @@
+local translation = require("engine.tech.translation")
+local stages = require("level.logic.stages")
 local api = require("engine.tech.api")
 local screenplay = require("engine.tech.screenplay")
 local cutscene = require("engine.tech.cutscene")
@@ -39,9 +41,32 @@ return {
       sp:finish_branch()
       sp:finish_branches()
 
-      local options = sp:start_options()
-      for _, key in ipairs(self._seen) do
-        options[key] = nil
+      local options = sp:start_options() do
+        for _, key in ipairs(self._seen) do
+          options[key] = nil
+        end
+
+        if State.rails.rront_status ~= "ran_away" then
+          options[4] = nil
+        end
+
+        if not State.rails.met_son_mary then
+          options[5] = nil
+        end
+
+        local alcohol = State.rails.quests.alcohol
+        if alcohol == 0 or alcohol == stages.alcohol._1000_completed then
+          options[6] = nil
+        end
+
+        local sigi = State.rails.quests.sigi
+        if sigi == 0 or sigi == stages.sigi._1000_completed or State.player.bag.sigs == 0 then
+          options[7] = nil
+        end
+
+        if not State.rails.did_markiss_help then
+          options[8] = nil
+        end
       end
 
       while true do
@@ -70,7 +95,77 @@ return {
                 sp:finish_single_option()
               end
             sp:finish_single_option()
+
+          elseif n == 2 then
+            sp:lines()
+            local m = sp:start_single_option()
+            if m == 1 then
+              sp:lines()
+              local o = sp:start_single_option()
+              if o == 1 then
+                sp:lines()
+              else
+                sp:lines()
+sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
+                  sp:lines()
+                sp:finish_single_branch()
+              end
+              sp:finish_single_option()
+              goto out
+            end
+
+            local skill, dc
+            if m == 2 then
+              skill = "religion"
+              dc = 10
+            else
+              skill = "persuasion"
+              dc = 12
+            end
+            sp:finish_single_option()
+
+            local check = self._nature_check or State.player:ability_check(skill, dc)
+            sp:start_single_branch(check and 1 or 2)
+            local skill_subs = {SKILL = translation.skills[skill]:utf_capitalize()}
+            if check then
+              sp:lines(skill_subs)
+              local suboptions = sp:start_options()
+              local looped = true
+              while looped do
+                m = api.options(suboptions, true)
+                sp:start_option(m)
+                  if m == 1 then
+                    sp:lines()
+                  elseif m == 2 then
+                    sp:lines()
+                    local o = sp:start_single_option()
+                    if o == 1 then
+                      sp:lines({NAME = State.player.name})
+                      ch.markiss.name = "Маркисс"
+                      sp:lines()
+                    else
+                      sp:lines()
+                    end
+                    sp:finish_single_option()
+                  else
+                    looped = false
+                  end
+                sp:finish_option()
+              end
+              sp:finish_options()
+            else
+              sp:lines(skill_subs)
+              sp:start_single_branch()
+              if State.player:ability_check("nature", 10) then
+                sp:lines()
+              end
+              sp:finish_single_branch()
+              sp:lines()
+            end
+            sp:finish_single_branch()
           end
+
+        ::out::
         sp:finish_option()
       end
       sp:finish_options()
