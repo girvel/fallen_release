@@ -47,7 +47,7 @@ methods.control = function(self, entity)
     end
   end
 
-  api.travel(entity, State.level.positions[travel_points[self.point_i]])
+  api.travel(entity, State.level.positions[travel_points[self.point_i]], false, 4)
 end
 
 methods.observe = function(self, entity, dt)
