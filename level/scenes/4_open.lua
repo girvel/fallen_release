@@ -18,6 +18,7 @@ return {
     end,
 
     _run_i = 0,
+    _seen = {},
     _run = function(self, ch, ps, sp)
       self._run_i = self._run_i + 1
       sp:start_branches()
@@ -37,6 +38,42 @@ return {
         end
       sp:finish_branch()
       sp:finish_branches()
+
+      local options = sp:start_options()
+      for _, key in ipairs(self._seen) do
+        options[key] = nil
+      end
+
+      while true do
+        local n = api.options(options, true)
+        if n == 9 then break end
+        table.insert(self._seen, n)
+        sp:start_option(n)
+          if n == 1 then
+            sp:lines()
+            sp:start_single_option()
+              sp:lines()
+            sp:finish_single_option()
+            local m = sp:start_single_option()
+              if m == 1 then
+                sp:lines()
+              else
+                sp:lines()
+                local o = sp:start_single_option()
+                  if o == 1 then
+                    sp:start_single_branch(State.player:ability_check("persuasion", 12) and 1 or 2)
+                      sp:lines()
+                    sp:finish_single_branch()
+                  else
+                    sp:lines()
+                  end
+                sp:finish_single_option()
+              end
+            sp:finish_single_option()
+          end
+        sp:finish_option()
+      end
+      sp:finish_options()
     end,
   },
 
