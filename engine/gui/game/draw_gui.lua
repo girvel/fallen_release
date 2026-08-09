@@ -651,23 +651,27 @@ draw_dialogue = function()
     dialogue_scroll = {}
   end
 
-  local H = is_compact and 190 or 280
-  local BOTTOM_GAP = is_compact and 0 or 50
-  local FONT_SIZE = is_compact and 26 or 32
-  dialogue_y = love.graphics.getHeight() - H - BOTTOM_GAP
-
-  local x, y, w, h = ui.frame_coords("center", dialogue_y, "read_max", H)
+  local w = math.min(love.graphics.getWidth(), ui.MAX_READABLE_W)
+  local h = is_compact and 190 or 280
+  local bottom_gap = is_compact and 0 or 50
+  local font_size = is_compact and 26 or 32
+  dialogue_y = love.graphics.getHeight() - h - bottom_gap
+  local y = dialogue_y
+  local x = (love.graphics.getWidth() - w) / 2
 
   local portrait = this_line.source and this_line.source.portrait
   if portrait then
-    ui.start_frame(x - portrait.image:getWidth(), y)
-      ui.image(portrait.image, 1)
+    local scale = is_compact and 1 or 2
+    local GAP = 20
+
+    ui.start_frame(x - portrait.image:getWidth() * scale - GAP, y)
+      ui.image(portrait.image, scale)
     ui.finish_frame()
   end
 
   local bg = State.player.incapacitated and "none" or nil
   tk.start_window(x, y, w, h, bg, dialogue_scroll)
-  ui.start_font(FONT_SIZE)
+  ui.start_font(font_size)
     if this_line.type == "plain_line" then
       draw_line(this_line)
     elseif this_line.type == "options" then

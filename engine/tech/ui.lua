@@ -321,7 +321,7 @@ ui.finish = function()
   love.graphics.draw(cursor.image, unpack(V(love.mouse.getPosition()):sub_mut(cursor.offset)))
 end
 
-local MAX_READABLE_W = 800
+ui.MAX_READABLE_W = 800
 
 --- @param x? integer|"center"|"right"
 --- @param y? integer|"center"
@@ -333,7 +333,7 @@ local MAX_READABLE_W = 800
 --- @return integer
 ui.frame_coords = function(x, y, w, h)
   if w == "read_max" then
-    w = math.min(love.graphics.getWidth(), MAX_READABLE_W)
+    w = math.min(love.graphics.getWidth(), ui.MAX_READABLE_W)
   end --- @cast w integer
 
   if x == "center" then
