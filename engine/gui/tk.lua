@@ -40,7 +40,8 @@ tk.WINDOW_PADDING = 40
 --- @param w integer|"max"|"read_max"
 --- @param h integer|"max"
 --- @param bg? "none"|string
-tk.start_window = function(x, y, w, h, bg)
+--- @param scroll_id any
+tk.start_window = function(x, y, w, h, bg, scroll_id)
   if w == "max" then
     w = love.graphics.getWidth() - 2 * tk.WINDOW_PADDING
   end --- @cast w integer
@@ -61,7 +62,8 @@ tk.start_window = function(x, y, w, h, bg)
     x + tk.WINDOW_PADDING,
     y + tk.WINDOW_PADDING,
     w - 2 * tk.WINDOW_PADDING,
-    h - 2 * tk.WINDOW_PADDING
+    h - 2 * tk.WINDOW_PADDING,
+    scroll_id
   )
 end
 

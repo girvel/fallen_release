@@ -426,6 +426,7 @@ ui.finish_frame = function(push_y)
   local max_x = ui.stack_pop("max_x")
   local max_y = ui.stack_pop("max_y")
 
+  -- TODO not correct if the frame is scrollable
   context.max_x = math.max(context.max_x, max_x)
   context.max_y = math.max(context.max_y, max_y)
 
@@ -434,6 +435,24 @@ ui.finish_frame = function(push_y)
     state.scroll_maxs[scroll_id] = math.max(
       0, max_y - prev_frame.y - state.scrolls[scroll_id] - prev_frame.h
     )
+
+    if state.scrolls[scroll_id] < 0 then
+      ui.start_frame(
+        prev_frame.x, prev_frame.y,
+        prev_frame.w, 2 * ui.SCALE
+      )
+        ui.tile("engine/assets/gui/scroll_indicator.png")
+      ui.finish_frame()
+    end
+
+    if max_y > prev_frame.y + prev_frame.h then
+      ui.start_frame(
+        prev_frame.x, prev_frame.y + prev_frame.h - 2 * ui.SCALE,
+        prev_frame.w, 2 * ui.SCALE
+      )
+        ui.tile("engine/assets/gui/scroll_indicator.png")
+      ui.finish_frame()
+    end
   end
 
   if context.scroll_id then

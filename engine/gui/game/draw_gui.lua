@@ -638,11 +638,17 @@ draw_bag = function()
 end
 
 local draw_line, draw_options
+local dialogue_scroll, prev_hears
 
 draw_dialogue = function()
   local this_line = State.model.hears
   if not this_line then
     return
+  end
+
+  if prev_hears ~= State.model.hears then
+    prev_hears = State.model.hears
+    dialogue_scroll = {}
   end
 
   local H = is_compact and 190 or 280
@@ -660,7 +666,7 @@ draw_dialogue = function()
   end
 
   local bg = State.player.incapacitated and "none" or nil
-  tk.start_window(x, y, w, h, bg)
+  tk.start_window(x, y, w, h, bg, dialogue_scroll)
   ui.start_font(FONT_SIZE)
     if this_line.type == "plain_line" then
       draw_line(this_line)
