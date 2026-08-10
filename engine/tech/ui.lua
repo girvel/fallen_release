@@ -374,6 +374,12 @@ end
 --- @param scroll_id? any
 ui.start_frame = function(x, y, w, h, scroll_id)
   x, y, w, h = ui.frame_coords(x, y, w, h)
+
+  -- TODO figure out semantics: if we do ui.start_frame(nil, nil, nil, nil), we do want relative
+  --   positioning; if we do ui.start_frame(love.graphics.getWidth() / 2), do we need to consider
+  --   the cursor? We kind of need to, because the cursor is influenced by scroll, but we also need
+  --   to have absolutely positioned frames that are not affected by the cursor, like for tiling
+  --   scroll indicators
   x = context.cursor_x + x
   y = context.cursor_y + y
 
@@ -437,21 +443,29 @@ ui.finish_frame = function(push_y)
     )
 
     if state.scrolls[scroll_id] < 0 then
+      ui.stack_push("cursor_x", 0)
+      ui.stack_push("cursor_y", 0)
       ui.start_frame(
         prev_frame.x, prev_frame.y,
         prev_frame.w, 2 * ui.SCALE
       )
         ui.tile("engine/assets/gui/scroll_indicator.png")
       ui.finish_frame()
+      ui.stack_pop("cursor_x")
+      ui.stack_pop("cursor_y")
     end
 
     if max_y > prev_frame.y + prev_frame.h then
+      ui.stack_push("cursor_x", 0)
+      ui.stack_push("cursor_y", 0)
       ui.start_frame(
         prev_frame.x, prev_frame.y + prev_frame.h - 2 * ui.SCALE,
         prev_frame.w, 2 * ui.SCALE
       )
         ui.tile("engine/assets/gui/scroll_indicator.png")
       ui.finish_frame()
+      ui.stack_pop("cursor_x")
+      ui.stack_pop("cursor_y")
     end
   end
 

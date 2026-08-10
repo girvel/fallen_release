@@ -322,6 +322,8 @@ return {
 
     _run = function(self, ch, ps, sp)
       api.order(sp:literal())
+      async.sleep(3)
+      api.order(sp:literal())
     end,
   },
 
@@ -506,10 +508,9 @@ return {
     },
 
     _condition = function(self, dt, ch, ps)
-      return api.distance(State.player, ch.engineer_4) >= 7 and (
-        State.rails.rront_status == "ran_away"
-        or ch.engineer_4.inventory.gloves
-      )
+      return api.distance(State.player, ch.engineer_4) >= 7
+        and (State.rails.rront_status == "ran_away" or ch.engineer_4.inventory.gloves)
+        and api.is_visible(ch.engineer_4)
     end,
 
     _run = function(self, ch, ps, sp)
