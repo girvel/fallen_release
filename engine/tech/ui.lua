@@ -1074,7 +1074,11 @@ ui.choice = function(options)
       state.selection.i = state.selection.max_i + i
       is_selected = true
       state.cursor = "hand"
-      love.graphics.setColor(.7, .7, .7)
+      if button_out.is_active then
+        ui.start_color(colors.dark_red)
+      else
+        ui.start_color(colors.yellow)
+      end
     end
 
     if state.selection.max_i + i == state.selection.i then
@@ -1095,7 +1099,7 @@ ui.choice = function(options)
     ui.text(option)
 
     if button_out.is_mouse_over then
-      love.graphics.setColor(1, 1, 1)
+      ui.finish_color()
     end
 
     if button_out.is_clicked then
