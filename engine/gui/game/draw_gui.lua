@@ -178,11 +178,15 @@ draw_gui = function(self, dt)
   is_compact = love.graphics.getHeight() < 900
   hint = nil
 
+  local dialogue_h = is_compact and 190 or 280
+  local bottom_gap = is_compact and 0 or 50
+  dialogue_y = love.graphics.getHeight() - dialogue_h - bottom_gap
+
   use_mouse(self)
   draw_popups(dt)
   draw_curtain()
   draw_sidebar(self)
-  draw_dialogue()
+  draw_dialogue(dialogue_h)
   draw_notification()
   draw_order()
   draw_suggestion()
@@ -640,7 +644,7 @@ end
 local draw_line, draw_options
 local dialogue_scroll, prev_hears
 
-draw_dialogue = function()
+draw_dialogue = function(h)
   local this_line = State.model.hears
   if not this_line then
     return
@@ -651,11 +655,8 @@ draw_dialogue = function()
     dialogue_scroll = {}
   end
 
-  local w = math.min(love.graphics.getWidth(), ui.MAX_READABLE_W)
-  local h = is_compact and 190 or 280
-  local bottom_gap = is_compact and 0 or 50
   local font_size = is_compact and 26 or 32
-  dialogue_y = love.graphics.getHeight() - h - bottom_gap
+  local w = math.min(love.graphics.getWidth(), ui.MAX_READABLE_W)
   local y = dialogue_y
   local x = (love.graphics.getWidth() - w) / 2
 
