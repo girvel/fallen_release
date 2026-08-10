@@ -566,15 +566,16 @@ solids.hauler = function()
 end
 
 solids.janitor = function()
-  local e = solids.dreamer {
+  local e = solids.dreamer({
     inventory = {
       hand = items.mop(),
       offhand = items.bucket(),
     }
-  }
+  })
 
   e.name = "уборщик"
   e.codename = "janitor"
+  e.faction = "janitor"
   e.ai = janitor_ai.new()
 
   return e

@@ -92,12 +92,13 @@ methods.add_at = function(self, entity, position, grid_layer)
 end
 
 --- Schedules entity to be removed
---- @generic T: entity
+--- @generic T: entity?
 --- @param self state
 --- @param entity T
 --- @param silently? boolean
 --- @return T
 methods.remove = function(self, entity, silently)
+  if not entity then return nil end
   --- @cast entity entity
   table.insert(self._entities_to_remove, {entity, silently})
   return entity

@@ -9,6 +9,7 @@ local janitor_ai = {}
 
 --- @class janitor_ai: ai_strict
 --- @field combat_module combat_ai
+--- @field current_line integer
 --- @field bucket entity?
 local methods = {}
 janitor_ai.mt = {__index = methods}
@@ -17,16 +18,27 @@ janitor_ai.mt = {__index = methods}
 janitor_ai.new = function()
   return setmetatable({
     combat_module = combat.new(),
+    current_line = 0,
   }, janitor_ai.mt)
 end
 
 methods.init = function(self, entity)
+  Table.assert_fields(entity, {"faction"})
   self.combat_module:init(entity)
 end
 
 methods.deinit = function(self, entity)
   self.combat_module:deinit(entity)
 end
+
+local LINES = {
+  "Ой.",
+  "Опять пролилась.",
+  "Пожалуйста, не делай этого.",
+  "Ты это специально?",
+  "Ещё раз и у тебя будут проблемы.",
+  "Ну всё, я тебе покажу!",
+}
 
 methods.control = function(self, entity)
   if State.hostility:get(entity, State.player) == "enemy" then
@@ -98,13 +110,33 @@ methods.control = function(self, entity)
     entity:animate("hand_attack")
     async.sleep(.8)
 
-    -- NEXT fix the bucket
+    if not State:exists(self.bucket) then
+      entity:rotate(bucket_direction)
+      self.current_line = self.current_line + 1
+      State.model.popups = {}
+      api.popup(LINES[self.current_line], entity)
+
+      async.sleep(.2)
+      if self.current_line == #LINES then
+        State.hostility:set(entity.faction, "player", "enemy")
+        return
+      end
+
+      State:remove(State.grids.on_tiles[bucket_position])
+      self.bucket = State:add_at(solids.bucket(), bucket_position, "solids")
+    end
   end
 
   local mark = State.grids.marks[entity.position]
   if mark then
     State:remove(mark)
   end
+
+  -- 4. Pick up the bucket --
+  local e = State.grids.solids[bucket_position] or State.grids.on_tiles[bucket_position]
+  if e then State:remove(e) end
+
+  item.give(entity, items.bucket())
 end
 
 methods.observe = function(self, entity, dt)
