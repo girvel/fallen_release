@@ -63,6 +63,7 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
+    humanoid.add_blood_mark({position = V(33, 71)})
   end)
 end
 

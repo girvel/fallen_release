@@ -1,3 +1,4 @@
+local janitor_ai = require("level.logic.janitor_ai")
 local rront_ai = require("level.logic.rront_ai")
 local item = require("engine.tech.item")
 local shaders = require("level.shaders")
@@ -222,13 +223,15 @@ do
       name = "ведро",
       sprite = sprite_intact,
       hp = 1,
-      on_remove = function(self)
+      on_death = function(self)
         State:add_at(on_tiles[5](), self.position, "on_tiles")
         breaking_sound:play_at(self.position)
       end,
       shader = shaders.reflective(Vector.down),
     }
   end
+
+  solids.bucket = solids[i_intact]
 end
 
 for _, tuple in ipairs {
@@ -572,29 +575,7 @@ solids.janitor = function()
 
   e.name = "уборщик"
   e.codename = "janitor"
-  e.ai = {  --- @diagnostic disable-line
-    combat_module = combat_ai.new(),
-
-    init = function(self, entity)
-      self.combat_module:init(entity)
-    end,
-
-    deinit = function(self, entity)
-      self.combat_module:deinit(entity)
-    end,
-
-    control = function(self, entity)
-      if State.hostility:get(entity, State.player) == "enemy" then
-        return self.combat_module:control(entity)
-      end
-
-      -- TODO hauler AI
-    end,
-
-    observe = function(self, entity, dt)
-      return self.combat_module:observe(entity, dt)
-    end,
-  }
+  e.ai = janitor_ai.new()
 
   return e
 end
