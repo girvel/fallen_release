@@ -64,7 +64,8 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-    humanoid.add_blood_mark({position = V(33, 71)})
+    State.player.bag.valve = 1
+    item.give(State.player, items.gas_key())
   end)
 end
 

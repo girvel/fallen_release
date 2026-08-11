@@ -60,7 +60,10 @@ methods.start_options = function(self)
 end
 
 methods.finish_options = function(self)
-  assert(Table.last(self.stack).type == "options")
+  local item_type = Table.last(self.stack).type
+  if item_type ~= "options" then
+    Error("Expected to close options, got %q instead", item_type)
+  end
   table.remove(self.stack)
   table.remove(self.cursor)
 end

@@ -1,3 +1,5 @@
+local solids = require("level.palette.solids")
+local health = require("engine.mech.health")
 local interactive = require("engine.tech.interactive")
 local item = require("engine.tech.item")
 local translation = require("engine.tech.translation")
@@ -253,6 +255,9 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     characters = {
       player = {},
       captain_door_note = {},
+      bridge_megadoor1 = {},
+      bridge_megadoor2 = {},
+      bridge_megadoor3 = {},
     },
 
     _on_add = function(self, ch, ps)
@@ -279,18 +284,82 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
         options[4] = nil
       end
 
-      while true do
+      local looped = true
+      while looped do
         local n = api.options(options, true)
-        if n == 1 then
-          break
-        elseif n == 2 then
-          
-        elseif n == 3 then
-        else
-        end
+        sp:start_option(n)
+          if n == 1 then
+            looped = false
+          elseif n == 2 then
+            State.player:animate("interact")
+            sp:lines()
+            local m = sp:start_single_option()
+            if m == 1 then
+              sp:lines()
+            else
+              local branch = State.player:ability_check("athletics", 18) and 1 or 2
+              sp:start_single_branch(branch)
+              if branch == 1 then
+                State.player.inventory.hand = nil
+                State.player:animate("holding", true, true)
+                for _ = 1, 5 do
+                  health.damage(State.player, 1, nil, true)
+                  sp:lines()
+                end
+                State.player:animate()
+                State.player.inventory.hand = hand
+                ch.bridge_megadoor3._locked = false
+                ch.bridge_megadoor3:on_interact(State.player)
+                -- TODO iron jerry codex page
+                looped = false
+              else
+                sp:lines()
+              end
+              sp:finish_single_branch()
+            end
+            sp:finish_single_option()
+          elseif n == 3 then
+            State:remove(ch.bridge_megadoor3)
+            State:remove(ch.bridge_megadoor2)
+            State:remove(ch.bridge_megadoor1)
+            local new_megadoor3 = State:add_at(
+              solids.megadoor3(), ch.bridge_megadoor3.position, "solids"
+            )
+            State:add_at(solids.megadoor2(), ch.bridge_megadoor2.position, "solids")
+            State:add_at(solids.megadoor1(), ch.bridge_megadoor1.position, "solids")
+            new_megadoor3._locked = false
+            State:remove(ch.captain_door_note)
+            sp:lines()
+            looped = false
+          else
+            State.player:animate("holding", true, true)
+            sp:lines()
+            State.player:animate()
+            ch.bridge_megadoor3._locked = false
+            ch.bridge_megadoor3:on_interact(State.player)
+            sp:lines()
+            looped = false
+          end
+        sp:finish_option()
       end
 
       sp:finish_options()
+    end,
+  },
+
+  bridge_opens = cutscene.make {
+    enabled = true,
+    characters = {
+      bridge_megadoor3 = {optional = true},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return not State:exists(ch.bridge_megadoor3) -- NEXT does not trigger
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.order("Разблокируй желтый рычаг на правой панели")
+      Log.warn("TODO advance parasites")
     end,
   },
 }

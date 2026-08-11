@@ -11,7 +11,7 @@
 	"iid": "7cebdd80-6fc0-11f1-b298-23dcb58a5112",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 104,
+	"nextUid": 105,
 	"identifierStyle": "Free",
 	"toc": [],
 	"worldLayout": "Free",
@@ -1809,7 +1809,45 @@
 			"limitBehavior": "MoveLastOne",
 			"pivotX": 0,
 			"pivotY": 0,
-			"fieldDefs": []
+			"fieldDefs": [
+				{
+					"identifier": "capture_name",
+					"doc": null,
+					"__type": "String",
+					"uid": 104,
+					"type": "F_String",
+					"isArray": false,
+					"canBeNull": true,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"exportToToc": false,
+					"searchable": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": null,
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				}
+			]
 		},
 		{
 			"identifier": "pole",
@@ -4948,6 +4986,56 @@
 							}] }],
 							"__worldX": 304,
 							"__worldY": 1136
+						},
+						{
+							"__identifier": "entity_capture",
+							"__grid": [27,68],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 320, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#E4A672",
+							"iid": "9ab85cd0-6fc0-11f1-a58c-05765e8fa609",
+							"width": 16,
+							"height": 16,
+							"defUid": 95,
+							"px": [432,1088],
+							"fieldInstances": [
+								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "solids", "__tile": null, "defUid": 97, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["solids"]
+								}] },
+								{ "__identifier": "capture_name", "__type": "String", "__value": "bridge_megadoor1", "__tile": null, "defUid": 98, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["bridge_megadoor1"]
+								}] }
+							],
+							"__worldX": 432,
+							"__worldY": 1088
+						},
+						{
+							"__identifier": "entity_capture",
+							"__grid": [28,68],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 320, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#E4A672",
+							"iid": "9ff4b1d0-6fc0-11f1-a58c-23cce3a71270",
+							"width": 16,
+							"height": 16,
+							"defUid": 95,
+							"px": [448,1088],
+							"fieldInstances": [
+								{ "__identifier": "layer", "__type": "LocalEnum.layer", "__value": "solids", "__tile": null, "defUid": 97, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["solids"]
+								}] },
+								{ "__identifier": "capture_name", "__type": "String", "__value": "bridge_megadoor2", "__tile": null, "defUid": 98, "realEditorValues": [{
+									"id": "V_String",
+									"params": ["bridge_megadoor2"]
+								}] }
+							],
+							"__worldX": 448,
+							"__worldY": 1088
 						}
 					]
 				},
@@ -5918,7 +6006,10 @@
 							"height": 16,
 							"defUid": 25,
 							"px": [464,1088],
-							"fieldInstances": [],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "bridge_megadoor3", "__tile": null, "defUid": 104, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["bridge_megadoor3"]
+							}] }],
 							"__worldX": 464,
 							"__worldY": 1088
 						},

@@ -30,7 +30,15 @@ base.mix_in = function(entity)
   entity.codename = "player"
   entity.player_flag = true
   entity.fov_r = 15
-  entity.bag = {money = 0, bird_food = 0, bird_remains = 0, amulet = 0}
+  entity.bag = {
+    money = 0,
+    alcohol = 0,
+    valve = 0,
+    sigs = 0,
+    amulet = 0,
+    bird_food = 0,
+    bird_remains = 0,
+  }
   entity.ai = ai.new()
   entity.immovable_flag = true
   entity.on_death = false
