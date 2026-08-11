@@ -72,7 +72,7 @@ for _, tuple in ipairs {
   {27, "door_broken"},
   {28, "vines"},
   {29, "vines"},
-  {30, "note"},
+  {30, "note", false, "записка"},
   {31, "booklet"},
   {33, "vines"},
   {34, "vines"},
@@ -113,8 +113,8 @@ for _, tuple in ipairs {
   {93, "bone_meal"},
   {94, "bone_meal"},
 } do
-  local index, codename, perspective_flag = unpack(
-    tuple --[=[@as [integer, string, true?]]=]
+  local index, codename, perspective_flag, name = unpack(
+    tuple --[=[@as [integer, string, boolean?, string]]=]
   )
   local i, this_sprite = packer:geti(index)
   on_solids[i] = function()
@@ -122,6 +122,7 @@ for _, tuple in ipairs {
       boring_flag = true,
       perspective_flag = perspective_flag,
       codename = codename,
+      name = name,
       sprite = this_sprite,
     }
   end

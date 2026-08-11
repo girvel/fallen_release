@@ -25,6 +25,7 @@ local rails = {}
 --- @field rront_status "dead"|"ran_away"?
 --- @field met_son_mary boolean?
 --- @field did_markiss_help boolean?
+--- @field lunch_started boolean?
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -188,7 +189,7 @@ methods.rront_killed = function(self)
 end
 
 methods.start_lunch = function(self)
-  Log.warn("TODO")
+  self.lunch_started = true
 end
 
 --- @param i number

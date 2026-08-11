@@ -1,3 +1,5 @@
+local interactive = require("engine.tech.interactive")
+local item = require("engine.tech.item")
 local translation = require("engine.tech.translation")
 local stages = require("level.logic.stages")
 local api = require("engine.tech.api")
@@ -241,6 +243,54 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       self._line_i = math.min(#self._lines, self._line_i + 1)
       State.model.popups = {}
       api.popup(self._lines[self._line_i], ch.markiss)
+    end,
+  },
+
+  _410_captain_door = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/410_captain_door.ms",
+    characters = {
+      player = {},
+      captain_door_note = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      item.set_cue(ch.captain_door_note, "highlight", true)
+      interactive.mix_in(ch.captain_door_note)
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.captain_door_note.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+
+      local options = sp:start_options()
+      if self._tried_brute_force then
+        options[2] = nil
+      end
+      if State.player.bag.valve == 0 then
+        options[3] = nil
+      end
+      local hand = State.player.inventory.hand
+      if not hand or hand.codename ~= "gas_key" then
+        options[4] = nil
+      end
+
+      while true do
+        local n = api.options(options, true)
+        if n == 1 then
+          break
+        elseif n == 2 then
+          
+        elseif n == 3 then
+        else
+        end
+      end
+
+      sp:finish_options()
     end,
   },
 }
