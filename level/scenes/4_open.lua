@@ -1,3 +1,4 @@
+local mind_control = require("level.logic.mind_control")
 local player_base = require("engine.state.player.base")
 local solids = require("level.palette.solids")
 local health = require("engine.mech.health")

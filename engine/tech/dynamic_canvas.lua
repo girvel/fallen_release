@@ -1,10 +1,10 @@
 local dynamic_canvas = {}
 
---- @type table<love.Canvas, {container: table, key: string}>
+--- @type table<love.Canvas, {container: table, key: any}>
 local map = setmetatable({}, {__mode = "k"})
 
 --- @param container table
---- @param key string
+--- @param key any
 --- @return love.Canvas
 dynamic_canvas.new = function(container, key)
   local params = {container = container, key = key}

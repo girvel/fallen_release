@@ -1,3 +1,5 @@
+local async = require("engine.tech.async")
+local mind_control = require("level.logic.mind_control")
 local items = require("level.palette.items")
 local item = require("engine.tech.item")
 local xp = require("engine.mech.xp")
@@ -66,6 +68,8 @@ init_debug = function()
     Kernel.gui._mode:submit()
     State.player.bag.valve = 1
     item.give(State.player, items.gas_key())
+    async.sleep(1)
+    State:add(mind_control.new())
   end)
 end
 
