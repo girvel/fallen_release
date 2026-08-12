@@ -348,6 +348,38 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     end,
   },
 
+  _420_son_mary_swears = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/420_son_mary_swears.ms",
+    characters = {
+      son_mary = {},
+    },
+
+    _prev_distance = 100,
+    _condition = function(self, dt, ch, ps)
+      local distance = api.distance(State.player, ch.son_mary)
+      local result = not State.rails.met_son_mary
+        and distance <= 3
+        and self._prev_distance > 3
+      self._prev_distance = distance
+      return result
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp)
+      State.model.popups = {}
+      local first_swear = sp:literal()
+      if self._first_time then
+        self._first_time = false
+        api.popup(first_swear, ch.son_mary)
+        return
+      end
+
+      api.popup(sp:literal(), ch.son_mary)
+    end,
+  },
+
   bridge_opens = cutscene.make {
     enabled = true,
     characters = {

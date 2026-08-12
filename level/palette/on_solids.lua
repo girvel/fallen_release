@@ -34,13 +34,15 @@ end
 do
   local i, this_sprite = packer:get(6, 3)
   on_solids[i] = function()
-    return {
+    local e = {
       boring_flag = true,
       codename = "son_mary_bottom",
       name = "Голова в банке",
       sprite = this_sprite,
       portrait = sprite.image("assets/portraits/son_mary.png"),
     }
+    interactive.mix_in(e)
+    return e
   end
 end
 

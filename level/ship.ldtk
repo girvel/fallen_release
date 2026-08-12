@@ -4627,9 +4627,9 @@
 									"id": "V_String",
 									"params": ["on_solids"]
 								}] },
-								{ "__identifier": "capture_name", "__type": "String", "__value": "son_mary_lower", "__tile": null, "defUid": 98, "realEditorValues": [{
+								{ "__identifier": "capture_name", "__type": "String", "__value": "son_mary", "__tile": null, "defUid": 98, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["son_mary_lower"]
+									"params": ["son_mary"]
 								}] }
 							],
 							"__worldX": 448,
