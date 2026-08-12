@@ -730,6 +730,10 @@ return {
     },
 
     _condition = function(self, dt, ch, ps)
+      if State.rails.lunch_started then
+        State.runner:remove(self)
+        return false
+      end
       return api.distance(State.player, ch.possessed) < 5
     end,
 
@@ -753,6 +757,10 @@ return {
     },
 
     _condition = function(self, dt, ch, ps)
+      if State.rails.lunch_started then
+        State.runner:remove(self)
+        return false
+      end
       local possessed = rawget(ch, "possessed")
       return possessed and possessed.hp <= 0
         and State.rails.quests.detective < stages.detective._1000_completed

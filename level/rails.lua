@@ -1,3 +1,5 @@
+local sprite = require("engine.tech.sprite")
+local health = require("engine.mech.health")
 local async = require("engine.tech.async")
 local mind_control = require("level.logic.mind_control")
 local items = require("level.palette.items")
@@ -29,6 +31,7 @@ local rails = {}
 --- @field resists_son_mary boolean?
 --- @field did_markiss_help boolean?
 --- @field lunch_started boolean?
+--- @field flask_noticed boolean?
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -203,14 +206,76 @@ end
 
 methods.rront_killed = function(self)
   assert(not State:exists(State.level.entities.engineer_3))
-  State.rails:start_lunch()
-  State.rails:set_quest("detective", stages.detective._1000_completed)
+  self:start_lunch()
+  self:set_quest("detective", stages.detective._1000_completed)
   api.autosave("Диверсант устранён")
   self.rront_status = "dead"
 end
 
 methods.start_lunch = function(self)
   self.lunch_started = true
+
+  local ch = State.level.entities
+  local ps = State.level.positions
+
+  item.set_cue(ch.soup_cauldron, "highlight", true)
+  if State:exists(ch.cook) then
+    level.unsafe_move(ch.cook, ps.cook_chilling)
+  end
+
+  local did_dreamers_kill_possessed = ch.possessed and ch.possessed.hp > 0
+  if did_dreamers_kill_possessed then
+    health.damage(ch.possessed, 1000)
+  end
+
+  local possessed_position = ch.possessed and ch.possessed.position
+  if not possessed_position
+    or api.distance(possessed_position, ps.possessed_spawn) > 10
+  then
+    possessed_position = ps.possessed_spawn
+  end
+
+  local killer_counter = 0
+  local bfs = State.grids.solids:bfs(possessed_position)
+  bfs()
+  for p, e in bfs do
+    if e then bfs:discard() end
+    killer_counter = killer_counter + 1
+    if killer_counter == 3 and did_dreamers_kill_possessed then
+      humanoid.add_body({position = p})  --- @diagnostic disable-line
+      break
+    end
+
+    local killer = solids.dreamer({faction = "canteen_killers"})
+    killer:rotate((possessed_position - p):normalized2())
+    ch["canteen_killer_"..killer_counter] = State:add_at(killer, p, "solids")
+
+    if killer_counter == 3 then break end
+  end
+
+  for i = 1, 3 do
+    for p, e in State.grids.solids:bfs(ps["canteen_dreamer_spawn_"..i]) do
+      if not e then
+        State:add_at(solids.dreamer({faction = "canteen_dreamers"}), p, "solids")
+        break
+      end
+    end
+  end
+
+  for p, e in State.grids.solids:bfs(ps.canteen_dreamer_spawn_flask) do
+    if not e then
+      local dreamer = solids.dreamer({faction = "canteen_dreamers", race = "half_elf"})
+      dreamer.inventory.right_pocket = items.flask()
+      dreamer.portrait = sprite.image("assets/portraits/half_elf.png")
+      State:add_at(dreamer, p, "solids")
+      ch.canteen_dreamer_flask = dreamer
+      break
+    end
+  end
+
+  if self.flask_noticed then
+    item.set_cue(ch.canteen_dreamer_flask, "highlight", true)
+  end
 end
 
 --- @param i number

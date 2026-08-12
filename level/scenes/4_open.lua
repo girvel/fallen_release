@@ -1,3 +1,4 @@
+local async = require("engine.tech.async")
 local sound = require("engine.tech.sound")
 local mind_control = require("level.logic.mind_control")
 local player_base = require("engine.state.player.base")
@@ -389,6 +390,7 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     characters = {
       player = {},
       son_mary = {},
+      canteen_dreamer_flask = {},
     },
 
     _condition = function(self, dt, ch, ps)
@@ -427,7 +429,8 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       n = State.player:saving_throw("wis", 18) and 1 or 2
       sp:start_single_branch(n)
       if n == 1 then
-        -- NEXT shader here
+        -- TODO shader here
+        -- SOUND
         sp:lines()
         State.rails.resists_son_mary = true
       else
@@ -444,6 +447,24 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       sp:finish_single_branch()
 
       sp:lines()
+
+      api.order(sp:literal())
+      async.sleep(2)
+
+      sp:lines()
+
+      sp:start_single_branch(State.player:ability_check("insight", 13) and 1 or 2)
+        sp:lines()
+      sp:finish_single_branch()
+
+      sp:start_single_option()
+        sp:lines()
+      sp:finish_single_option()
+
+      api.order(sp:literal())
+
+      State.rails:set_quest("alcohol", stages.alcohol._0010_search)
+      interactive.mix_in(ch.canteen_dreamer_flask)
     end,
   },
 
