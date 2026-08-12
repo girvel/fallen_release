@@ -156,7 +156,6 @@ end
 
 --- @return boolean
 methods.empty = function(self)
-  Log.traces(#self.stack, self.cursor, #self.stack[1], self.stack[1][1])
   local last = self.stack[1]
   local cursor = self.cursor[1]
   return #self.stack == 1

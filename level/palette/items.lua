@@ -80,6 +80,7 @@ end
 
 items.bucket = function()
   local e = {
+    boring_flag = true,
     name = "ведро",
     codename = "bucket",
     slot = "offhand",

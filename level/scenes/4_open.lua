@@ -322,12 +322,12 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
             State:remove(ch.bridge_megadoor3)
             State:remove(ch.bridge_megadoor2)
             State:remove(ch.bridge_megadoor1)
-            local new_megadoor3 = State:add_at(
+            State.level.entities.bridge_megadoor3 = State:add_at(
               solids.megadoor3(), ch.bridge_megadoor3.position, "solids"
             )
             State:add_at(solids.megadoor2(), ch.bridge_megadoor2.position, "solids")
             State:add_at(solids.megadoor1(), ch.bridge_megadoor1.position, "solids")
-            new_megadoor3._locked = false
+            State.level.entities.bridge_megadoor3._locked = false
             State:remove(ch.captain_door_note)
             sp:lines()
             looped = false
@@ -350,11 +350,11 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
   bridge_opens = cutscene.make {
     enabled = true,
     characters = {
-      bridge_megadoor3 = {optional = true},
+      bridge_megadoor3 = {},
     },
 
     _condition = function(self, dt, ch, ps)
-      return not State:exists(ch.bridge_megadoor3) -- NEXT does not trigger
+      return ch.bridge_megadoor3.grid_layer ~= "solids"
     end,
 
     _run = function(self, ch, ps, sp)
