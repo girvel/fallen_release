@@ -133,6 +133,23 @@ checkpoints.cp4 = function(rails)
   item.give(State.player, items.greatsword())
 end
 
+checkpoints.cp5 = function(rails)
+  skip_intro(rails)
+  rails:transition_2_warmup()
+  rails:transition_3_detective()
+  level.unsafe_move(State.player, State.level.positions.cp5)
+  rails:set_quest("warmup", stages.warmup._1000_bird_fed)
+  rails:rront_runs_away()
+  State.runner:remove("_304_room_description")
+  State.runner:remove("_322_dwarf_start")
+  State.player.xp = xp.for_level[3]
+  item.give(State.player, items.greatsword())
+
+  local ch = State.level.entities
+  ch.bridge_megadoor3._locked = false
+  ch.bridge_megadoor3:on_interact(State.player)
+end
+
 --- @param questname stages.keys
 --- @param stage integer
 methods.set_quest = function(self, questname, stage)

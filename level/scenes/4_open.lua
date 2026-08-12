@@ -380,6 +380,47 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     end,
   },
 
+  _422_son_mary_meeting = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/422_son_mary_meeting.ms",
+    characters = {
+      player = {},
+      son_mary = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      if State.rails.quests.alcohol > 0 then
+        State.runner:remove(self)
+        return false
+      end
+      return ch.son_mary.was_interacted_by == State.player
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp)
+      State.model.popups = {}
+      sp:start_single_branch()
+      if self._first_time then
+        self._first_time = false
+        sp:lines()
+        sp:start_single_branch(State.player:ability_check("medicine", 8) and 1 or 2)
+          sp:lines()
+        sp:finish_single_branch()
+        sp:lines()
+      end
+      sp:finish_single_branch()
+
+      local n = sp:start_single_option()
+        sp:lines()
+        if n == 4 then return end
+      sp:finish_single_option()
+
+      State.runner:remove(self)
+      sp:lines()
+    end,
+  },
+
   bridge_opens = cutscene.make {
     enabled = true,
     characters = {
