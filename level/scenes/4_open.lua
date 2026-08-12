@@ -1,3 +1,4 @@
+local player_base = require("engine.state.player.base")
 local solids = require("level.palette.solids")
 local health = require("engine.mech.health")
 local interactive = require("engine.tech.interactive")
@@ -360,6 +361,34 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     _run = function(self, ch, ps, sp)
       api.order("Разблокируй желтый рычаг на правой панели")
       Log.warn("TODO advance parasites")
+    end,
+  },
+
+  deck_fov_enter = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position.y == ps.water_fov_border_enter.y
+        and State.player.fov_r ~= 30
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.player.fov_r = 30
+    end,
+  },
+
+  deck_fov_exit = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position.y == ps.water_fov_border_exit.y
+        and State.player.fov_r ~= player_base.DEFAULT_FOV
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.player.fov_r = player_base.DEFAULT_FOV
     end,
   },
 }

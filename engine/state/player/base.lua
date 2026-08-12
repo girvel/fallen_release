@@ -24,25 +24,29 @@ local base = {}
 --- @field bird_food integer
 --- @field bird_remains integer
 
+base.DEFAULT_FOV = 15
+
 --- @param entity table
 base.mix_in = function(entity)
   creature.mix_in(entity)
-  entity.codename = "player"
-  entity.player_flag = true
-  entity.fov_r = 15
-  entity.bag = {
-    money = 0,
-    alcohol = 0,
-    valve = 0,
-    sigs = 0,
-    amulet = 0,
-    bird_food = 0,
-    bird_remains = 0,
-  }
-  entity.ai = ai.new()
-  entity.immovable_flag = true
-  entity.on_death = false
-  entity.souls_n = entity.souls_n or 1
+  Table.defaults(entity, {
+    codename = "player",
+    player_flag = true,
+    fov_r = base.DEFAULT_FOV,
+    bag = {
+      money = 0,
+      alcohol = 0,
+      valve = 0,
+      sigs = 0,
+      amulet = 0,
+      bird_food = 0,
+      bird_remains = 0,
+    },
+    ai = ai.new(),
+    immovable_flag = true,
+    on_death = false,
+    souls_n = 1,
+  })
 end
 
 --- @type action
