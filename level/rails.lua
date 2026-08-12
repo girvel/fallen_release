@@ -26,6 +26,7 @@ local rails = {}
 --- @field given_up_gloves boolean
 --- @field rront_status "dead"|"ran_away"?
 --- @field met_son_mary boolean?
+--- @field resists_son_mary boolean?
 --- @field did_markiss_help boolean?
 --- @field lunch_started boolean?
 local methods = {}
@@ -68,8 +69,6 @@ init_debug = function()
     Kernel.gui._mode:submit()
     State.player.bag.valve = 1
     item.give(State.player, items.gas_key())
-    async.sleep(1)
-    State:add(mind_control.new())
   end)
 end
 

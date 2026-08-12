@@ -1,3 +1,4 @@
+local sound = require("engine.tech.sound")
 local mind_control = require("level.logic.mind_control")
 local player_base = require("engine.state.player.base")
 local solids = require("level.palette.solids")
@@ -418,6 +419,30 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       sp:finish_single_option()
 
       State.runner:remove(self)
+      sp:lines()
+
+      sound.new("assets/sounds/son_mary_spell.mp3"):play()
+      sp:lines()
+
+      n = State.player:saving_throw("wis", 18) and 1 or 2
+      sp:start_single_branch(n)
+      if n == 1 then
+        -- NEXT shader here
+        sp:lines()
+        State.rails.resists_son_mary = true
+      else
+        local this_mind_control = State:add(mind_control.new())
+        sp:lines()
+        local heartbeat = sound.new("assets/sounds/heartbeat.mp3")
+        heartbeat:play()
+        sp:lines()
+        heartbeat:stop()
+        sp:lines()
+        State:remove(this_mind_control)
+        sp:lines()
+      end
+      sp:finish_single_branch()
+
       sp:lines()
     end,
   },
