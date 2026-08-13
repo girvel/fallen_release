@@ -159,7 +159,7 @@ return {
       sc:_run(ch, ps)
       sp:lines()
 
-      api.autosave()
+      api.autosave("Детектив")
     end,
   },
 
@@ -331,12 +331,17 @@ return {
     enabled = true,
 
     _condition = function(self, dt, ch, ps)
+      if State.rails.quests.detective >= stages.detective._1000_completed then
+        State.runner:remove(self)
+        return false
+      end
       return api.distance(State.player, ps.detective_exit) > 20
         and State.rails.quests.detective == stages.detective._0020_investigate
     end,
 
     _run = function(self, ch, ps, sp)
       State.rails:rront_runs_away()
+      api.autosave("Диверсант сбежал")
     end,
   },
 
@@ -348,12 +353,17 @@ return {
     },
 
     _condition = function(self, dt, ch, ps)
+      if State.rails.quests.detective >= stages.detective._1000_completed then
+        State.runner:remove(self)
+        return false
+      end
       return ch.engineer_3.position == ps.detective_exit
     end,
 
     _run = function(self, ch, ps, sp)
       async.sleep(.5)
       State.rails:rront_runs_away()
+      api.autosave("Диверсант сбежал")
     end,
   },
 

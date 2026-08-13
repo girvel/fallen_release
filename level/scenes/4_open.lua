@@ -484,6 +484,7 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
 
       State.rails:set_quest("alcohol", stages.alcohol._0010_search)
       interactive.mix_in(ch.canteen_dreamer_flask)
+      api.autosave("Встретил Сон Мари")
     end,
   },
 
