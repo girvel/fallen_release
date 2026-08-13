@@ -487,6 +487,35 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     end,
   },
 
+  _424_son_mary_no_alcohol = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    characters = {
+      son_mary = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      local alcohol = State.rails.quests.alcohol
+      if alcohol == 0 then return false end
+      if alcohol > stages.alcohol._0030_return then
+        State.runner:remove(self)
+        return false
+      end
+      return State.player.bag.alcohol == 0
+        and ch.son_mary.was_interacted_by == State.player
+    end,
+
+    _lines = love.filesystem.read("assets/screenplay/424_son_mary_no_alcohol.txt")
+      :strip()
+      :split("\n"),
+    _line_i = 0,
+    _run = function(self, ch, ps, sp)
+      self._line_i = Math.loopmod(self._line_i + 1, #self._lines)
+      State.model.popups = {}
+      api.popup(self._lines[self._line_i], ch.son_mary)
+    end,
+  },
+
   deck_fov_enter = cutscene.make {
     enabled = true,
     mode = "sequential",
