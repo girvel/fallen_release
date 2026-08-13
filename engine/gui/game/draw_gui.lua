@@ -178,7 +178,7 @@ draw_gui = function(self, dt)
   is_compact = love.graphics.getHeight() < 900
   hint = nil
 
-  local dialogue_h = is_compact and 190 or 280
+  local dialogue_h = is_compact and 190 or 300
   local bottom_gap = is_compact and 0 or 50
   dialogue_y = love.graphics.getHeight() - dialogue_h - bottom_gap
 
