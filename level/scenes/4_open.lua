@@ -327,9 +327,12 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
             State:remove(ch.bridge_megadoor2)
             State:remove(ch.bridge_megadoor1)
             State.level.entities.bridge_megadoor3 = State:add_at(
+              --- @diagnostic disable-next-line:undefined-field
               solids.megadoor3(), ch.bridge_megadoor3.position, "solids"
             )
+            --- @diagnostic disable-next-line:undefined-field
             State:add_at(solids.megadoor2(), ch.bridge_megadoor2.position, "solids")
+            --- @diagnostic disable-next-line:undefined-field
             State:add_at(solids.megadoor1(), ch.bridge_megadoor1.position, "solids")
             State.level.entities.bridge_megadoor3._locked = false
             State:remove(ch.captain_door_note)
@@ -348,6 +351,22 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       end
 
       sp:finish_options()
+    end,
+  },
+
+  bridge_opens = cutscene.make {
+    enabled = true,
+    characters = {
+      bridge_megadoor3 = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.bridge_megadoor3.grid_layer ~= "solids"
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.order("Разблокируй желтый рычаг на правой панели")
+      State.rails:set_quest("parasites", stages.parasites._0010_go_to_bridge)
     end,
   },
 
@@ -465,22 +484,6 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
 
       State.rails:set_quest("alcohol", stages.alcohol._0010_search)
       interactive.mix_in(ch.canteen_dreamer_flask)
-    end,
-  },
-
-  bridge_opens = cutscene.make {
-    enabled = true,
-    characters = {
-      bridge_megadoor3 = {},
-    },
-
-    _condition = function(self, dt, ch, ps)
-      return ch.bridge_megadoor3.grid_layer ~= "solids"
-    end,
-
-    _run = function(self, ch, ps, sp)
-      api.order("Разблокируй желтый рычаг на правой панели")
-      Log.warn("TODO advance parasites")
     end,
   },
 

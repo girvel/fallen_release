@@ -3,8 +3,9 @@ local stages = {}
 --- @class stages
 --- @field warmup stages.warmup
 --- @field detective stages.detective
---- @field sigi stages.sigi
+--- @field parasites stages.parasites
 --- @field alcohol stages.alcohol
+--- @field sigi stages.sigi
 
 --- @return stages
 stages.new = function()
@@ -12,8 +13,9 @@ stages.new = function()
   local result = {
     warmup = 0,
     detective = 0,
-    sigi = 0,
+    parasites = 0,
     alcohol = 0,
+    sigi = 0,
   }
   return result
 end
@@ -42,12 +44,12 @@ stages.detective = {
   _2000_failed = stages.FAILED,
 }
 
---- @enum stages.sigi
-stages.sigi = {
-  _0010_search = 10,
-  _0020_return = 20,
+--- @enum stages.parasites
+stages.parasites = {
+  _0010_go_to_bridge = 10,
+  _0020_unlock_starboard = 20,
+  _0030_kill_parasites = 30,
   _1000_completed = stages.COMPLETED,
-  _2000_failed = stages.FAILED,
 }
 
 --- @enum stages.alcohol
@@ -56,6 +58,14 @@ stages.alcohol = {
   _0020_search_again = 20,
   _0030_return = 30,
   _1000_completed = 1000,
+}
+
+--- @enum stages.sigi
+stages.sigi = {
+  _0010_search = 10,
+  _0020_return = 20,
+  _1000_completed = stages.COMPLETED,
+  _2000_failed = stages.FAILED,
 }
 
 Ldump.mark(stages, {mt = "const"}, ...)

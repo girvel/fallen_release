@@ -165,6 +165,68 @@ end
 ----------------------------------------------------------------------------------------------------
 
 pages.index = function(codex)
+  local sigi = State.rails.quests.sigi
+  if sigi > 0 then
+    codex:header("Если нет в кармане пачки", sigi)
+    codex:li(
+      "Найти “Душнарские” сигареты.",
+      sigi >= stages.sigi._0020_return
+    )
+
+    if sigi >= stages.sigi._0020_return then
+      codex:li(
+        "Отнести “Душнарские” сигареты коту.",
+        sigi >= stages.sigi._1000_completed
+      )
+    end
+  end
+
+  local alcohol = State.rails.quests.alcohol
+  if alcohol > 0 then
+    codex:header("Йо-хо-хо", alcohol)
+    codex:li(
+      "Принести алкоголь этой грёбаной голове в рубке.",
+      alcohol >= stages.alcohol._0020_search_again
+    )
+
+    if alcohol >= stages.alcohol._0020_search_again then
+      codex:li(
+        "Принести ещё один крепкий напиток грёбаному капитану в рубке.",
+        alcohol >= stages.alcohol._0030_return
+      )
+    end
+
+    if alcohol >= stages.alcohol._0030_return then
+      codex:li(
+        "Вернуться к капитану.",
+        alcohol >= stages.alcohol._1000_completed
+      )
+    end
+  end
+
+  local parasites = State.rails.quests.parasites
+  if parasites > 0 then
+    codex:header("Паразиты", parasites)
+    codex:li(
+      "Пойти в рубку, она должна быть вверх по коридору.",
+      parasites >= stages.parasites._0020_unlock_starboard
+    )
+
+    if parasites >= stages.parasites._0020_unlock_starboard then
+      codex:li(
+        "Разблокировать желтый рычаг на правой панели (недоступно в текущей версии).",
+        parasites >= stages.parasites._0030_kill_parasites
+      )
+    end
+
+    -- if parasites >= stages.parasites._0030_kill_parasites then
+    --   codex:li(
+    --     "",
+    --     parasites >= stages.parasites._1000_completed
+    --   )
+    -- end
+  end
+
   local detective = State.rails.quests.detective
   if detective > 0 then
     codex:header(
