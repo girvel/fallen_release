@@ -110,16 +110,29 @@ methods.cancel = function(self, scene, hard, silent)
   local name
   if type(scene) ~= "table" then
     name = scene
-    scene = self.scenes[scene]
   end
 
   local cancelled = {}
-  for _, run in ipairs(self._scene_runs) do
-    if run.base_scene == scene then
-      cancelled[run] = true
-      for _, child in ipairs(run.children) do
-        cancelled[child] = true
+  local cancel
+  cancel = function(run)
+    cancelled[run] = true
+    for _, child in ipairs(run.children) do
+      if not cancelled[child] then
+        cancel(child)
       end
+    end
+  end
+
+  for _, run in ipairs(self._scene_runs) do
+    local condition
+    if type(scene) == "table" then
+      condition = run.base_scene == scene
+    else
+      condition = run.name == scene
+    end
+
+    if condition then
+      cancel(run)
     end
   end
 

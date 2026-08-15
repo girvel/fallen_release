@@ -537,7 +537,6 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      State.runner:remove("_242_weapon_picked_up")
       sp:lines()
 
       local phantom
@@ -561,6 +560,7 @@ return {
               sp:lines()
             sp:finish_single_branch()
             State.runner:remove(self)
+            State.runner:cancel("_242_weapon_picked_up")
             ch.mirage_block.interact = nil
             running = false
           else
