@@ -1,4 +1,7 @@
 ---
+narration: О
+player: П
+son_mary: Н
 ---
 
 ДИАЛОГ СВОБОДНЫХ
