@@ -6,7 +6,7 @@ narration: О
 
 !Спас телосложения сложность 12
   О: Ты зажимаешь нос, предотвращая чихание; такой шум мог бы вызвать мебельную лавину; не самый лучший конец приключения.
-  NEXT mb option to performatively sneeze anyway, triggering the fight?
+  NEXT DISCUSSION TASK: mb option to performatively sneeze anyway, triggering the fight?
 !Провал: 
   Н: *АПЧХИ!!*
   Прилетает летучие мыши, боевка

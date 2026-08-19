@@ -18,9 +18,8 @@ son_mary: Н
 
 NEXT maybe unlock some dialogues gradually?
 NEXT warn about unresolved % expressions
-NEXT highlight [SKILL -- RESULT] syntax
 NEXT burning animation for furnaces, activated on coal/sometimes always active
-NEXT do we announce ability checks beforehand?
+NEXT DISCUSS do we announce ability checks beforehand?
 
 О: Сон Мари глухо кашляет, создавая водоворот из пузырей.
 Н: Ну что %SM_NAME%, собираешься что-то обсудить? 
