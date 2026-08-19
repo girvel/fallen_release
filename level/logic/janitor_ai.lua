@@ -3,6 +3,7 @@ local api = require("engine.tech.api")
 local items = require("level.palette.items")
 local item = require("engine.tech.item")
 local combat = require("engine.mech.ais.combat")
+local screenplay = require("engine.tech.screenplay")
 
 
 local janitor_ai = {}
@@ -31,14 +32,10 @@ methods.deinit = function(self, entity)
   self.combat_module:deinit(entity)
 end
 
-local LINES = {
-  "Ой.",
-  "Опять пролилась.",
-  "Пожалуйста, не делай этого.",
-  "Ты это специально?",
-  "Ещё раз и у тебя будут проблемы.",
-  "Ну всё, я тебе покажу!",
-}
+local LINES do
+  local sp = screenplay.new("assets/screenplay/468_janitor.ms", {})
+  LINES = sp:literal():split("\n")
+end
 
 methods.control = function(self, entity)
   if State.hostility:get(entity, State.player) == "enemy" then
