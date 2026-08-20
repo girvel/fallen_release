@@ -358,7 +358,7 @@ return {
     end,
   },
 
-  _230_disappearing_dude = cutscene.make {
+  _disappearing_dude = cutscene.make {
     enabled = true,
     characters = {
       dining_room_door_1 = {optional = true},
@@ -378,6 +378,22 @@ return {
     _run = function(self, ch, ps, sp)
       animated.add_fx("assets/animations/disappearing_dude", ps.possessed_image, "on2_solids")
       sound.new("assets/sounds/creepy.mp3", .1):play()
+    end,
+  },
+
+  _230_engine = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/230_engine.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position >= ps.engine_message_start
+        and State.player.position <= ps.engine_message_finish
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:start_single_branch(State.player:ability_check("history", 16) and 1 or 2)
+        api.popup(sp:literal())
+      sp:finish_single_branch()
     end,
   },
 

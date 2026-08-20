@@ -16,10 +16,8 @@ son_mary: Н
   Н: И забрал ты их с корабля, с которого вот-вот слиняешь.
   Н: Ты пират, %SM_NAME%.
 
-NEXT maybe unlock some dialogues gradually?
 NEXT warn about unresolved % expressions
 NEXT burning animation for furnaces, activated on coal/sometimes always active
-NEXT DISCUSS do we announce ability checks beforehand?
 
 О: Сон Мари глухо кашляет, создавая водоворот из пузырей.
 Н: Ну что %SM_NAME%, собираешься что-то обсудить? 
