@@ -397,6 +397,33 @@ return {
     end,
   },
 
+  _232_engine_attacked = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/232_engine_attacked.ms",
+
+    _on_add = function(self, ch, ps)
+      self._sub = State.hostility:subscribe(function(source, target)
+        if source == State.player and target._left_engine_flag then
+          self._triggered = true
+        end
+      end)
+    end,
+
+    _on_remove = function(self, ch, ps)
+      State.hostility:unsubscribe(self._sub)
+    end,
+
+    _triggered = false,
+    _condition = function(self, dt, ch, ps)
+      return self._triggered
+    end,
+
+    _run = function(self, ch, ps, sp)
+      self._triggered = false
+      api.popup(sp:literal())
+    end,
+  },
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Story scenes
 ----------------------------------------------------------------------------------------------------

@@ -367,14 +367,19 @@ for y = 1, 6 do
     local i, this_sprite = packer:get(x, y)
     local shader = y == 6 and x > 5 and shaders.reflective(Vector.down) or nil
     solids[i] = function()
-      return {
+      local e = {
         boring_flag = true,
         transparent_flag = true,
         codename = "engine",
         name = "двигатель",
         sprite = this_sprite,
         shader = shader,
+        hp = 1,
+        perks = {perks.invincible},
+        _left_engine_flag = true,
       }
+      creature.mix_in_perks(e)
+      return e
     end
 
     ::continue::
