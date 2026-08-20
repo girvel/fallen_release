@@ -686,9 +686,6 @@ end
 
 local SKIP_SOUNDS = sound.multiple("engine/assets/sounds/skip_line", .05)
 
-local FAILURE = colors.red
-local SUCCESS = colors.light_green
-
 local hate = Vector.hex("e64e4b")
 local last_text
 local split
@@ -710,25 +707,7 @@ draw_line = function(this_line)
       ui.text(": ")
     end
 
-    do
-      local color
-      local _, j, highlighted = text:find("^(%[[^%]]+ — успех%] )")
-      if highlighted then
-        color = SUCCESS
-      else
-        _, j, highlighted = text:find("^(%[[^%]]+ — провал%] )")
-        if highlighted then
-          color = FAILURE
-        end
-      end
-
-      if highlighted then
-        ui.start_color(color)
-          ui.text(highlighted)
-        ui.finish_color()
-        text = text:sub(j + 1)
-      end
-    end
+    text = tk.skill_check_annotation(text)
 
     if text ~= last_text then
       last_text = text

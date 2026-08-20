@@ -232,5 +232,32 @@ tk.popup = function(position, text)
   ui.finish_frame()
 end
 
+local FAILURE = colors.red
+local SUCCESS = colors.light_green
+
+--- @param text string
+--- @return string
+tk.skill_check_annotation = function(text)
+  local color
+  local _, j, highlighted = text:find("^(%[[^%]]+ — успех%] )")
+  if highlighted then
+    color = SUCCESS
+  else
+    _, j, highlighted = text:find("^(%[[^%]]+ — провал%] )")
+    if highlighted then
+      color = FAILURE
+    end
+  end
+
+  if highlighted then
+    ui.start_color(color)
+      ui.text(highlighted)
+    ui.finish_color()
+    text = text:sub(j + 1)
+  end
+
+  return text
+end
+
 Ldump.mark(tk, {}, ...)
 return tk

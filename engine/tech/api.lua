@@ -1,3 +1,4 @@
+local tk = require("engine.gui.tk")
 local translation = require("engine.tech.translation")
 local colors = require("engine.tech.colors")
 local tcod = require("engine.tech.tcod")
@@ -626,10 +627,14 @@ end
 --- @param life_time? number
 api.popup = function(text, target, life_time)
   target = api.to_vector(target or State.player)
+  text = text:gsub(" %-%- ", " — ")
   local render_text, final_life_time
   if type(text) == "string" then
     render_text = function()
-      ui.text(text)
+      ui.start_line()
+        local text_after = tk.skill_check_annotation(text)
+        ui.text(text_after)
+      ui.finish_line()
     end
     final_life_time = life_time or get_time(text)
   else
