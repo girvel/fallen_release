@@ -120,6 +120,8 @@ methods.control = function(self, entity)
       end
 
       State:remove(State.grids.on_tiles[bucket_position])
+      bucket_position = State.grids.solids:find_free_position(entity.position, 1)
+      if not bucket_position then break end
       self.bucket = State:add_at(solids.bucket(), bucket_position, "solids")
     end
   end
