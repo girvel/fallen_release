@@ -448,6 +448,28 @@ return {
     end,
   },
 
+  _236_guard_a_talking = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/236_guard_a_talking.ms",
+    characters = {
+      player = {},
+      guard_a = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      if State.hostility:get(ch.guard_a, State.player) == "enemy" then
+        State.runner:remove(self)
+        return false
+      end
+      return ch.guard_a.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+    end,
+  },
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Story scenes
 ----------------------------------------------------------------------------------------------------

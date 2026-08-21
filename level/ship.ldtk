@@ -5680,9 +5680,9 @@
 							"defUid": 67,
 							"px": [560,1872],
 							"fieldInstances": [
-								{ "__identifier": "capture_name", "__type": "String", "__value": "guard_1", "__tile": null, "defUid": 68, "realEditorValues": [{
+								{ "__identifier": "capture_name", "__type": "String", "__value": "guard_a", "__tile": null, "defUid": 68, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["guard_1"]
+									"params": ["guard_a"]
 								}] },
 								{ "__identifier": "args", "__type": "String", "__value": "{direction = Vector.left}", "__tile": null, "defUid": 69, "realEditorValues": [{
 									"id": "V_String",
@@ -5705,9 +5705,9 @@
 							"defUid": 67,
 							"px": [624,1904],
 							"fieldInstances": [
-								{ "__identifier": "capture_name", "__type": "String", "__value": "guard_2", "__tile": null, "defUid": 68, "realEditorValues": [{
+								{ "__identifier": "capture_name", "__type": "String", "__value": "guard_b", "__tile": null, "defUid": 68, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["guard_2"]
+									"params": ["guard_b"]
 								}] },
 								{ "__identifier": "args", "__type": "String", "__value": "{direction = Vector.down, has_valve = true}", "__tile": null, "defUid": 69, "realEditorValues": [{
 									"id": "V_String",
