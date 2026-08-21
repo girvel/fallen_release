@@ -501,6 +501,35 @@ return {
     end,
   },
 
+  _272_rum = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/272_rum.ms",
+    characters = {
+      player = {},
+      alcohol_crate = {},
+      guard_a = {optional = true},
+    },
+
+    _on_add = function(self, ch, ps)
+      self._on_interact = ch.alcohol_crate.on_interact
+      ch.alcohol_crate.on_interact = nil
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.alcohol_crate.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      if not State:exists(ch.guard_a) then
+        State.rails:alcohol_pick_up("rum")
+        self._on_interact(ch.alcohol_crate, State.player)
+        State.runner:remove(self)
+        return
+      end
+    end,
+  },
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Story scenes
 ----------------------------------------------------------------------------------------------------

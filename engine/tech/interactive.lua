@@ -35,7 +35,7 @@ end
 --- @param callback? fun(entity, entity)
 interactive.mix_in = function(entity, callback)
   entity.on_interact = callback
-  Table.extend(entity, methods)
+  Table.defaults(entity, methods)
 end
 
 --- @param self entity

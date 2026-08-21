@@ -1,7 +1,5 @@
 local sprite = require("engine.tech.sprite")
 local health = require("engine.mech.health")
-local async = require("engine.tech.async")
-local mind_control = require("level.logic.mind_control")
 local items = require("level.palette.items")
 local item = require("engine.tech.item")
 local xp = require("engine.mech.xp")
@@ -15,6 +13,8 @@ local quests = require("level.logic.stages")
 
 
 local rails = {}
+
+--- @alias rails.alcohol_source "flask"|"rum"
 
 --- @class rails
 --- @field quests stages
@@ -32,6 +32,7 @@ local rails = {}
 --- @field did_markiss_help boolean?
 --- @field lunch_started boolean?
 --- @field flask_noticed boolean?
+--- @field source_of_first_alcohol rails.alcohol_source?
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -68,10 +69,10 @@ end
 
 init_debug = function()
   State.runner:run_task(function()
+    State.player.xp = xp.for_level[5]
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-    State.player.bag.valve = 1
-    item.give(State.player, items.gas_key())
+    item.give(State.player, items.greatsword())
   end)
 end
 
@@ -286,6 +287,14 @@ methods.talk_to = function(self, i)
     :all(function(j) return State.rails.dreamers_talked_to[j] end)
   if not before and self.talked_to_everybody then
     State.model.has_new_task = true
+  end
+end
+
+--- @param source rails.alcohol_source
+methods.alcohol_pick_up = function(self, source)
+  State.player.bag.alcohol = State.player.bag.alcohol + 1
+  if not self.source_of_first_alcohol then
+    self.source_of_first_alcohol = source
   end
 end
 
