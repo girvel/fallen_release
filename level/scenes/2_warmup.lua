@@ -424,6 +424,30 @@ return {
     end,
   },
 
+  _234_engine_dreamers = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/234_engine_dreamers.ms",
+    characters = {
+      protected_1 = {},
+      protected_2 = {},
+      protected_3 = {},
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.protected_1.was_interacted_by == State.player
+        or ch.protected_2.was_interacted_by == State.player
+        or ch.protected_3.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.protected_1.interact = nil
+      ch.protected_2.interact = nil
+      ch.protected_3.interact = nil
+      sp:lines()
+    end,
+  },
+
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Story scenes
 ----------------------------------------------------------------------------------------------------
