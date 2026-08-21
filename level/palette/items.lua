@@ -51,6 +51,9 @@ items.large_valve = function()
     slot = "offhand",
   }
   item.mix_in(e, "assets/animations/large_valve")
+  e.on_interact = function(self, other)
+    State.rails:get_valve()
+  end
   return e
 end
 

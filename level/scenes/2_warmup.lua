@@ -502,6 +502,72 @@ return {
     end,
   },
 
+  _266_storage_container_1 = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/266_storage_container_1.ms",
+    characters = {
+      storage_container_1 = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      self._on_interact = ch.storage_container_1.on_interact
+      ch.storage_container_1.on_interact = nil
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.storage_container_1.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      self._on_interact(ch.storage_container_1, State.player)
+      api.popup(sp:literal(), ch.storage_container_1)
+    end,
+  },
+
+  _268_storage_container_2 = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/268_storage_container_2.ms",
+    characters = {
+      storage_container_2 = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      self._on_interact = ch.storage_container_2.on_interact
+      ch.storage_container_2.on_interact = nil
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.storage_container_2.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      self._on_interact(ch.storage_container_2, State.player)
+      api.popup(sp:literal(), ch.storage_container_2)
+    end,
+  },
+
+  _270_storage_container_3 = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/270_storage_container_3.ms",
+    characters = {
+      storage_container_3 = {},
+    },
+
+    _on_add = function(self, ch, ps)
+      self._on_interact = ch.storage_container_3.on_interact
+      ch.storage_container_3.on_interact = nil
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.storage_container_3.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      self._on_interact(ch.storage_container_3, State.player)
+      api.popup(sp:literal(), ch.storage_container_3)
+    end,
+  },
+
   _272_rum = cutscene.make {
     enabled = true,
     mode = "sequential",
@@ -577,7 +643,7 @@ return {
         sp:lines()
         return
       elseif n == 2 then
-        local check = State.player:ability_check("cha", 18) or true
+        local check = State.player:ability_check("cha", 18)
         sp:start_single_branch(check and 1 or 2)
         if check then
           finish()
@@ -625,6 +691,111 @@ return {
         sp:finish_single_branch()
       end
       sp:finish_single_option()
+    end,
+  },
+
+  _274_guard_b = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/274_guard_b.ms",
+    characters = {
+      guard_b = {},
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.guard_b.was_interacted_by == State.player
+    end,
+
+    _seen = {},
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+
+      local options do
+        options = sp:start_options()
+        for _, key in ipairs(self._seen) do
+          options[key] = nil
+        end
+
+        if not State.rails.read_captain_door_note then
+          options[2] = nil
+          options[3] = nil
+        else
+          if State.rails.quests.parasites == stages.parasites._0010_go_to_bridge then
+            options[3] = nil
+          else
+            options[2] = nil
+          end
+        end
+
+        if State.rails.quests.alcohol == 0
+          or State.rails.quests.alcohol == stages.alcohol._1000_completed
+        then
+          options[4] = nil
+        end
+      end
+
+      while true do
+        local n = api.options(options, true)
+        if n == 5 then break end
+        table.insert(self._seen, n)
+        sp:start_option(n)
+        if n == 1 then
+          sp:lines()
+          sp:start_single_branch(State.player:ability_check("history", 8) and 1 or 2)
+            sp:lines()  -- TODO SFX/SOUND for branch 2
+          sp:finish_single_branch()
+        elseif n == 2 then
+          ch.guard_b:animate("interact"):next(function()
+            State.rails:get_valve()
+          end)
+          sp:lines()
+          local check = State.player:ability_check("insight", 12)
+          sp:start_single_branch(check and 1 or 2)
+            if check then
+              sp:lines()
+            else
+              sp:lines()
+              State.player:rotate((State.player.position - ch.guard_b.position):normalized2())
+              sp:lines()
+            end
+          sp:finish_single_branch()
+          return
+        elseif n == 3 then
+          sp:lines()
+          local m = sp:start_single_option()
+            if m == 2 then
+              sp:finish_single_option()
+              goto continue
+            end
+
+            sp:lines()
+            local check = State.player:ability_check("intimidation", 12)
+            sp:start_single_branch(check and 1 or 2)
+            if check then
+              sp:lines()
+              ch.guard_b:animate("interact"):next(function()
+                State.rails:get_valve()
+              end)
+              sp:lines()
+            else
+              sp:lines()
+              api.order(sp:literal())
+              sp:lines()
+              State.hostility:set("guards", "player", "enemy")
+            end
+            sp:finish_single_branch()
+          sp:finish_single_option()
+          return
+        else
+          sp:lines()
+        end
+
+        ::continue::
+        sp:finish_option()
+      end
+
+      sp:finish_options()
     end,
   },
 

@@ -275,6 +275,7 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
 
     _run = function(self, ch, ps, sp)
       sp:lines()
+      State.rails.read_captain_door_note = true
 
       local options = sp:start_options()
       if self._tried_brute_force then
@@ -409,7 +410,7 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     characters = {
       player = {},
       son_mary = {},
-      canteen_dreamer_flask = {},
+      canteen_dreamer_flask = {dynamic = true, optional = true},
     },
 
     _condition = function(self, dt, ch, ps)
@@ -483,7 +484,9 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       api.order(sp:literal())
 
       State.rails:set_quest("alcohol", stages.alcohol._0010_search)
-      interactive.mix_in(ch.canteen_dreamer_flask)
+      if State:exists(ch.canteen_dreamer_flask) then
+        interactive.mix_in(ch.canteen_dreamer_flask)
+      end
       api.autosave("Встретил Сон Мари")
     end,
   },

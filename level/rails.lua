@@ -33,6 +33,7 @@ local rails = {}
 --- @field lunch_started boolean?
 --- @field flask_noticed boolean?
 --- @field source_of_first_alcohol rails.alcohol_source?
+--- @field read_captain_door_note boolean?
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -53,6 +54,7 @@ rails.new = function(checkpoint)
   if Kernel.debug then init_debug() end
   init_factions()
   init_audio()
+  State.level.entities.valve = State.level.entities.guard_b.inventory.offhand
   if checkpoint then
     local init_checkpoint = checkpoints[checkpoint]
     if init_checkpoint then
@@ -297,6 +299,14 @@ methods.alcohol_pick_up = function(self, source)
   if not self.source_of_first_alcohol then
     self.source_of_first_alcohol = source
   end
+end
+
+methods.get_valve = function()
+  State.player.bag.valve = State.player.bag.valve + 1
+  local ch = State.level.entities
+  State:remove(ch.valve)
+  ch.guard_b.inventory.offhand = nil
+  item.set_cue(ch.bridge_megadoor3, "highlight", true)
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)
