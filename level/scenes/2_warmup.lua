@@ -448,10 +448,10 @@ return {
     end,
   },
 
-  _236_guard_a_talking = cutscene.make {
+  _260_guard_a_talking = cutscene.make {
     enabled = true,
     mode = "sequential",
-    screenplay = "assets/screenplay/236_guard_a_talking.ms",
+    screenplay = "assets/screenplay/260_guard_a_talking.ms",
     characters = {
       player = {},
       guard_a = {},
@@ -467,6 +467,37 @@ return {
 
     _run = function(self, ch, ps, sp)
       sp:lines()
+    end,
+  },
+
+  _guard_a_rotates = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    characters = {
+      guard_a = {},
+    },
+
+    _t = 0,
+    _condition = function(self, dt, ch, ps)
+      if State.runner:is_running("_272_rum") then
+        return false
+      end
+
+      self._t = self._t + dt
+      if self._t >= 8 then
+        self._t = self._t - 8
+        return true
+      end
+      return false
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.guard_a:rotate(Vector.down)
+      local t = 0
+      while t < 1 or State.runner:is_running("_272_rum") do
+        t = t + coroutine.yield()
+      end
+      ch.guard_a:rotate(Vector.left)
     end,
   },
 
