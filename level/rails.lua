@@ -70,6 +70,7 @@ end
 init_debug = function()
   State.runner:run_task(function()
     State.player.xp = xp.for_level[5]
+    level.unsafe_move(State.player, State.level.entities.alcohol_crate.position + Vector.right)
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
     item.give(State.player, items.greatsword())

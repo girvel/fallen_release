@@ -1,3 +1,4 @@
+local actions = require("engine.mech.actions")
 local xp = require("engine.mech.xp")
 local solids = require("level.palette.solids")
 local stages = require("level.logic.stages")
@@ -474,7 +475,7 @@ return {
     enabled = true,
     mode = "sequential",
     characters = {
-      guard_a = {},
+      guard_a = {non_locking = true},
     },
 
     _t = 0,
@@ -509,6 +510,7 @@ return {
       player = {},
       alcohol_crate = {},
       guard_a = {optional = true},
+      guard_b = {optional = true},
     },
 
     _on_add = function(self, ch, ps)
@@ -520,13 +522,109 @@ return {
       return ch.alcohol_crate.was_interacted_by == State.player
     end,
 
+    _attempt_i = 0,
+    _intro = true,
     _run = function(self, ch, ps, sp)
-      if not State:exists(ch.guard_a) then
+      local finish = function()
         State.rails:alcohol_pick_up("rum")
         self._on_interact(ch.alcohol_crate, State.player)
         State.runner:remove(self)
+      end
+
+      if not State:exists(ch.guard_a) then
+        finish()
         return
       end
+
+      sp:start_branches()
+      if ch.guard_a.direction == Vector.left then
+        self._attempt_i = self._attempt_i + 1
+        sp:start_branch(self._attempt_i)
+          sp:lines()
+          if self._attempt_i == 3 then
+            State.hostility:set("guards", "player", "enemy")
+            State:start_combat({State.player, ch.guard_a, ch.guard_b})
+          end
+        sp:finish_branch()
+        return
+      end
+      sp:finish_branches()
+
+      sp:start_single_branch()
+      if self._intro then
+        self._intro = false
+        sp:lines()
+        sp:start_single_branch(State.rails.quests.alcohol == 0 and 1 or 2)
+          sp:lines()
+        sp:finish_single_branch()
+      end
+      sp:finish_single_branch()
+
+      local fail_the_check = function()
+        actions.move(Vector.right):_act(State.player)
+        sp:lines()
+
+        api.rotate(ch.guard_a, State.player)
+        api.rotate(ch.guard_b, State.player)
+        sp:lines()
+
+        State.hostility:set("guards", "player", "enemy")
+        State:start_combat({State.player, ch.guard_a, ch.guard_b})
+      end
+
+      local n = sp:start_single_option()
+      if n == 1 then
+        sp:lines()
+        return
+      elseif n == 2 then
+        local check = State.player:ability_check("cha", 18) or true
+        sp:start_single_branch(check and 1 or 2)
+        if check then
+          finish()
+
+          ch.guard_a:rotate(Vector.left)
+          api.popup(sp:literal(), ch.guard_a)
+          sp:lines()
+
+          api.rotate(State.player, ch.guard_a)
+          sp:lines()
+
+          State.player:rotate(Vector.down)
+          State.player:animate("interact")
+          State.runner:run_task(function()
+            async.sleep(.3)
+            ch.guard_a:rotate(Vector.down)
+          end)
+          sp:lines()
+
+          api.rotate(State.player, ch.guard_a)
+          sp:lines()
+          api.autosave("Ром заполучен")
+        else
+          fail_the_check()
+        end
+        sp:finish_single_branch()
+      else
+        local check = State.player:ability_check("perception", 12)
+        sp:start_single_branch(check and 1 or 2)
+        if check then
+          finish()
+
+          sp:lines()
+
+          actions.move(Vector.right):_act(State.player)
+          sp:lines()
+
+          local go_out = api.travel_scripted(State.player, ps.storage_room_exit)
+          sp:lines()
+          go_out:wait()
+          api.autosave("Ром заполучен")
+        else
+          fail_the_check()
+        end
+        sp:finish_single_branch()
+      end
+      sp:finish_single_option()
     end,
   },
 
