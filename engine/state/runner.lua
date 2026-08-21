@@ -95,12 +95,20 @@ end
 
 --- @param scene string|scene
 methods.is_running = function(self, scene)
-  if type(scene) ~= "table" then
-    scene = self.scenes[scene]
+  for _, run in ipairs(self._scene_runs) do
+    local condition
+    if type(scene) == "table" then
+      condition = run.base_scene == scene
+    else
+      condition = run.name == scene
+    end
+
+    if condition then
+      return true
+    end
   end
 
-  return Fun.iter(self._scene_runs)
-    :any(function(r) return r.base_scene == scene end)
+  return false
 end
 
 --- @param scene string|scene
