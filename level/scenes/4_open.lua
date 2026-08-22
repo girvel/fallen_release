@@ -566,6 +566,41 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     end,
   },
 
+  _444_furniture_room_fight = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/444_furniture_room_fight.ms",
+    characters = {
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.furniture_room_fight
+    end,
+
+    _run = function(self, ch, ps, sp)
+      local check = State.player:saving_throw("con", 12)
+      sp:start_single_branch(check and 1 or 2)
+      if check then
+        sp:lines()
+      else
+        sp:lines()
+        local bfs = State.grids.solids:bfs(State.player.position)
+        bfs()
+        for _ = 1, 4 do ::redo::
+          local p, e = bfs()
+          if not p then break end
+          if e then
+            bfs:discard()
+            goto redo
+          else
+            State:add_at(solids.bat(), p, "solids")
+          end
+        end
+      end
+      sp:finish_single_branch()
+    end,
+  },
+
   _452_razor = cutscene.make {
     enabled = true,
     mode = "sequential",
