@@ -11,6 +11,10 @@ creature.methods = {}
 --- @param entity table
 creature.mix_in = function(entity)
   Table.assert_fields(entity, {"base_abilities", "level"})
+  if entity.hp then
+    Error("Do not pass entity with .hp initialized to creature.mix_in, it uses a long rest during "
+      .."initialization => health is reset; entity: %s", entity)
+  end
 
   if entity.resources == nil then entity.resources = {} end
   if entity.inventory == nil then entity.inventory = {} end

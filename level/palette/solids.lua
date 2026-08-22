@@ -471,7 +471,6 @@ solids.dreamer = function(params)
     codename = "dreamer",
     race = race and races[race] or Random.item(dreamer_races),
     max_hp = 15,
-    hp = blood and 6 or nil,
     base_abilities = abilities.new(12, 10, 10, 10, 10, 10),
     ai = faction and combat_ai.new(),
     faction = faction,
@@ -480,6 +479,9 @@ solids.dreamer = function(params)
   }
   creature.mix_in(e)
   humanoid.mix_in(e)
+  if blood then
+    health.set_hp(e, 6)
+  end
   return e
 end
 
@@ -616,7 +618,6 @@ solids.engineer = function(n)
       name = "инженер-полуорк",
       race = races.half_orc,
       level = 3,
-      hp = 34,
       max_hp = 35,
       inventory = {gloves = items.yellow_gloves()},
       faction = "half_orc",

@@ -6070,9 +6070,9 @@
 							"defUid": 46,
 							"px": [416,1184],
 							"fieldInstances": [
-								{ "__identifier": "capture_name", "__type": "String", "__value": "\"dorm_halfling\"", "__tile": null, "defUid": 47, "realEditorValues": [{
+								{ "__identifier": "capture_name", "__type": "String", "__value": "dorm_halfling", "__tile": null, "defUid": 47, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["\"dorm_halfling\""]
+									"params": ["dorm_halfling"]
 								}] },
 								{ "__identifier": "args", "__type": "String", "__value": "{faction = \"dreamers_1\", blood = true, race = \"halfling\", interactive = true}", "__tile": null, "defUid": 63, "realEditorValues": [{
 									"id": "V_String",

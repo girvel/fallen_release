@@ -1,3 +1,8 @@
+local items = require("level.palette.items")
+local no_op = require("engine.mech.ais.no_op")
+local on_solids = require("level.palette.on_solids")
+local level = require("engine.tech.level")
+local actions = require("engine.mech.actions")
 local async = require("engine.tech.async")
 local sound = require("engine.tech.sound")
 local mind_control = require("level.logic.mind_control")
@@ -545,6 +550,126 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
 
     _run = function(self, ch, ps, sp)
       State.player.fov_r = player_base.DEFAULT_FOV
+    end,
+  },
+
+  _452_razor = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/452_razor.ms",
+    characters = {
+      player = {},
+      dorm_woman = {},
+      dorm_beard = {},
+      dorm_grunt = {},
+      dorm_halfling = {},
+      razor = {dynamic = true},
+    },
+
+    _on_add = function(self, ch, ps)
+      item.set_cue(ch.dorm_halfling, "highlight", true)
+      interactive.mix_in(ch.dorm_halfling)
+      local razor = State:add(items.razor())
+      ch.dorm_halfling.inventory.inside = razor
+      State.level.entities.razor = razor
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      return ch.dorm_halfling.was_interacted_by == State.player
+    end,
+
+    _seen = {},
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+      local options, option_3 do
+        options = sp:start_options()
+        for _, k in ipairs(self._seen) do
+          options[k] = nil
+        end
+        if options[2] then
+          option_3 = options[3]
+          options[3] = nil
+        end
+      end
+
+      while true do
+        local n = api.options(options, true)
+        if n == 4 then return end
+        table.insert(self._seen, n)
+
+        sp:start_option(n)
+        if n == 1 then
+          actions.move(Vector.up):_act(ch.dorm_woman)
+          sp:lines()
+        elseif n == 2 then
+          sp:lines()
+          options[3] = option_3
+        else
+          State.runner:remove(self)
+          ch.dorm_halfling.interact = nil
+
+          local check = State.player:ability_check("medicine", 12) and false
+          sp:start_single_branch(check and 1 or 2)
+          if check then
+            sp:lines()
+
+            api.curtain(.5, Vector.black):wait()
+            local moved_characters = {"dorm_grunt", "dorm_woman"}
+            local old_positions = {}
+            for _, id in ipairs(moved_characters) do
+              local p = ps[id.."_1"]
+              if p then
+                local e = ch[id]
+                old_positions[e] = e.position
+                level.slow_move(e, p)
+              end
+            end
+            on_solids.fs.lie(ch.dorm_halfling, ps.dorm_bed, "lower")
+            ch.dorm_halfling.ai = no_op.new()
+            health.set_hp(ch.dorm_halfling, ch.dorm_halfling:get_max_hp())
+            level.unsafe_move(State.player, ps.dorm_player)
+            api.curtain(.5, Vector.transparent):wait()
+
+            sp:lines()
+            actions.move(Vector.right):_act(ch.dorm_woman)
+            actions.move(Vector.left):_act(ch.dorm_grunt)
+
+            api.curtain(.5, Vector.black):wait()
+            for e, p in pairs(old_positions) do
+              level.slow_move(e, p)
+            end
+            item.drop(ch.dorm_halfling, "inside")
+            level.slow_move(ch.razor, ps.razor_drop)
+            api.curtain(.5, Vector.transparent):wait()
+
+            sp:lines()
+
+            api.autosave("Полурослик вылечен")
+          else
+            sp:lines()
+            local interacting = State.player:animate("interact")
+            sp:lines()
+            interacting:wait()
+            health.damage(ch.dorm_grunt, 8, State.player, true)
+            health.damage(ch.dorm_halfling, 10, State.player, true)
+            sp:lines()
+            State.hostility:set("dreamers_1", "player", "enemy")
+            State:start_combat({State.player, ch.dorm_grunt})
+
+            State.runner:run_task(function()
+              coroutine.yield()
+              while State.combat do
+                coroutine.yield()
+              end
+              api.autosave("После драки в общежитии")
+            end)
+          end
+          return
+          sp:finish_single_branch()
+        end
+        sp:finish_option()
+      end
+      sp:finish_options()
     end,
   },
 }

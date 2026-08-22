@@ -6,7 +6,7 @@ local interactive = require "engine.tech.interactive"
 
 local item = {}
 
-item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "body"}
+item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "body", "inside"}
 
 --- @alias item item_strict|table
 

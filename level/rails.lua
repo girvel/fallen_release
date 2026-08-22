@@ -37,7 +37,7 @@ local rails = {}
 local methods = {}
 rails.mt = {__index = methods}
 
-local init_debug, init_factions, init_audio
+local init_debug, init_factions, init_audio, init_characters
 local checkpoints = {}
 
 --- @param checkpoint string?
@@ -54,7 +54,7 @@ rails.new = function(checkpoint)
   if Kernel.debug then init_debug() end
   init_factions()
   init_audio()
-  State.level.entities.valve = State.level.entities.guard_b.inventory.offhand
+  init_characters()
   if checkpoint then
     local init_checkpoint = checkpoints[checkpoint]
     if init_checkpoint then
@@ -72,7 +72,6 @@ end
 init_debug = function()
   State.runner:run_task(function()
     State.player.xp = xp.for_level[5]
-    level.unsafe_move(State.player, State.level.entities.alcohol_crate.position + Vector.right)
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
     item.give(State.player, items.greatsword())
@@ -91,6 +90,11 @@ init_audio = function()
     sound.new("assets/sounds/music/drone_1.mp3", .1),
     sound.new("assets/sounds/music/drone_2.mp3", .1),
   })
+end
+
+init_characters = function()
+  local ch = State.level.entities
+  ch.valve = ch.guard_b.inventory.offhand
 end
 
 local skip_intro = function(self)

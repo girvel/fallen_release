@@ -5,6 +5,7 @@
 return function(factory, grid_layer)
   grid_layer = grid_layer or "marks"
   return function(self)
+    if not self.position then return end
     local entity = factory()
     entity.bouncy_spawn_flag = true
 
