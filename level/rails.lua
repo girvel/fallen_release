@@ -74,7 +74,7 @@ init_debug = function()
     State.player.xp = xp.for_level[5]
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-    item.give(State.player, items.greatsword())
+    item.give(State.player, items.gas_key())
   end)
 end
 

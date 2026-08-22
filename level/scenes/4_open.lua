@@ -553,6 +553,19 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
     end,
   },
 
+  _442_furniture_room = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/442_furniture_room.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.player.position == ps.furniture_room
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.popup(sp:literal())
+    end,
+  },
+
   _452_razor = cutscene.make {
     enabled = true,
     mode = "sequential",
@@ -608,7 +621,7 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
           State.runner:remove(self)
           ch.dorm_halfling.interact = nil
 
-          local check = State.player:ability_check("medicine", 12) and false
+          local check = State.player:ability_check("medicine", 12)
           sp:start_single_branch(check and 1 or 2)
           if check then
             sp:lines()
