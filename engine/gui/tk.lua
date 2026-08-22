@@ -146,7 +146,11 @@ tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra)
 
   ui.start_alignment("center", "center")
   ui.start_font(math.floor(h * .8))
-    ui.text("%s/%s", value, max)
+    if max == 0 or max == math.huge then
+      ui.text(value)
+    else
+      ui.text("%s/%s", value, max)
+    end
   ui.finish_font()
   ui.finish_alignment()
 end
