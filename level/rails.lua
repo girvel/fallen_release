@@ -158,6 +158,9 @@ checkpoints.cp5 = function(rails)
   State.runner:remove("_322_dwarf_start")
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
+  State.player.bag.alcohol = 3
+  rails.met_son_mary = true
+  rails:set_quest("alcohol", stages.alcohol._0010_search)
 
   local ch = State.level.entities
   ch.bridge_megadoor3._locked = false

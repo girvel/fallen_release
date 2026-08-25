@@ -1,3 +1,4 @@
+local animated = require("engine.tech.animated")
 local items = require("level.palette.items")
 local no_op = require("engine.mech.ais.no_op")
 local on_solids = require("level.palette.on_solids")
@@ -522,6 +523,79 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       self._line_i = Math.loopmod(self._line_i + 1, #self._lines)
       State.model.popups = {}
       api.popup(self._lines[self._line_i], ch.son_mary)
+    end,
+  },
+
+  _426_son_mary_first_alcohol = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/426_son_mary_first_alcohol.ms",
+    characters = {
+      son_mary = {},
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      local alcohol = State.rails.quests.alcohol
+      if alcohol == 0 then return false end
+      if alcohol > stages.alcohol._0010_search then
+        State.runner:remove(self)
+        return false
+      end
+      return State.player.bag.alcohol > 0
+        and ch.son_mary.was_interacted_by == State.player
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp)
+      sp:start_single_branch()
+      if self._first_time then
+        self._first_time = false
+        sp:lines()
+
+        local orders = {sp:literal(), sp:literal()}
+        State.runner:run_task(function()
+          api.order(orders[1])
+          async.sleep(3)
+          api.order(orders[2])
+        end)
+
+        async.sleep(1.5)
+        sp:lines()
+      end
+      sp:finish_single_branch()
+
+      local n = sp:start_single_option()
+      if n == 2 then
+        sp:lines()
+        return
+      end
+      sp:finish_single_option()
+      State.runner:remove(self)
+
+      local travel = api.travel_scripted(State.player, ps.deck_open_pipe)
+      sp:lines()
+      travel:wait()
+
+      local pouring = State.player:animate("interact"):next(function()
+        State.runner:run_task(function()
+          State.player.bag.alcohol = State.player.bag.alcohol - 1
+          async.sleep(3)
+          api.rotate(State.player, ch.son_mary)
+        end)
+      end)
+      sp:lines()
+      pouring:wait()
+
+      local drinking_sound = sound.new("assets/sounds/son_mary_drinks.mp3", .3):play()
+      sp:lines()
+
+      for _, p in ipairs(State.level:position_sequence("captain_steam")) do
+        Log.tracel(p)
+        animated.add_fx("assets/animations/steam/", p, "fx_over")
+      end
+      -- NEXT shaking
+      sp:lines()
     end,
   },
 
