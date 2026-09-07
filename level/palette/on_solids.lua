@@ -224,7 +224,7 @@ local pipe_burst_sounds = sound.multiple("assets/sounds/steam_hissing", .8)
 
 --- @param pos vector
 on_solids.fs.burst = function(pos)
-  local fx = animated.add_fx("assets/animations/steam/", pos, "fx_over")
+  local fx = animated.add_fx("assets/animations/steam_right/", pos, "fx_over")
   pipe_burst_sounds:play_at(pos)
   State.runner:run_task(function()
     local damaged = {}

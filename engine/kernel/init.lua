@@ -1,4 +1,6 @@
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
+
+
 local kernel = {}
 
 --- @class kernel middleware between fallen engine and LOVE

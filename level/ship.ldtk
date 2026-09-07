@@ -5131,6 +5131,63 @@
 							}] }],
 							"__worldX": 400,
 							"__worldY": 816
+						},
+						{
+							"__identifier": "position",
+							"__grid": [26,56],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "bdafad10-96d0-11f1-812a-7997b8bea22b",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [416,896],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "captain_steam_2", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["captain_steam_2"]
+							}] }],
+							"__worldX": 416,
+							"__worldY": 896
+						},
+						{
+							"__identifier": "position",
+							"__grid": [29,52],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "c69fbb40-96d0-11f1-812a-fb37ebd0d053",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [464,832],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "captain_steam_3", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["captain_steam_3"]
+							}] }],
+							"__worldX": 464,
+							"__worldY": 832
+						},
+						{
+							"__identifier": "position",
+							"__grid": [24,53],
+							"__pivot": [0,0],
+							"__tags": ["position"],
+							"__tile": { "tilesetUid": 50, "x": 256, "y": 64, "w": 16, "h": 16 },
+							"__smartColor": "#3E2731",
+							"iid": "df992a00-96d0-11f1-812a-ebf7488b0763",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [384,848],
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "captain_steam_4", "__tile": null, "defUid": 88, "realEditorValues": [{
+								"id": "V_String",
+								"params": ["captain_steam_4"]
+							}] }],
+							"__worldX": 384,
+							"__worldY": 848
 						}
 					]
 				},

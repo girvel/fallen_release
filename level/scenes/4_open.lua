@@ -590,9 +590,16 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       local drinking_sound = sound.new("assets/sounds/son_mary_drinks.mp3", .3):play()
       sp:lines()
 
-      for _, p in ipairs(State.level:position_sequence("captain_steam")) do
-        Log.tracel(p)
-        animated.add_fx("assets/animations/steam/", p, "fx_over")
+      for i, dir in ipairs {
+        "up", "left", "up", "left",
+      } do
+        local p = ps["captain_steam_"..i]
+        if dir == "up" then
+          p = p + Vector.up
+        elseif dir == "left" then
+          p = p + Vector.left
+        end
+        animated.add_fx("assets/animations/steam_"..dir, p, "fx_over")
       end
       -- NEXT shaking
       sp:lines()
