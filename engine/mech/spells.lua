@@ -243,17 +243,10 @@ spells.spray_of_cards = action.leveled_spell(2, function(mod, cast_level)
 
       State.player:rotate(d)
       entity:animate("throw"):next(function()
-        local offset
-        if d == Vector.up then offset = V(-1, -2)
-        elseif d == Vector.right then offset = V(3, -1)
-        elseif d == Vector.down then offset = V(2, 3)
-        elseif d == Vector.left then offset = V(-2, 2)
-        else assert(false) end
-
-        local fx = animated.add_fx(
-          "engine/assets/animations/spray_of_cards", entity.position + offset, "fx_over"
+        animated.add_fx_rotated(
+          "engine/assets/animations/spray_of_cards", entity.position + V(.5, .5) + d, "fx_over",
+          d, V(1.5, 1.5)
         )
-        fx.rotation = d:angle()
 
         for target, t in pairs(damages) do
           health.attack_save_enact(entity, target, unpack(t))

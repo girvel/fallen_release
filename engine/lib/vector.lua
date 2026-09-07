@@ -372,6 +372,14 @@ vector_methods.rotate = function(self)
   return self:copy():rotate_mut()
 end
 
+--- @param v vector
+vector_methods.rotate_with = function(self, v)
+  assert(#self == 2)
+  assert(v:abs() == 1)
+  local x, y = unpack(self)
+  return V(-x * v.y - y * v.x, x * v.x - y * v.y)
+end
+
 --- Return rotation in radians
 --- @return number
 vector_methods.angle = function(self)

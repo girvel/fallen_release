@@ -1,3 +1,5 @@
+local spells = require("engine.mech.spells")
+local class = require("engine.mech.class")
 local sprite = require("engine.tech.sprite")
 local health = require("engine.mech.health")
 local items = require("level.palette.items")
@@ -75,6 +77,8 @@ init_debug = function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
     item.give(State.player, items.gas_key())
+    table.insert(State.player.perks, class.spell(spells.spray_of_cards, "cha"))
+    State.player.resources.spell_slots_5 = 5
   end)
 end
 

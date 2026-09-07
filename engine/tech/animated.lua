@@ -59,6 +59,19 @@ end
 --- @param path string
 --- @param position vector
 --- @param layer? layer
+--- @param rotation vector
+--- @param anchor vector
+--- @return entity
+animated.add_fx_rotated = function(path, position, layer, rotation, anchor)
+  local e = animated.fx(path, position - anchor:rotate_with(rotation), layer)
+  e.rotation = rotation:angle()
+  State:add(e)
+  return e
+end
+
+--- @param path string
+--- @param position vector
+--- @param layer? layer
 --- @return entity
 animated.fx = function(path, position, layer)
   local result = {}
