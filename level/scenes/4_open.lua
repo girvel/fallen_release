@@ -593,7 +593,8 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       local steam_start = love.timer.getTime()
       local steam_tasks = {}
       for i, dir in ipairs {
-        "up", "left", "up", "left",
+        "up", "left", "up", "left", "left", "down", "left", "down", "left", "down",
+        "up", "right", "left", "left", "left", "right", "up",
       } do
         local delay = math.random() * 1
         local _, scene = State.runner:run_task(function()
@@ -659,6 +660,10 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       end
 
       sp:lines()
+
+      sp:start_single_branch(State.player:ability_check("insight", 12) and 1 or 2)
+        sp:lines()
+      sp:finish_single_branch()
     end,
   },
 

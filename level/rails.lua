@@ -77,8 +77,6 @@ init_debug = function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
     item.give(State.player, items.gas_key())
-    table.insert(State.player.perks, class.spell(spells.spray_of_cards, "cha"))
-    State.player.resources.spell_slots_5 = 5
   end)
 end
 
