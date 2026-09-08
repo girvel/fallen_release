@@ -590,15 +590,74 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       sound.new("assets/sounds/son_mary_drinks.mp3", .3):play()
       sp:lines()
 
+      local steam_start = love.timer.getTime()
+      local steam_tasks = {}
       for i, dir in ipairs {
         "up", "left", "up", "left",
       } do
-        animated.add_fx_rotated(
-          "assets/animations/steam", ps["captain_steam_"..i] + V(.5, .5), "fx_over",
-          Vector[dir], V(.5, 1.5)
-        )
+        local delay = math.random() * 1
+        local _, scene = State.runner:run_task(function()
+          while true do
+            async.sleep(delay)
+            local fx = animated.add_fx_rotated(
+              "assets/animations/steam", ps["captain_steam_"..i] + V(.5, .5), "fx_over",
+              Vector[dir], V(.5, 1.5)
+            )
+            coroutine.yield()
+            while State:exists(fx) do
+              coroutine.yield()
+            end
+          end
+        end, "captain_steam")
+
+        table.insert(steam_tasks, scene)
       end
-      -- NEXT shaking
+
+      local trauma = 1
+      local _, shake = State.runner:run_task(function()
+        local MAX_OFFSET_PX = 10
+        local FQ = 10
+        local SEED = V(math.random() * 10, math.random() * 10)
+
+        local noise = function(x)
+          return math.sin(x * 17) * .5 + math.sin(x * 23) * .5
+        end
+
+        State.camera:immediate_center()
+        State.camera.is_following = false
+        local base_offset = State.camera.offset
+        while true do
+          local t = love.timer.getTime()
+          local intensity = trauma ^ 2
+          State.camera.offset = base_offset + V(
+            MAX_OFFSET_PX * intensity * noise(SEED.x + t * FQ),
+            MAX_OFFSET_PX * intensity * noise(SEED.y + t * FQ)
+          )
+          coroutine.yield()
+        end
+      end, "shake")
+
+      sp:lines()
+
+      while love.timer.getTime() - steam_start < 5 do
+        coroutine.yield()
+      end
+      sp:lines()
+
+      local trauma_decay = State.runner:run_task(function()
+        local DECAY_RATE = 0.5
+        while trauma > 0 do
+          local dt = coroutine.yield()
+          trauma = math.max(0, trauma - DECAY_RATE * dt)
+        end
+        State.camera.is_following = true
+      end)
+      trauma_decay:wait()
+      State.runner:cancel(shake)
+      for _, scene in ipairs(steam_tasks) do
+        State.runner:cancel(scene)
+      end
+
       sp:lines()
     end,
   },

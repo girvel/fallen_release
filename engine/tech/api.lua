@@ -393,18 +393,18 @@ end
 --- @return promise, scene
 api.move_camera = function(position)
   local promise, scene = State.runner:run_task(function()
-    State.camera.is_camera_following = true
+    State.camera.is_following = true
     --- @diagnostic disable-next-line
     State.camera.target_override = {position = position}
     coroutine.yield()
     while State.camera.is_moving do coroutine.yield() end
     State.camera.target_override = nil
-    State.camera.is_camera_following = false
+    State.camera.is_following = false
   end, "move_camera")
 
   scene.on_cancel = function()
     State.camera.target_override = nil
-    State.camera.is_camera_following = true
+    State.camera.is_following = true
   end
 
   return promise, scene
@@ -415,14 +415,14 @@ api.free_camera = function()
   local promise, scene = State.runner:run_task(function()
     --- @diagnostic disable-next-line
     State.camera.target_override = nil
-    State.camera.is_camera_following = true
+    State.camera.is_following = true
     coroutine.yield()
     while State.camera.is_moving do coroutine.yield() end
   end, "free_camera")
 
   scene.on_cancel = function()
     State.camera.target_override = nil
-    State.camera.is_camera_following = true
+    State.camera.is_following = true
   end
 
   return promise, scene

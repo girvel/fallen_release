@@ -8,7 +8,7 @@ local camera = {}
 
 --- @class state_camera
 --- @field target_override entity?
---- @field is_camera_following boolean
+--- @field is_following boolean
 --- @field is_moving boolean (internally set)
 --- @field offset vector (internally set) offset in pixels relative to the grid start
 --- @field vision_start vector (internally set) the grid coordinate of the first cell visible in top left corner, clamped to grid size
@@ -22,7 +22,7 @@ camera.mt = {__index = methods}
 camera.new = function()
   local self = {
     is_moving = false,
-    is_camera_following = true,
+    is_following = true,
     offset = Vector.zero,
     vision_start = Vector.zero,
     vision_end = Vector.zero,
@@ -68,7 +68,7 @@ methods._update = function(self, dt)
     State.player.ai._vision_map:refresh_fov(State.player.position, State.player.fov_r)
   end
 
-  if self.is_camera_following then
+  if self.is_following then
     local prev_offset = self.offset
 
     if dt >= .05 then
