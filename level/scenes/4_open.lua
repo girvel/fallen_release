@@ -26,7 +26,7 @@ return {
     screenplay = "assets/screenplay/400_markiss.ms",
     characters = {
       player = {},
-      markiss = {},
+markiss = {},
     },
 
     _condition = function(self, dt, ch, ps)
@@ -122,7 +122,7 @@ return {
                 sp:lines()
 sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
                   sp:lines()
-                sp:finish_single_branch()
+sp:finish_single_branch()
               end
               sp:finish_single_option()
               goto out
@@ -664,6 +664,78 @@ sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
       sp:start_single_branch(State.player:ability_check("insight", 12) and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
+
+      api.travel(State.player, ch.son_mary.position)
+
+      local options = sp:start_options()
+      --- @type string?
+      local option_5 = options[5]
+      options[5] = nil
+      if State.player.bag.alcohol == 0 then
+        options[6] = nil
+      end
+
+      local looped = true
+      while looped do
+        if option_5 and not options[4] then
+          options[5] = option_5
+          option_5 = nil
+        end
+        n = api.options(options, true)
+        sp:start_option(n)
+        if n == 1 then
+          looped = false
+          sp:lines()
+          sp:start_single_branch(options[3] and 1 or 2)
+            sp:lines()
+          sp:finish_single_branch()
+        elseif n == 2 then
+          options[4] = nil
+          sp:start_single_branch(State.rails.source_of_first_alcohol == "ethanol" and 2 or 1)
+            sp:lines()
+          sp:finish_single_branch()
+          sp:lines()
+        elseif n == 3 then
+          options[4] = nil
+          api.order(sp:literal())
+          sp:lines()
+          -- TODO creepy portrait
+          sp:lines()
+          -- TODO normal portrait
+          sp:lines()
+        elseif n == 4 then
+          looped = false
+          actions.move(Vector.down):_act(State.player)
+          sp:lines()
+          local m = sp:start_single_option()
+          if m == 1 then
+            -- TODO FX & shaders & sounds
+            sp:lines()
+            local orders = {sp:literal(), sp:literal()}
+            State.runner:run_task(function()
+              api.order(orders[1])
+              async.sleep(3)
+              api.order(orders[2])
+            end)
+            sp:lines()
+            -- TODO creepy face
+            sp:lines()
+            return State.runner.scenes._430_son_mary_freedom:run("_430_son_mary_freedom", ch, ps)
+          else
+            sp:lines()
+          end
+          sp:finish_single_option()
+        elseif n == 5 then
+          looped = false
+          actions.move(Vector.down):_act(State.player)
+          sp:lines()
+        else
+          return State.runner.scenes._430_son_mary_freedom:run("_430_son_mary_freedom", ch, ps)
+        end
+        sp:finish_option()
+      end
+      sp:finish_options()
+      State.rails:set_quest("alcohol", stages.alcohol._0020_search_again)
     end,
   },
 

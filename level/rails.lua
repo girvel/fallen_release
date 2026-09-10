@@ -16,7 +16,7 @@ local quests = require("level.logic.stages")
 
 local rails = {}
 
---- @alias rails.alcohol_source "flask"|"rum"
+--- @alias rails.alcohol_source "flask"|"rum"|"ethanol"
 
 --- @class rails
 --- @field quests stages
