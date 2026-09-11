@@ -654,7 +654,7 @@ ui.text = function(text, ...)
         context.cursor_x = context.frame.x
         context.line_last_h = 0
       else
-        context.cursor_x = context.cursor_x + font:getWidth("w") * text:utf_len()
+        context.cursor_x = context.cursor_x + font:getWidth("w") * line:utf_len()
         context.line_last_h = math.max(context.line_last_h, font:getHeight() * LINE_K)
       end
     else
