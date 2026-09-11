@@ -720,7 +720,8 @@ sp:finish_single_branch()
             sp:lines()
             -- TODO creepy face
             sp:lines()
-            return State.runner.scenes._430_son_mary_freedom:run("_430_son_mary_freedom", ch, ps)
+            return State.runner.scenes._430_son_mary_freedom
+              :run("_430_son_mary_freedom", ch, ps, true)
           else
             sp:lines()
           end
@@ -730,12 +731,82 @@ sp:finish_single_branch()
           actions.move(Vector.down):_act(State.player)
           sp:lines()
         else
-          return State.runner.scenes._430_son_mary_freedom:run("_430_son_mary_freedom", ch, ps)
+          return State.runner.scenes._428_son_mary_second_alcohol
+            :run("_428_son_mary_second_alcohol", ch, ps, true)
         end
         sp:finish_option()
       end
       sp:finish_options()
       State.rails:set_quest("alcohol", stages.alcohol._0020_search_again)
+    end,
+  },
+
+  _428_son_mary_second_alcohol = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/428_son_mary_second_alcohol.ms",
+    characters = {
+      son_mary = {},
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      local alcohol = State.rails.quests.alcohol
+      if alcohol <= stages.alcohol._0010_search then return false end
+      if alcohol == stages.alcohol._1000_completed then
+        State.runner:remove(self)
+        return false
+      end
+      return State.player.bag.alcohol > 0
+        and ch.son_mary.was_interacted_by == State.player
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp, did_transition)
+      sp:start_single_branch(not did_transition and 1 or 2)
+      if not did_transition then
+        sp:lines()
+        sp:start_single_branch()
+        if self._first_time then
+          self._first_time = false
+          local orders = {sp:literal(), sp:literal(), sp:literal()}
+          State.runner:run_task(function()
+            api.order(orders[1])
+            async.sleep(2)
+            api.order(orders[2])
+            async.sleep(2)
+            api.order(orders[3])
+          end)
+        end
+        sp:finish_single_branch()
+        sp:lines()
+
+        local n = sp:start_single_option()
+        sp:finish_single_option()
+        if n == 1 then return end
+        State.runner:remove(self)
+        sp:lines()
+        sp:start_single_branch()
+        if State.player.bag.alcohol >= 2 then
+          sp:lines()
+        end
+        sp:finish_single_branch()
+        sp:lines()
+      else
+        State.runner:remove(self)
+        sp:lines()
+      end
+      sp:finish_single_branch()
+
+      sp:lines()
+
+      local orders = {sp:literal(), sp:literal()}
+      State.runner:run_task(function()
+        api.order(orders[1])
+        async.sleep(3)
+        api.order(orders[2])
+      end)
+      sp:lines()
     end,
   },
 
