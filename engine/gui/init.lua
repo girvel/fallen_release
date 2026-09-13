@@ -38,7 +38,7 @@ local empty_f = function() end
 local methods = {}
 gui.mt = {__index = methods}
 
---- @param type gui.mode
+--- @param type string|gui.mode
 --- @return boolean
 methods.is_opened = function(self, type)
   local mode = self._mode
@@ -120,13 +120,22 @@ methods.start_game = function(self)
   self:_set_mode(STATES.game.new())
 end
 
---- @param kind "escape_menu"|"journal"|"creator"|"save_menu"|"load_menu"|"appearance_editor"
-methods.open_menu = function(self, kind)
-  Log.info("Opening %s", kind)
-  if kind == "journal" or kind == "creator" then
-    OPEN_JOURNAL:play()
+--- @alias gui.menu_type "escape_menu"|"journal"|"creator"|"save_menu"|"load_menu"|"appearance_editor"
+
+--- @param menu (fun(prev: table): table)|gui.menu_type
+methods.open_menu = function(self, menu)
+  local mode
+  if type(menu) == "string" then
+    Log.info("Opening %s", menu)
+    if menu == "journal" or menu == "creator" then
+      OPEN_JOURNAL:play()
+    end
+    mode = STATES[menu].new(self._mode)
+  else
+    mode = menu(self._mode)
+    Log.info("Opening %s", mode.type or "<unnamed menu>")
   end
-  self:_set_mode(STATES[kind].new(self._mode))
+  self:_set_mode(mode)
 end
 
 methods.close_menu = function(self)

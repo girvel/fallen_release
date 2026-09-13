@@ -1,3 +1,4 @@
+local name_menu = require("level.logic.name_menu")
 local shaders = require("level.shaders")
 local ui = require("engine.tech.ui")
 local stages = require("level.logic.stages")
@@ -129,8 +130,8 @@ return {
       api.scale(10)
       local wrong_names = map_literal()
       while true do
-        Kernel.gui:open_menu("appearance_editor")
-        while Kernel.gui:is_opened("appearance_editor") do
+        Kernel.gui:open_menu(name_menu.new)
+        while Kernel.gui:is_opened("name_menu") do
           coroutine.yield()
         end
         local reaction = wrong_names[State.player.name:utf_lower()]
