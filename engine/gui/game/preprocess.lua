@@ -10,7 +10,7 @@ local preprocess = function(self, dt)
   State.camera:_update(dt)
 
   local bg = State.level.background
-  if bg then
+  if bg and State.player.fov_r > 0 then
     self._bg_offset = (self._bg_offset + State.level.water_speed * dt) % sprite.cell_size
 
     local old_canvas = love.graphics.getCanvas()
