@@ -493,6 +493,7 @@ return {
               coroutine.yield()
               wait_for_the_kill()
             else
+              State.rails.let_rront_go = true
               ch.engineer_3.ai.mercy = true
               while not State.rails.rront_status and State:exists(ch.engineer_3) do
                 coroutine.yield()
@@ -551,6 +552,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      State.rails.met_dwarf = true
       ch.engineer_4.interact = nil
       api.rotate(ch.engineer_4, State.player)
       sp:lines()

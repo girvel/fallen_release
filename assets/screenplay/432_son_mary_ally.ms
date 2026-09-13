@@ -16,7 +16,6 @@ son_mary: Н
   Н: И забрал ты их с корабля, с которого вот-вот слиняешь.
   Н: Ты пират, %SM_NAME%.
 
-NEXT warn about unresolved % expressions
 NEXT burning animation for furnaces, activated on coal/sometimes always active
 
 О: Сон Мари глухо кашляет, создавая водоворот из пузырей.

@@ -27,7 +27,7 @@ return {
     screenplay = "assets/screenplay/400_markiss.ms",
     characters = {
       player = {},
-markiss = {},
+      markiss = {},
     },
 
     _condition = function(self, dt, ch, ps)
@@ -37,6 +37,8 @@ markiss = {},
     _run_i = 0,
     _seen = {},
     _run = function(self, ch, ps, sp)
+      State.rails.met_markiss = true
+
       self._run_i = self._run_i + 1
       sp:start_branches()
       sp:start_branch(math.min(sp:branches_n(), self._run_i))
@@ -913,6 +915,137 @@ sp:finish_single_branch()
       sp:finish_single_option()
       return State.runner.scenes._432_son_mary_ally
         :run("_432_son_mary_ally", ch, ps, true)
+    end,
+  },
+
+  _432_son_mary_ally = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/432_son_mary_ally.ms",
+    characters = {
+      son_mary = {},
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.rails.quests.alcohol >= stages.alcohol._1000_completed
+        and State.rails.player_nickname
+        and ch.son_mary.was_interacted_by == State.player
+    end,
+
+    _money_noticed = false,
+    _piracy_discussed = false,
+    _enemy_discussed = false,
+    _run = function(self, ch, ps, sp)
+      local subs = {SM_NAME = State.rails.player_nickname}
+      sp:start_single_branch()
+      if not self._money_noticed and State.player.bag.money >= 1000 then
+        sp:lines(subs)
+      end
+      sp:finish_single_branch()
+      sp:lines(subs)
+
+      local options = sp:start_options()
+      if self._enemy_discussed then options[3] = nil end
+      while true do
+        local n = api.options(options)
+        sp:start_option(n)
+        if n == 1 then
+          sp:lines()
+          return
+        elseif n == 2 then
+          sp:lines()
+
+          local options_2 = sp:start_options()
+          if self._piracy_discussed then
+            options_2[1] = nil
+          end
+
+          local looped = true
+          while looped do
+            local m = api.options(options_2)
+            sp:start_option(m)
+            if m == 1 then
+              options_2[1] = nil
+              self._piracy_discussed = true
+              sp:lines()
+              local check = State.player:ability_check("insight", 14)
+                or State.rails.resists_son_mary and State.player:ability_check("insight", 14)
+              sp:start_single_branch(check and 1 or 2)
+                sp:lines()
+              sp:finish_single_branch()
+            elseif m == 2 then
+              sp:lines()
+            elseif m == 3 then
+              sp:lines(subs)
+            elseif m == 4 then
+              sp:lines()
+            elseif m == 5 then
+              sp:lines(subs)
+            else
+              sp:lines(subs)
+              looped = false
+            end
+            sp:finish_option()
+          end
+          sp:finish_options()
+        elseif n == 3 then
+          options[3] = nil
+          self._enemy_discussed = true
+          sp:lines()
+        elseif n == 4 then
+          sp:lines()
+          local options_2 = sp:start_options()
+          if self._strategy_discussed then options_2[4] = nil end
+          local looped = true
+          while looped do
+            local m = api.options(options_2)
+            sp:start_option(m)
+            if m == 1 then
+              sp:lines()
+            elseif m == 2 then
+              sp:lines()
+            elseif m == 3 then
+              sp:lines()
+            elseif m == 4 then
+              options_2[4] = nil
+              local check = State.player:ability_check("investigation", 13)
+                or State.rails.resists_son_mary and State.player:ability_check("investigation", 13)
+              sp:start_single_branch(check and 1 or 2)
+                sp:lines(subs)
+              sp:finish_single_branch()
+            else
+              sp:lines()
+              looped = false
+            end
+            sp:finish_option()
+          end
+          sp:finish_options()
+        else
+          sp:lines()
+
+          local options_2 = sp:start_options()
+          if not State.rails.met_markiss then options_2[1] = nil end
+          if State.rails.rront_status ~= "ran_away" or not State.rails.let_rront_go then
+            options_2[3] = nil
+          end
+          options_2[4] = nil
+          if not State.rails.met_dwarf then options_2[5] = nil end
+
+          local looped = true
+          while looped do
+            local m = api.options(options_2)
+            sp:start_option(m)
+              sp:lines()
+              if m == 6 then looped = false end
+            sp:finish_option()
+          end
+
+          sp:finish_options()
+        end
+        sp:finish_option()
+      end
+      sp:finish_options()
     end,
   },
 

@@ -27,7 +27,10 @@ local rails = {}
 --- @field talked_to_everybody boolean?
 --- @field given_up_gloves boolean
 --- @field rront_status "dead"|"ran_away"?
+--- @field let_rront_go boolean?
 --- @field met_son_mary boolean?
+--- @field met_markiss boolean?
+--- @field met_dwarf boolean?
 --- @field resists_son_mary boolean?
 --- @field did_markiss_help boolean?
 --- @field lunch_started boolean?
