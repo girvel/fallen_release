@@ -748,6 +748,8 @@ sp:finish_single_branch()
     characters = {
       son_mary = {},
       player = {},
+      markiss = {},
+      hungover_door = {optional = true},
     },
 
     _condition = function(self, dt, ch, ps)
@@ -769,14 +771,7 @@ sp:finish_single_branch()
         sp:start_single_branch()
         if self._first_time then
           self._first_time = false
-          local orders = {sp:literal(), sp:literal(), sp:literal()}
-          State.runner:run_task(function()
-            api.order(orders[1])
-            async.sleep(2)
-            api.order(orders[2])
-            async.sleep(2)
-            api.order(orders[3])
-          end)
+          api.orders({sp:literal(), sp:literal(), sp:literal()}, 2)
         end
         sp:finish_single_branch()
         sp:lines()
@@ -800,13 +795,63 @@ sp:finish_single_branch()
 
       sp:lines()
 
-      local orders = {sp:literal(), sp:literal()}
-      State.runner:run_task(function()
-        api.order(orders[1])
-        async.sleep(3)
-        api.order(orders[2])
-      end)
+      api.orders({sp:literal(), sp:literal()}, 3)
       sp:lines()
+
+      State.rails:freedom()
+      local check = State.player:saving_throw("con", 15)
+      sp:start_single_branch(check and 1 or 2)
+      if check then
+        sp:lines()
+
+        State.player:animate("lying", false, true)
+        local death_sequence = State.runner:run_task(function()
+          local fx = animated.add_fx(
+            "engine/assets/animations/angel_leaves", State.player.position, "fx_over"
+          )
+          coroutine.yield()
+          while State:exists(fx) do
+            coroutine.yield()
+          end
+        end)
+        sp:lines()
+
+        death_sequence:wait()
+        State.player:animate()
+        sp:lines()
+        return State.runner.scenes._430_son_mary_freedom
+          :run("_430_son_mary_freedom", ch, ps, true)
+      else
+        State.player:animate("lying", false, true)
+        api.fade_out(3)
+
+        local death_sequence = State.runner:run_task(function()
+          async.sleep(.5)
+          State.player.souls_n = State.player.souls_n - 1
+          local fx = animated.add_fx(
+            "engine/assets/animations/angel_leaves", State.player.position, "fx_over"
+          )
+          coroutine.yield()
+          while State:exists(fx) do
+            coroutine.yield()
+          end
+        end)
+
+        sp:lines()
+
+        death_sequence:wait()
+        api.assert_position(State.player, ps.hungover_player, true)
+        api.assert_position(ch.markiss, ps.hungover_markiss, true)
+        api.rotate(ch.markiss, State.player)
+        if State:exists(ch.hungover_door) then
+          ch.hungover_door:on_interact(State.player)
+        end
+        State.camera:immediate_center()
+        api.fade_in(.5)
+        sp:lines()
+        State.rails:set_quest("alcohol", stages.alcohol._0030_return)
+      end
+      sp:finish_single_branch()
     end,
   },
 

@@ -108,61 +108,61 @@ local skip_intro = function(self)
   self:set_quest("warmup", stages.warmup._0010_intro_heard)
 end
 
---- @param rails rails
-checkpoints.cp1 = function(rails)
-  skip_intro(rails)
-  rails:transition_2_warmup()
+--- @param this_rails rails
+checkpoints.cp1 = function(this_rails)
+  skip_intro(this_rails)
+  this_rails:transition_2_warmup()
   level.unsafe_move(State.player, State.level.positions.cp1)
 end
 
---- @param rails rails
-checkpoints.cp2 = function(rails)
-  skip_intro(rails)
-  rails:transition_2_warmup()
+--- @param this_rails rails
+checkpoints.cp2 = function(this_rails)
+  skip_intro(this_rails)
+  this_rails:transition_2_warmup()
   level.unsafe_move(State.player, State.level.positions.officer_room_enter)
 end
 
---- @param rails rails
-checkpoints.cp3 = function(rails)
-  skip_intro(rails)
-  rails:transition_2_warmup()
-  rails:transition_3_detective()
+--- @param this_rails rails
+checkpoints.cp3 = function(this_rails)
+  skip_intro(this_rails)
+  this_rails:transition_2_warmup()
+  this_rails:transition_3_detective()
   level.unsafe_move(State.player, State.level.positions.cp3)
-  rails:set_quest("warmup", stages.warmup._1000_bird_fed)
-  rails:set_quest("detective", stages.detective._0020_investigate)
+  this_rails:set_quest("warmup", stages.warmup._1000_bird_fed)
+  this_rails:set_quest("detective", stages.detective._0020_investigate)
   State.runner:remove("_304_room_description")
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
 end
 
---- @param rails rails
-checkpoints.cp4 = function(rails)
-  skip_intro(rails)
-  rails:transition_2_warmup()
-  rails:transition_3_detective()
+--- @param this_rails rails
+checkpoints.cp4 = function(this_rails)
+  skip_intro(this_rails)
+  this_rails:transition_2_warmup()
+  this_rails:transition_3_detective()
   level.unsafe_move(State.player, State.level.positions.cp4)
-  rails:set_quest("warmup", stages.warmup._1000_bird_fed)
-  rails:rront_runs_away()
+  this_rails:set_quest("warmup", stages.warmup._1000_bird_fed)
+  this_rails:rront_runs_away()
   State.runner:remove("_304_room_description")
   State.runner:remove("_322_dwarf_start")
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
 end
 
-checkpoints.cp5 = function(rails)
-  skip_intro(rails)
-  rails:transition_2_warmup()
-  rails:transition_3_detective()
+checkpoints.cp5 = function(this_rails)
+  skip_intro(this_rails)
+  this_rails:transition_2_warmup()
+  this_rails:transition_3_detective()
   level.unsafe_move(State.player, State.level.positions.cp5)
-  rails:set_quest("warmup", stages.warmup._1000_bird_fed)
-  rails:rront_runs_away()
+  this_rails:set_quest("warmup", stages.warmup._1000_bird_fed)
+  this_rails:rront_runs_away()
   State.runner:remove("_304_room_description")
   State.runner:remove("_322_dwarf_start")
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
-  State.player.bag.alcohol = 3
-  rails.met_son_mary = true
-  rails:set_quest("alcohol", stages.alcohol._0010_search)
+  State.player.bag.alcohol = 2
+  this_rails.met_son_mary = true
+  this_rails:set_quest("alcohol", stages.alcohol._0020_search_again)
 
   local ch = State.level.entities
   ch.bridge_megadoor3._locked = false
@@ -316,6 +316,12 @@ methods.get_valve = function()
   State:remove(ch.valve)
   ch.guard_b.inventory.offhand = nil
   item.set_cue(ch.bridge_megadoor3, "highlight", true)
+end
+
+methods.freedom = function()
+  if not State.rails.rront_status then
+    State.rails:rront_runs_away()
+  end
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)

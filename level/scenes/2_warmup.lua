@@ -473,6 +473,7 @@ return {
 
   _guard_a_rotates = cutscene.make {
     enabled = true,
+    boring_flag = true,
     mode = "sequential",
     characters = {
       guard_a = {non_locking = true},

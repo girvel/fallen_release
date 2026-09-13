@@ -496,6 +496,17 @@ api.order = function(text)
   return promise
 end
 
+--- @param orders string[]
+--- @param delay number
+api.orders = function(orders, delay)
+  State.runner:run_task(function()
+    for i, order in ipairs(orders) do
+      if i > 1 then async.sleep(delay) end
+      api.order(order)
+    end
+  end)
+end
+
 local NOTIFICATION_SOUND = sound.multiple("engine/assets/sounds/notification", .01)
 
 -- TODO queue
