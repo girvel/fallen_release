@@ -25,7 +25,7 @@ name_menu.prompt = function()
   while Kernel.gui:is_opened("name_menu") do
     coroutine.yield()
   end
-  return name_menu.last_result
+  return name_menu.last_result:strip()
 end
 
 tk.delegate(methods, "draw_entity", "preprocess", "postprocess")

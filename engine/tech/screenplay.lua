@@ -27,6 +27,22 @@ end
 
 local push_block
 
+--- @param line string
+--- @param subs table<string, string>?
+--- @return string
+local apply_subs = function(line, subs)
+  if subs then
+    for sub, v in pairs(subs) do
+      line = line:gsub("%%" .. sub .. "%%", v)
+    end
+  end
+  local unresolved_expr = line:match("%%[^%%]+%%")
+  if unresolved_expr then
+    Log.warn_once("Unresolved expression %q in line %q", unresolved_expr, line)
+  end
+  return line
+end
+
 --- @async
 --- @param subs? table<string, string>
 methods.lines = function(self, subs)
@@ -37,25 +53,20 @@ methods.lines = function(self, subs)
     if line.source ~= "narration" then
       character = self.characters[line.source]
     end
-    local text = line.text
-    if subs then
-      for sub, v in pairs(subs) do
-        text = text:gsub("%%" .. sub .. "%%", v)
-      end
-    end
-    api.line(character, text)
+    api.line(character, apply_subs(line.text, subs))
   end
 end
 
 --- @nodiscard
+--- @param subs? table<string, string>
 --- @return table<integer, string>
-methods.start_options = function(self)
+methods.start_options = function(self, subs)
   local block = push_block(self, "options")  --[[@as moonspeak_options]]
   table.insert(self.stack, block)
   table.insert(self.cursor, 0)
 
   return Fun.iter(block.options)
-    :map(function(b) return b.text end)
+    :map(function(b) return apply_subs(b.text, subs) end)
     :totable()
 end
 
@@ -88,9 +99,10 @@ methods.finish_option = function(self)
   assert(Table.last(self.stack).type == "options")
 end
 
+--- @param subs? table<string, string>
 --- @return integer
-methods.start_single_option = function(self)
-  local n = api.options(self:start_options())
+methods.start_single_option = function(self, subs)
+  local n = api.options(self:start_options(subs))
   self:start_option(n)
   return n
 end

@@ -1,3 +1,4 @@
+local name_menu = require("level.logic.name_menu")
 local animated = require("engine.tech.animated")
 local items = require("level.palette.items")
 local no_op = require("engine.mech.ais.no_op")
@@ -755,7 +756,7 @@ sp:finish_single_branch()
     _condition = function(self, dt, ch, ps)
       local alcohol = State.rails.quests.alcohol
       if alcohol <= stages.alcohol._0010_search then return false end
-      if alcohol == stages.alcohol._1000_completed then
+      if alcohol >= stages.alcohol._0030_return then
         State.runner:remove(self)
         return false
       end
@@ -852,6 +853,66 @@ sp:finish_single_branch()
         State.rails:set_quest("alcohol", stages.alcohol._0030_return)
       end
       sp:finish_single_branch()
+    end,
+  },
+
+  _430_son_mary_freedom = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/430_son_mary_freedom.ms",
+    characters = {
+      player = {},
+      son_mary = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.son_mary.was_interacted_by == State.player
+        and State.rails.quests.alcohol == stages.alcohol._0030_return
+    end,
+
+    _run = function(self, ch, ps, sp, did_transition)
+      State.rails:set_quest("alcohol", stages.alcohol._1000_completed)
+      sp:start_single_branch()
+      if did_transition then
+        State.rails:freedom()
+      else
+        sp:lines()
+      end
+      sp:finish_single_branch()
+
+      sp:lines()
+      sp:start_single_option()
+        sp:lines()
+      sp:finish_single_option()
+      sp:lines()
+
+      local n = sp:start_single_option({NAME = State.player.name})
+      if n == 1 then
+        State.rails.player_nickname = "Гаспар"
+        sp:lines()
+      elseif n == 2 then
+        State.rails.player_nickname = State.player.name
+        sp:lines({NAME = State.player.name})
+      else
+        sp:start_branches()
+        local looped = true
+        while looped do
+          State.rails.player_nickname = name_menu.prompt()
+          local matches = State.rails.player_nickname:utf_lower() == "сон мари"
+          sp:start_branch(matches and 1 or 2)
+          if matches then
+            sp:lines({SM_NAME = State.rails.player_nickname})
+            sp:lines()
+          else
+            sp:lines({SM_NAME = State.rails.player_nickname})
+            looped = false
+          end
+          sp:finish_branch()
+        end
+        sp:finish_branches()
+      end
+      sp:finish_single_option()
+      return State.runner.scenes._432_son_mary_ally
+        :run("_432_son_mary_ally", ch, ps, true)
     end,
   },
 

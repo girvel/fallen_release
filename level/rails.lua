@@ -34,6 +34,7 @@ local rails = {}
 --- @field flask_noticed boolean?
 --- @field source_of_first_alcohol rails.alcohol_source?
 --- @field read_captain_door_note boolean?
+--- @field player_nickname string?
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -158,9 +159,9 @@ checkpoints.cp5 = function(this_rails)
   State.runner:remove("_322_dwarf_start")
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
-  State.player.bag.alcohol = 2
+  State.player.bag.alcohol = 1
   this_rails.met_son_mary = true
-  this_rails:set_quest("alcohol", stages.alcohol._0020_search_again)
+  this_rails:set_quest("alcohol", stages.alcohol._0030_return)
 
   local ch = State.level.entities
   ch.bridge_megadoor3._locked = false

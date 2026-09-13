@@ -14,6 +14,7 @@ local levels, count, pretty
 --- @param ... any
 --- @return string
 log.format = function(fmt, ...)
+  if select("#", ...) == 0 then return fmt end
   return fmt:format(pretty(...))
 end
 
