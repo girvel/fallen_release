@@ -893,8 +893,16 @@ draw_suggestion = function()
     end
 
     target = State.grids.solids:slow_get(State.player.position + State.player.direction)
-    if target and target.sokoban_flag then
-      ui.text("[2] чтобы толкнуть "..Name.game(target))
+    if target then
+      if target.sokoban_flag then
+        ui.text("[2] чтобы толкнуть "..Name.game(target))
+        goto proceed
+      end
+
+      if target.hp and State.hostility:get(State.player, target) == nil then
+        ui.text("[1] чтобы атаковать "..Name.game(target))
+        goto proceed
+      end
     end
   end ::proceed::
   ui.finish_font()
