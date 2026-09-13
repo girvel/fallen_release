@@ -12,6 +12,7 @@ sprite.cell_size = 16
 
 --- @class sprite.rendered
 --- @field type "rendered"
+--- @field anchor "screen"
 --- @field render fun(self: sprite.rendered, entity: entity, dt: number): love.Drawable
 
 --- @class sprite.image

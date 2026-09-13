@@ -13,7 +13,7 @@ return Tiny.sortedProcessingSystem {
   end,
 
   process = function(_, entity, dt)
-    if entity.sprite.type ~= "grid" then
+    if entity.sprite.type ~= "grid" and entity.sprite.anchor ~= "screen" then
       if (entity.position - State.player.position):abs2() > State.player.fov_r then
         return
       end
