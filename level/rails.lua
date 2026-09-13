@@ -1,6 +1,3 @@
-local name_menu = require("level.logic.name_menu")
-local spells = require("engine.mech.spells")
-local class = require("engine.mech.class")
 local sprite = require("engine.tech.sprite")
 local health = require("engine.mech.health")
 local items = require("level.palette.items")
@@ -78,8 +75,6 @@ init_debug = function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
     item.give(State.player, items.gas_key())
-    coroutine.yield()
-    Kernel.gui:open_menu(name_menu.new)
   end)
 end
 

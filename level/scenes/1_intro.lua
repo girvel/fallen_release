@@ -130,17 +130,14 @@ return {
       api.scale(10)
       local wrong_names = map_literal()
       while true do
-        Kernel.gui:open_menu(name_menu.new)
-        while Kernel.gui:is_opened("name_menu") do
-          coroutine.yield()
-        end
+        State.player.name = name_menu.prompt()
         local reaction = wrong_names[State.player.name:utf_lower()]
         if not reaction then break end
         api.line(State.player, reaction)
       end
 
       api.scale():next(function()
-      -- memory glitches with api.scale, remove this when it's fixed
+        -- memory glitches with api.scale, remove this when it's fixed
         local prev_canvas = love.graphics.getCanvas()
         love.graphics.setCanvas(State.model.memory)
         love.graphics.clear()

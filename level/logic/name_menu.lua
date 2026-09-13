@@ -1,5 +1,7 @@
 local ui = require("engine.tech.ui")
 local tk = require("engine.gui.tk")
+
+
 local name_menu = {}
 
 --- @class name_menu
@@ -16,6 +18,16 @@ name_menu.new = function(prev)
   }, name_menu.mt)
 end
 
+--- @async
+--- @return string
+name_menu.prompt = function()
+  Kernel.gui:open_menu(name_menu.new)
+  while Kernel.gui:is_opened("name_menu") do
+    coroutine.yield()
+  end
+  return name_menu.last_result
+end
+
 tk.delegate(methods, "draw_entity", "preprocess", "postprocess")
 
 local W = 500
@@ -23,7 +35,6 @@ local H = 150
 local PADDING = 20
 
 methods.draw_gui = function(self, dt)
-  Log.traces(1)
   tk.start_window(love.graphics.getWidth() - W - PADDING, "center", W, H)
   ui.start_font(24)
     ui.start_line()
@@ -41,7 +52,7 @@ methods.draw_gui = function(self, dt)
 
   if ok_button or ui.keyboard("return") then
     Log.info("Submitted the name %q", State.player.name)
-    State.player.name = self.name:strip()
+    name_menu.last_result = self.name:strip()
     Kernel.gui:close_menu()
   end
 
