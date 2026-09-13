@@ -1050,4 +1050,49 @@ sp:finish_single_branch()
       sp:finish_options()
     end,
   },
+
+  _470_deck_sign = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/470_deck_sign.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ps.captain_deck_message) <= 1
+    end,
+
+    _run = function(self, ch, ps, sp)
+      local check = State.player:ability_check("history", 12)
+      sp:start_single_branch(check and 1 or 2)
+        api.popup(sp:literal(), ps.captain_deck_message)
+      sp:finish_single_branch()
+    end,
+  },
+
+  _472_parasites_sign = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/472_parasites_sign.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ps.parasites_message) <= 2
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:start_single_branch(State.player:ability_check("investigation", 10) and 1 or 2)
+        api.popup(sp:literal())
+      sp:finish_single_branch()
+    end,
+  },
+
+  _482_coal_pile = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/482_coal_pile.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ps.coal_message_y) <= 3
+        and State.player.position.y == ps.coal_message_y.y
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.popup(sp:literal(), ps.coal_message_source)
+    end,
+  },
 }
