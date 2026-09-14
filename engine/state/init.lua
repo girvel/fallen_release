@@ -20,7 +20,7 @@ local state = {}
 --- @field uid state_uid
 --- @field stats state_stats
 --- @field model state.model
---- @field shadow state_shadow
+--- @field shadow state.shadow
 --- @field shader shader?
 --- @field rails rails
 --- @field grids grids

@@ -1,16 +1,18 @@
+local api = require("engine.tech.api")
 local level = require("engine.tech.level")
 local sprite = require("engine.tech.sprite")
 
 
 local shadow = {}
 
---- @class state_shadow
+--- @alias state.shadow state.shadow_strict|table
+--- @class state.shadow_strict: entity_strict
 --- @field static grid<number>
 local methods = {}
 shadow.mt = {__index = methods}
 
 --- @param base_grid grid<number>
---- @return state_shadow
+--- @return state.shadow
 shadow.new = function(base_grid)
   return setmetatable({
     static = base_grid,
@@ -22,7 +24,7 @@ local shadow_sprite = {
   anchor = "screen",
 }
 
---- @param entity entity
+--- @param entity state.shadow
 --- @param dt number
 shadow_sprite.render = function(self, entity, dt)
   local prev_canvas = love.graphics.getCanvas()
@@ -77,8 +79,10 @@ shadow_sprite.render = function(self, entity, dt)
         end
       end
 
+      local map = State.player.ai._vision_map
       for x = vision_start.x, vision_end.x do
         for y = vision_start.y, vision_end.y do
+          if not map:is_visible_unsafe(x, y) then goto continue end
           local relx = x - vision_start.x + 1
           local rely = y - vision_start.y + 1
           local shadow_value = State.shadow.static:unsafe_get(x, y)
@@ -92,6 +96,7 @@ shadow_sprite.render = function(self, entity, dt)
             oy + (rely - 1) * k,
             k, k
           )
+          ::continue::
         end
       end
       love.graphics.rectangle("fill", ox, oy, k, k)
