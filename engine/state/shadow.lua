@@ -1,3 +1,4 @@
+local tcod = require("engine.tech.tcod")
 local api = require("engine.tech.api")
 local level = require("engine.tech.level")
 local sprite = require("engine.tech.sprite")
@@ -65,15 +66,19 @@ shadow_sprite.render = function(self, entity, dt)
 
       -- TODO optimize
       if light_value > 0 then
+        local map = tcod.map(State.grids.solids)
         local light_value_int = math.ceil(light_value / .1)
+        map:refresh_fov(V(x, y), light_value_int)
         for d in Iteration.rhombus(light_value_int) do
-          local x1 = relx + d.x
-          local y1 = rely + d.y
-          if light_grid:can_fitn(x1, y1) then
-            local v = light_grid:unsafe_get(x1, y1) + (light_value_int - d:abs2()) * .1
-            light_grid:unsafe_set(x1, y1, v)
+          local relx1 = relx + d.x
+          local rely1 = rely + d.y
+
+          if light_grid:can_fitn(relx1, rely1) and map:is_visible_unsafe(x + d.x, y + d.y) then
+            local v = light_grid:unsafe_get(relx1, rely1) + (light_value_int - d:abs2()) * .1
+            light_grid:unsafe_set(relx1, rely1, v)
           end
         end
+        map:free()
       end
     end
   end
@@ -86,15 +91,16 @@ shadow_sprite.render = function(self, entity, dt)
       local rely = y - vision_start.y + 1
       local shadow_value = State.shadow.static:unsafe_get(x, y)
       local light_value = light_grid:unsafe_get(relx, rely)
-      shadow_value = math.max(0, shadow_value - light_value)
-
-      love.graphics.setColor(0, 0, 0, shadow_value)
-      love.graphics.rectangle(
-        "fill",
-        ox + (relx - 1) * k,
-        oy + (rely - 1) * k,
-        k, k
-      )
+      local total_value = shadow_value - light_value
+      if total_value > 0 then
+        love.graphics.setColor(0, 0, 0, total_value)
+        love.graphics.rectangle(
+          "fill",
+          ox + (relx - 1) * k,
+          oy + (rely - 1) * k,
+          k, k
+        )
+      end
       ::continue::
     end
   end
