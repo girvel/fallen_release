@@ -19,11 +19,6 @@ love.load = function(args)
   assert = safety.assert
   Error = safety.error
 
-  if args.profiler then
-    Profile.start()
-    async.lag_threshold = 1
-  end
-
   if args.mobdebug then
     local ok, mobdebug = pcall(require, "mobdebug")
     assert(

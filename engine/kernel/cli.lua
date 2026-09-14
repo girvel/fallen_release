@@ -76,7 +76,9 @@ cli.parse = function(args)
       ["360p"] = V(640, 360),
     }
 
-    assert(builtin_resolutions[resolution] or resolution:find("x"))
+    if not builtin_resolutions[resolution] and not resolution:find("x") then
+      error(("Invalid resolution %q"):format(resolution))
+    end
 
     --- @type vector
     result.resolution = builtin_resolutions[resolution]

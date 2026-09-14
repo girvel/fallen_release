@@ -235,6 +235,11 @@ methods.load_level = function(self, path)
 
   self.is_loaded = true
   async.lag_threshold = .1
+
+  if Kernel.args.profiler then
+    Profile.start()
+    async.lag_threshold = math.huge
+  end
 end
 
 --- @param list entity[]
