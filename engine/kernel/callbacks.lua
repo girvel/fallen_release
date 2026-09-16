@@ -1,3 +1,4 @@
+local inotify = require("engine.tech.inotify")
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
 local colors = require("engine.tech.colors")
 local ui = require("engine.tech.ui")
@@ -166,6 +167,11 @@ love.run = function()
     if prev_size ~= size then
       prev_size = size
       dynamic_canvas.handle_resize(unpack(size))
+    end
+
+    local changed_files = inotify.get_changed_files()
+    for _, file in ipairs(changed_files) do
+      Log.trace(file)
     end
 
     love.event.pump()
