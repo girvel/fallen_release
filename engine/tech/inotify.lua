@@ -1,7 +1,39 @@
 local ffi = require("ffi")
 local inotify = {}
 
-local inotify_fd, watch_fd, buffer
+local get_subdirectories_recursively
+
+--- @param base string
+--- @param result? string[]
+--- @return string[]
+get_subdirectories_recursively = function(base, result)
+  result = result or {}
+  table.insert(result, base)
+
+  local info = {}
+  if base == "." then
+    for _, entry in ipairs(love.filesystem.getDirectoryItems("")) do
+      if not entry:starts_with(".")
+        and love.filesystem.getRealDirectory(entry) ~= love.filesystem.getSaveDirectory()
+        and love.filesystem.getInfo(entry, "directory", info)
+      then
+        get_subdirectories_recursively(entry, result)
+      end
+    end
+  else
+    for _, entry in ipairs(love.filesystem.getDirectoryItems(base)) do
+      local entry_full_path = base.."/"..entry
+      if not entry:starts_with(".")
+        and love.filesystem.getInfo(entry_full_path, "directory", info)
+      then
+        get_subdirectories_recursively(entry_full_path, result)
+      end
+    end
+  end
+  return result
+end
+
+local inotify_fd, fd_to_dir, buffer
 
 local init = function()
   ffi.cdef [[
@@ -25,8 +57,13 @@ local init = function()
   inotify_fd = ffi.C.inotify_init1(IN_NONBLOCK)
   assert(inotify_fd >= 0)
 
-  watch_fd = ffi.C.inotify_add_watch(inotify_fd, ".", IN_CLOSE_WRITE)
-  assert(watch_fd >= 0)
+  fd_to_dir = {}
+  for _, dir in ipairs(get_subdirectories_recursively(".")) do
+    if dir == "" then dir = "." end
+    local watch_fd = ffi.C.inotify_add_watch(inotify_fd, dir, IN_CLOSE_WRITE)
+    assert(watch_fd >= 0)
+    fd_to_dir[watch_fd] = dir
+  end
 
   buffer = ffi.new("char[4096]")
 end
@@ -34,6 +71,7 @@ end
 --- @class inotify.event
 --- @field name ffi.cdata*
 --- @field len integer
+--- @field wd integer
 
 --- @return string[]
 --- @nodiscard
@@ -47,7 +85,7 @@ inotify.get_changed_files = function()
     local ptr = base
     while ptr < base + bytes_read do
       local event = ffi.cast("struct inotify_event *", ptr) --[[@as inotify.event]]
-      table.insert(result, ffi.string(event.name))
+      table.insert(result, fd_to_dir[event.wd].."/"..ffi.string(event.name))
       ptr = ptr + ffi.sizeof("struct inotify_event") + event.len
     end
   end
