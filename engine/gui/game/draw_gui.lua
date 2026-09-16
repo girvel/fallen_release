@@ -209,8 +209,8 @@ draw_curtain = function()
 end
 
 local PADDING_LX = 48
-local PADDING_RX = 60
-local SIDEBAR_INNER_W = 336
+local PADDING_RX = 48
+local SIDEBAR_INNER_W = 344
 
 local SIDEBAR_W = SIDEBAR_INNER_W + PADDING_LX + PADDING_RX
 
