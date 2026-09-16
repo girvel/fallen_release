@@ -59,6 +59,7 @@ local wrap = function(modname, fname, memoize)
 end
 
 love.graphics.newCanvasRaw = love.graphics.newCanvas
+love.graphics.newImageRaw = love.graphics.newImage
 
 wrap("graphics", "newImage", true)
 wrap("graphics", "newQuad")

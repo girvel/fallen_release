@@ -1,4 +1,3 @@
-local ui = require("engine.tech.ui")
 local ffi = require("ffi")
 local inotify = {}
 
@@ -143,9 +142,14 @@ inotify.update = function()
   end
 
   if images_changed then
+    local gui_elements = require("engine.gui.gui_elements")
+    local ui = require("engine.tech.ui")
+
     --- @diagnostic disable-next-line:undefined-field
     love.graphics.newImageCache.children = nil
     ui.reset_caches()
+    gui_elements.assign()
+    Log.info("Reloaded images")
   end
 
   if modules_changed then
