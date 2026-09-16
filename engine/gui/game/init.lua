@@ -1,9 +1,8 @@
+local inotify = require("engine.tech.inotify")
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
 
 
 local game = {}
-
---- @alias gui_input_mode "normal"|"target"
 
 --- @class gui_game
 --- @field type "game"
@@ -11,13 +10,13 @@ local game = {}
 --- @field _main_canvas love.Canvas
 --- @field _bg_canvas love.Canvas
 --- @field _bg_offset number
-local methods = {
-  draw_entity = require("engine.gui.game.draw_entity"),
-  draw_gui = require("engine.gui.game.draw_gui"),
-  draw_grid = require("engine.gui.game.draw_grid"),
-  preprocess = require("engine.gui.game.preprocess"),
-  postprocess = require("engine.gui.game.postprocess"),
-}
+local methods = {}
+
+methods.draw_entity = inotify.require("engine.gui.game.draw_entity", methods)
+methods.draw_gui = inotify.require("engine.gui.game.draw_gui", methods)
+methods.draw_grid = inotify.require("engine.gui.game.draw_grid", methods)
+methods.preprocess = inotify.require("engine.gui.game.preprocess", methods)
+methods.postprocess = inotify.require("engine.gui.game.postprocess", methods)
 
 game.mt = {__index = methods}
 

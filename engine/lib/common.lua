@@ -45,4 +45,10 @@ common.locals = function(f)
   })
 end
 
+--- @param modpath string
+--- @return string
+common.posix_path = function(modpath)
+  return modpath:gsub("%.", "/")..".lua"
+end
+
 return common

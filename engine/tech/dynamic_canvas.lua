@@ -19,15 +19,13 @@ end
 --- @param screen_w integer
 --- @param screen_h integer
 dynamic_canvas.handle_resize = function(screen_w, screen_h)
-  local new_map = {}
+  local new_map = setmetatable({}, {__mode = "k"})
 
-  local n = 0
   for prev_canvas, params in pairs(map) do
     local canvas = love.graphics.newCanvasRaw(screen_w, screen_h)
     new_map[canvas] = params
     params.container[params.key] = canvas
     Ldump.serializer.handlers[canvas] = Ldump.serializer.handlers[prev_canvas]
-    n = n + 1
   end
 
   map = new_map

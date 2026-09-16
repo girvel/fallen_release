@@ -93,5 +93,49 @@ inotify.get_changed_files = function()
   return result
 end
 
+--- @type table<table, {container: table, key: string, modpath: string}>
+local map = setmetatable({}, {__mode = "k"})
+
+--- @param modpath string
+--- @param base table
+--- @param key any
+--- @return any
+inotify.require = function(modpath, base, key)
+  key = key or assert(modpath:match("%.?([^%.]+)$"))
+  local result = require(modpath)
+  map[result] = {
+    container = base,
+    key = key,
+    modpath = modpath,
+  }
+  Ldump.serializer.handlers[result] = function()
+    return inotify.require(modpath, base, key)
+  end
+  return result
+end
+
+inotify.update = function()
+  local changed_files = {}
+  local modules_changed = false
+  for _, file in ipairs(inotify.get_changed_files()) do
+    if file:ends_with(".lua") then
+      modules_changed = true
+      changed_files[file] = true
+    end
+  end
+  if not modules_changed then return end
+
+  for prev_mod, params in pairs(map) do
+    if changed_files[Common.posix_path(params.modpath)] then
+      Log.info("Reloaded %s", params.modpath)
+      package.loaded[params.modpath] = nil
+      local mod = require(params.modpath)
+      map[mod] = params
+      params.container[params.key] = mod
+      Ldump.serializer.handlers[mod] = Ldump.serializer.handlers[prev_mod]
+    end
+  end
+end
+
 Ldump.mark(inotify, {}, ...)
 return inotify

@@ -67,19 +67,19 @@ methods._set_mode = function(self, mode_value)
 end
 
 methods.draw_gui = function(self, dt)
-  Error("No Kernel.gui._mode is set")
+  return self._mode:draw_gui(dt)
 end
 
 methods.draw_entity = function(self, entity, dt)
-  Error("No Kernel.gui._mode is set")
+  return self._mode:draw_entity(entity, dt)
 end
 
 methods.preprocess = function(self, dt)
-  Error("No Kernel.gui._mode is set")
+  return self._mode:preprocess(dt)
 end
 
 methods.postprocess = function(self, dt)
-  Error("No Kernel.gui._mode is set")
+  return self._mode:postprocess(dt)
 end
 
 methods.load_level = function(self)

@@ -159,7 +159,7 @@ love.run = function()
     end
 
     Kernel._is_active = love.window.isVisible()
-      and love.window.hasFocus()
+      -- and love.window.hasFocus()
 
     -- resize event does not capture all resize attempts
     -- (for example, Niri's autoresize to a column)
@@ -169,10 +169,7 @@ love.run = function()
       dynamic_canvas.handle_resize(unpack(size))
     end
 
-    local changed_files = inotify.get_changed_files()
-    for _, file in ipairs(changed_files) do
-      Log.trace(file)
-    end
+    if Kernel.debug then inotify.update() end
 
     love.event.pump()
     for name, a,b,c,d,e,f in love.event.poll() do
