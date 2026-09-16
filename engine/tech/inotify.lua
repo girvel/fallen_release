@@ -1,3 +1,4 @@
+local ui = require("engine.tech.ui")
 local ffi = require("ffi")
 local inotify = {}
 
@@ -31,6 +32,16 @@ get_subdirectories_recursively = function(base, result)
     end
   end
   return result
+end
+
+local is_available do
+  local cache
+  is_available = function()
+    if cache == nil then
+      cache = love.system.getOS() == "Linux"
+    end
+    return cache
+  end
 end
 
 local inotify_fd, fd_to_dir, buffer
@@ -94,16 +105,18 @@ inotify.get_changed_files = function()
 end
 
 --- @type table<table, {container: table, key: string, modpath: string}>
-local map = setmetatable({}, {__mode = "k"})
+local module_map = setmetatable({}, {__mode = "k"})
 
 --- @param modpath string
 --- @param base table
 --- @param key any
 --- @return any
 inotify.require = function(modpath, base, key)
-  key = key or assert(modpath:match("%.?([^%.]+)$"))
   local result = require(modpath)
-  map[result] = {
+  if not is_available() then return result end
+
+  key = key or assert(modpath:match("%.?([^%.]+)$"))
+  module_map[result] = {
     container = base,
     key = key,
     modpath = modpath,
@@ -115,24 +128,36 @@ inotify.require = function(modpath, base, key)
 end
 
 inotify.update = function()
+  if not is_available() then return end
+
   local changed_files = {}
   local modules_changed = false
+  local images_changed = false
   for _, file in ipairs(inotify.get_changed_files()) do
     if file:ends_with(".lua") then
       modules_changed = true
       changed_files[file] = true
+    elseif file:ends_with(".png") then
+      images_changed = true
     end
   end
-  if not modules_changed then return end
 
-  for prev_mod, params in pairs(map) do
-    if changed_files[Common.posix_path(params.modpath)] then
-      Log.info("Reloaded %s", params.modpath)
-      package.loaded[params.modpath] = nil
-      local mod = require(params.modpath)
-      map[mod] = params
-      params.container[params.key] = mod
-      Ldump.serializer.handlers[mod] = Ldump.serializer.handlers[prev_mod]
+  if images_changed then
+    --- @diagnostic disable-next-line:undefined-field
+    love.graphics.newImageCache.children = nil
+    ui.reset_caches()
+  end
+
+  if modules_changed then
+    for prev_mod, params in pairs(module_map) do
+      if changed_files[Common.posix_path(params.modpath)] then
+        Log.info("Reloaded %s", params.modpath)
+        package.loaded[params.modpath] = nil
+        local mod = require(params.modpath)
+        module_map[mod] = params
+        params.container[params.key] = mod
+        Ldump.serializer.handlers[mod] = Ldump.serializer.handlers[prev_mod]
+      end
     end
   end
 end

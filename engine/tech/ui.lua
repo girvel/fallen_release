@@ -138,12 +138,15 @@ local align = function(w, h)
   return x, y
 end
 
+local get_font_cache = {}
+
 --- @param size number
 --- @return love.Font
 local get_font = Memoize(function(size)
   return love.graphics.newFont("engine/assets/fonts/clacon2.ttf", size)
-end)
+end, get_font_cache)
 
+local get_batch_cache = {}
 local get_batch = Memoize(function(path)
   local image = love.graphics.newImage(path)
   local batch = love.graphics.newSpriteBatch(image)
@@ -157,7 +160,7 @@ local get_batch = Memoize(function(path)
   end
 
   return batch, quads, cell_size
-end)
+end, get_batch_cache)
 
 local get_mouse_over = function(x, y, w, h)
   return (
@@ -770,11 +773,15 @@ ui.image = function(texture, scale, quad)
   end
 end
 
+local get_atlas_cache = {}
+
 --- @param path string
 --- @return love.ImageData
 local get_atlas = Memoize(function(path)
   return love.image.newImageData(path)
-end)
+end, get_atlas_cache)
+
+local get_atlas_image_cache = {}
 
 --- @param image love.ImageData|string
 --- @param atlas_n integer
@@ -784,7 +791,7 @@ local get_atlas_image = Memoize(function(image, atlas_n)
     image = get_atlas(image)
   end
   return love.graphics.newImage(sprite.utility.select(image, atlas_n))
-end)
+end, get_atlas_image_cache)
 
 ui.atlas_image = function(image, atlas_n)
   ui.image(get_atlas_image(image, atlas_n))
@@ -1219,6 +1226,13 @@ ui.handle_update = function(dt)
     state.active_frames_t:set(next_v, unpack(k))
   end
   state.time = love.timer.getTime()
+end
+
+ui.reset_caches = function()
+  get_batch_cache.children = nil
+  get_font_cache.children = nil
+  get_atlas_cache.children = nil
+  get_atlas_image_cache.children = nil
 end
 
 ----------------------------------------------------------------------------------------------------
