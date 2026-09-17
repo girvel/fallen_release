@@ -54,15 +54,18 @@ end
 
 --- @param d vector
 --- @return shader
-shaders.reflective = Memoize(function(d)
+shaders.reflective = function(d)
   local result = {
     love_shader = shaders.load_shader("reflective"),
+    _prev_reflection = nil,
 
     preprocess = function(self, entity)
-      local image_data = get_reflected_image_data(entity.position, d)
-      self.love_shader:send("reflects", image_data ~= nil)
-      if image_data then
-        self.love_shader:send("reflection", image_data)
+      local reflection = get_reflected_image_data(entity.position, d)
+      if self._prev_reflection == reflection then return end
+      self._prev_reflection = reflection
+      self.love_shader:send("reflects", reflection ~= nil)
+      if reflection then
+        self.love_shader:send("reflection", reflection)
       end
     end,
   }
@@ -71,7 +74,7 @@ shaders.reflective = Memoize(function(d)
     return shaders.reflective(d)
   end
   return result
-end)
+end
 
 shaders.latrine = {
   love_shader = shaders.load_shader("latrine"),
