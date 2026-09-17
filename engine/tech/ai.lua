@@ -32,18 +32,15 @@ local ai = {}
 --- @return entity?
 ai.find_target = function(entity, r, vision_map, sane_traveling_distance)
   vision_map:refresh_fov(entity.position, r)
-  local bfs = State.grids.solids:bfs(entity.position)
-  bfs()
-  for p, e in bfs do
-    if (p - entity.position):abs2() > r then bfs:discard() end
+
+  for x, y, e in State.grids.solids:rhombus(entity.position, r) do
     if not e then goto continue end
-    bfs:discard()
 
     if State.hostility:get(entity, e) == "enemy"
       and e.hp and e.hp > 0
       and (entity.blind_sight_flag or vision_map:is_visible_unsafe(unpack(e.position)))
       and (not State.level.locked_entities[e])
-      and api.traveling_distance(entity, e) < (sane_traveling_distance or 100)
+      and api.traveling_distance(entity, e) < (sane_traveling_distance or 48)
     then
       return e
     end
