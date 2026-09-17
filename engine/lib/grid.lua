@@ -211,6 +211,99 @@ methods.rect = function(self, x1, y1, x2, y2)
   end
 end
 
+--- @generic T
+--- @param self grid<T>
+--- @param start vector
+--- @param max_radius? integer
+--- @return fun(): integer, integer, T, integer
+methods.rhombus = function(self, start, max_radius)
+  local cx, cy = unpack(start)
+  local w, h = unpack(self.size)
+
+  local max_grid_r = math.max(cx - 1, w - cx) + math.max(cy - 1, h - cy)
+  if max_radius then
+    max_radius = math.min(max_radius, max_grid_r)
+  else
+    max_radius = max_grid_r
+  end
+
+  local min_x_dist = math.max(0, 1 - cx, cx - w)
+  local min_y_dist = math.max(0, 1 - cy, cy - h)
+  local min_possible_r = min_x_dist + min_y_dist
+  if min_possible_r > max_radius then
+    return function() end
+  end
+
+  local r = min_possible_r
+  local seg, i, i_max
+
+  if r == 0 then
+    seg = -1
+    i = 0
+    i_max = 0
+  else
+    seg = 0
+    i = math.max(0, 1 - cx, cy + r - h)
+    i_max = math.min(r - 1, w - cx, cy + r - 1)
+  end
+
+  return function()
+    while true do
+      if i <= i_max then
+        local x, y
+        if seg == -1 then
+          x = cx
+          y = cy
+        elseif seg == 0 then
+          x = cx + i
+          y = cy + r - i
+        elseif seg == 1 then
+          x = cx + r - i
+          y = cy - i
+        elseif seg == 2 then
+          x = cx - i
+          y = cy - r + i
+        elseif seg == 3 then
+          x = cx - r + i
+          y = cy + i
+        end
+
+        i = i + 1
+        return x, y, self._inner_array[x + (y - 1) * w], r
+      end
+
+      if seg == -1 then
+        r = 1
+        seg = 0
+      else
+        seg = seg + 1
+        if seg > 3 then
+          r = r + 1
+          seg = 0
+        end
+      end
+
+      if r > max_radius then
+        return nil
+      end
+
+      if seg == 0 then
+        i = math.max(0, 1 - cx, cy + r - h)
+        i_max = math.min(r - 1, w - cx, cy + r - 1)
+      elseif seg == 1 then
+        i = math.max(0, cx + r - w, cy - h)
+        i_max = math.min(r - 1, cx + r - 1, cy - 1)
+      elseif seg == 2 then
+        i = math.max(0, cx - w, 1 - cy + r)
+        i_max = math.min(r - 1, cx - 1, h - cy + r)
+      elseif seg == 3 then
+        i = math.max(0, 1 - cx + r, 1 - cy)
+        i_max = math.min(r - 1, w - cx + r, h - cy)
+      end
+    end
+  end
+end
+
 --- @alias iteration_bfs _iteration_bfs|fun():vector?,any
 
 --- @class _iteration_bfs
