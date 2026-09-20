@@ -13,11 +13,12 @@ return Tiny.sortedProcessingSystem {
   end,
 
   process = function(_, entity, dt)
-    if entity.sprite.type ~= "grid" and entity.sprite.anchor ~= "screen" then
-      if (entity.position - State.player.position):abs2() > State.player.fov_r then
-        return
-      end
+    local x, y = unpack(entity.position)
+    local ax, ay = unpack(State.camera.vision_start)
+    local bx, by = unpack(State.camera.vision_end)
+    local distance = math.max(0, ax - x, x - bx) + math.max(0, ay - y, y - by)
+    if distance <= (entity.render_size or 1) then
+      Kernel.gui:draw_entity(entity, dt)
     end
-    Kernel.gui:draw_entity(entity, dt)
   end,
 }

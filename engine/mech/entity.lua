@@ -16,6 +16,7 @@
 --- @field grid_layer grid_layer name of the grid layer; grid layers are a subset of all layers; mutually exclusive with .layer.
 --- @field ai ai
 --- @field shader shader individial shader to render with
+--- @field render_size integer
 --- @field sprite sprite [CONST]
 --- @field animation animation
 --- @field faction string determines hostility through State.hostility

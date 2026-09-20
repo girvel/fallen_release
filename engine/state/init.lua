@@ -191,11 +191,11 @@ methods.load_level = function(self, path)
       sprite = sprite.grid(grid),
       layer = layer,
       position = Vector.zero,
+      render_size = math.huge,
     })
   end
 
-  self.shadow = shadow.new(load_data.shadows)
-  self:add(shadow.new_entity())
+  self.shadow = self:add(shadow.new(load_data.shadows))
 
   for i, e in ipairs(load_data.entities) do
     e = self:add(e)

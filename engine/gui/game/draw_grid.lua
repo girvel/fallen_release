@@ -1,6 +1,3 @@
-local sprite = require("engine.tech.sprite")
-
-
 local is_blind_for = function(x, y)
   if not State.model.is_blind then return false end
 
