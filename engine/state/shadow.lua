@@ -1,3 +1,4 @@
+local ffi = require("ffi")
 local tcod = require("engine.tech.tcod")
 local level = require("engine.tech.level")
 local sprite = require("engine.tech.sprite")
@@ -50,10 +51,7 @@ local rerender = function(data)
     end
   end
 
-  local prev_canvas = love.graphics.getCanvas()
-  local prev_color = {love.graphics.getColor()}
-  love.graphics.setCanvas(data.canvas)
-  love.graphics.clear(Vector.transparent)
+  local pixels = ffi.cast("Color*", data.image_data:getFFIPointer())
 
   local map = State.player.ai._vision_map
   for x = start.x, finish.x do
@@ -62,20 +60,13 @@ local rerender = function(data)
 
       local shadow_value = data.static:unsafe_get(x, y)
       local light_value = data.dynamic:unsafe_get(x, y)
-      local total_value = shadow_value - light_value
+      local total_value = Math.clamp(0, 1, shadow_value - light_value)
 
-      if total_value > 0 then
-        love.graphics.setColor(0, 0, 0, total_value)
-        love.graphics.points(x + 1, y + 1)
-        -- idk why +1
-      end
+      pixels[y * grid_size.x + x].a = math.ceil(total_value * 255)
 
       ::continue::
     end
   end
-
-  love.graphics.setColor(prev_color)
-  love.graphics.setCanvas(prev_canvas)
 end
 
 local shadow_sprite = {
@@ -87,9 +78,7 @@ local shadow_sprite = {
 --- @param dt number
 shadow_sprite.render = function(self, entity, dt)
   rerender(entity._data)
-  -- entity._data.canvas:newImageData():encode("png", "shadow.png")
-  -- os.exit(42)
-  return entity._data.canvas, sprite.cell_size
+  return love.graphics.newImage(entity._data.image_data), sprite.cell_size
 end
 
 --- @alias state.shadow state.shadow_strict|table
@@ -97,7 +86,7 @@ end
 --- @field _data state.shadow.data
 
 --- @class state.shadow.data
---- @field canvas love.Canvas
+--- @field image_data love.ImageData
 --- @field static grid<number>
 --- @field dynamic grid<number>
 
@@ -111,7 +100,7 @@ shadow.new = function(base_grid)
     layer = "shadows",
     position = Vector.zero,
     _data = {
-      canvas = love.graphics.newCanvas(unpack(base_grid.size)),
+      image_data = love.image.newImageData(unpack(base_grid.size)),
       static = base_grid,
       dynamic = Grid.new(base_grid.size, function() return 0 end),
     },

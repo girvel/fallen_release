@@ -20,6 +20,16 @@ mathx.median = function(...)
   return t[math.ceil(#t / 2)]
 end
 
+--- @param min number
+--- @param max number
+--- @param value number
+--- @return number
+mathx.clamp = function(min, max, value)
+  if value > max then return max end
+  if value < min then return min end
+  return value
+end
+
 --- @param t number[]
 --- @return number
 mathx.average = function(t)
