@@ -9,8 +9,9 @@ local tmp_canvas
 --- @param entity table
 --- @param dt number
 local draw_entity = function(self, entity, dt)
-  if entity.sprite.type == "grid" then
-    return self:draw_grid(entity.layer, entity.sprite.grid, dt)
+  Mp("first"); if entity.sprite.type == "grid" then
+    Mp(); local ret = self:draw_grid(entity.layer, entity.sprite.grid, dt)
+    Mp(); return ret
   end
 
   local x, y = unpack(entity.position)

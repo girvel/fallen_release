@@ -67,6 +67,11 @@ methods.report = function(self)
     Log.info("Line profile:\n%s", line_report)
   end
 
+  local manual_report = Mp("report")
+  if manual_report then
+    Log.info("Manual report:\n%s", manual_report)
+  end
+
   Log.info("Play time %s s, average FPS is %.2f", math.floor(love.timer.getTime() - self.start_time), self.frame_n / self.cpu_time)
   Log.info("Saved log to %s/%s", love.filesystem.getRealDirectory(Log.outfile), Log.outfile)
   Log.report()

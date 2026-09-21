@@ -34,6 +34,8 @@ Memoize = require("engine.lib.memoize")
 
 Moonspeak = require("engine.lib.moonspeak")
 
+Mp = require("engine.lib.mp")
+
 Name = require("engine.lib.name")
 
 Polygon = require("engine.lib.polygon")
