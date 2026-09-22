@@ -4,6 +4,8 @@ local KB = 1024
 Ldump.upvalue_warning_threshold = 1024 * KB
 
 
+Ldump.mark_module("ffi", {})
+
 Argparse = require("engine.lib.argparse")
 
 Common = require("engine.lib.common")

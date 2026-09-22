@@ -70,13 +70,9 @@ do
 
     if type(arg1) ~= "string" then
       assert(arg1:typeOf("ImageData"))
-      local result = love.graphics.newImageRaw(arg1, ...)
-      local repr = arg1:encode("png"):getString()
+      local result = love.graphics.newImageRaw(arg1)
       Ldump.serializer.handlers[result] = function()
-        -- NEXT repetition of saving would break this
-        return love.graphics.newImage(
-          love.filesystem.newFileData(repr, "tmp.png")
-        )
+        return love.graphics.newImage(arg1)
       end
       return result
     end
@@ -85,6 +81,9 @@ do
     if cache_hit then return cache_hit end
 
     local result = love.graphics.newImageRaw(arg1)
+    Ldump.serializer.handlers[result] = function()
+      return love.graphics.newImage(arg1)
+    end
     cache[arg1] = result
     return result
   end
