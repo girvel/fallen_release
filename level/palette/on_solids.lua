@@ -81,6 +81,7 @@ for _, tuple in ipairs {
   {35, "vines"},
   {36, "vines"},
   {37, "vines"},
+  {38, "shield_mark"},
   {41, "engine"},
   {42, "engine"},
   {43, "engine"},

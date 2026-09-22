@@ -1077,6 +1077,28 @@ sp:finish_single_branch()
     end,
   },
 
+  _440_fireplace_room = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/440_fireplace_room.ms",
+    characters = {
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(ps.fireplace_room_trigger, State.player) <= 3
+    end,
+
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+      local check = State.player:ability_check("religion", 13)
+      sp:start_single_branch(check and 1 or 2)
+        api.move_camera(check and ps.fireplace_room_trigger or ps.fireplace_room_bed)
+        sp:lines()
+        api.free_camera()
+      sp:finish_single_branch()
+    end,
+  },
+
   _442_furniture_room = cutscene.make {
     enabled = true,
     screenplay = "assets/screenplay/442_furniture_room.ms",
