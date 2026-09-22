@@ -211,6 +211,7 @@ sp:finish_single_branch()
           
           elseif n == 8 then
             sp:lines()
+            State.rails.did_markiss_help = true
           end
 
         ::out::
@@ -1439,6 +1440,35 @@ sp:finish_single_branch()
         while music.source:isPlaying() do coroutine.yield() end
         State.audio:set_paused(false)
       end)
+    end,
+  },
+
+  _464_flask_noticing = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/464_flask_noticing.ms",
+    characters = {
+      player = {},
+      canteen_dreamer_flask = {dynamic = true},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      if State.rails.quests.alcohol >= stages.alcohol._1000_completed then
+        State.runner:remove(self)
+        return false
+      end
+      return api.is_visible(ch.canteen_dreamer_flask)
+        and api.distance(ch.canteen_dreamer_flask, State.player) <= 3
+        and State.rails.quests.alcohol > 0
+    end,
+
+    _run = function(self, ch, ps, sp)
+      local check = State.rails.flask_noticed or State.player:ability_check("perception", 12)
+      if check then
+        local pr = api.move_camera(ch.canteen_dreamer_flask)
+        sp:lines()
+        pr:wait()
+        api.free_camera()
+      end
     end,
   },
 

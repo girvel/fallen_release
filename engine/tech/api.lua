@@ -389,9 +389,10 @@ api.fade_in = function(duration)
   return promise, scene
 end
 
---- @param position vector
+--- @param position vector|entity
 --- @return promise, scene
 api.move_camera = function(position)
+  position = api.to_vector(position)
   local promise, scene = State.runner:run_task(function()
     State.camera.is_following = true
     --- @diagnostic disable-next-line
