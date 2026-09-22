@@ -1,3 +1,4 @@
+local ffi = require("ffi")
 local sprite = require("engine.tech.sprite")
 local ui = require("engine.tech.ui")
 
@@ -12,6 +13,7 @@ local debug_overlay = {}
 --- @field _show_scenes boolean
 --- @field _show_rails boolean
 --- @field _show_console boolean
+--- @field _show_shadows boolean
 local methods = {}
 local mt = {__index = methods}
 
@@ -24,13 +26,14 @@ debug_overlay.new = function(use_debug_setup)
     _show_points = false,
     _show_fps = use_debug_setup,
     _show_ai = false,
-    _show_scenes = use_debug_setup,
-    _show_rails = use_debug_setup,
+    _show_scenes = false,
+    _show_rails = false,
     _show_console = false,
+    _show_shadows = false,
   }, mt)
 end
 
-local draw_points, report_fps, report_ai, report_scenes, report_rails, report_console
+local draw_points, report_fps, report_ai, report_scenes, report_rails, report_console, report_shadows
 
 methods.draw = function(self, dt)
   self._show_points = self._show_points ~= ui.keyboard("f1")
@@ -40,6 +43,7 @@ methods.draw = function(self, dt)
   self._show_rails = self._show_rails ~= ui.keyboard("f5")
   self._show_console = self._show_console ~= ui.keyboard("f6")
   ui.trace_frames = ui.trace_frames ~= ui.keyboard("f7")
+  self._show_shadows = self._show_shadows ~= ui.keyboard("f8")
 
   if ui.keyboard("f12") then
     self._show_points = false
@@ -49,6 +53,7 @@ methods.draw = function(self, dt)
     self._show_rails = false
     self._show_console = false
     ui.trace_frames = false
+    self._show_shadows = false
   end
 
   if State and self._show_points then draw_points(self.points) end
@@ -57,6 +62,7 @@ methods.draw = function(self, dt)
   if State and self._show_scenes then report_scenes() end
   if State and self._show_rails then report_rails() end
   if self._show_console then report_console() end
+  if self._show_shadows then report_shadows() end
 end
 
 draw_points = function(points)
@@ -77,8 +83,6 @@ draw_points = function(points)
     local x, y = unpack(v)
     love.graphics.circle("fill", x, y, 3)
     love.graphics.print(tostring(k), x, y)
-
-    ::continue::
   end
   love.graphics.setColor(Vector.white)
   ui.finish_font()
@@ -205,6 +209,19 @@ report_console = function()
     ui.selector()
     ui.field(input, "value")
   ui.finish_line()
+end
+
+report_shadows = function()
+  local pixels = ffi.cast("Color*", State.shadow._data.image_data:getFFIPointer())
+  local w = State.shadow._data.image_data:getWidth()
+
+  for x = State.camera.vision_start.x, State.camera.vision_end.x do
+    for y = State.camera.vision_start.y, State.camera.vision_end.y do
+      local sx, sy = State.camera:game_to_screen(x, y)
+      local px = pixels[x + y * w]
+      love.graphics.print(("%02x%02x"):format(px.r, px.a), sx, sy)
+    end
+  end
 end
 
 --- @class overlay_point

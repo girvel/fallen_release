@@ -61,7 +61,35 @@ end
 love.graphics.newCanvasRaw = love.graphics.newCanvas
 love.graphics.newImageRaw = love.graphics.newImage
 
-wrap("graphics", "newImage", true)
+do
+  local cache = {}
+
+  --- @diagnostic disable-next-line:duplicate-set-field
+  love.graphics.newImage = function(arg1, ...)
+    assert(select("#", ...) == 0)
+
+    if type(arg1) ~= "string" then
+      assert(arg1:typeOf("ImageData"))
+      local result = love.graphics.newImageRaw(arg1, ...)
+      local repr = arg1:encode("png"):getString()
+      Ldump.serializer.handlers[result] = function()
+        -- NEXT repetition of saving would break this
+        return love.graphics.newImage(
+          love.filesystem.newFileData(repr, "tmp.png")
+        )
+      end
+      return result
+    end
+
+    local cache_hit = cache[arg1]
+    if cache_hit then return cache_hit end
+
+    local result = love.graphics.newImageRaw(arg1)
+    cache[arg1] = result
+    return result
+  end
+end
+
 wrap("graphics", "newQuad")
 wrap("graphics", "newFont", true)
 wrap("graphics", "newSpriteBatch")

@@ -78,6 +78,7 @@ local shadow_sprite = {
 --- @param dt number
 shadow_sprite.render = function(self, entity, dt)
   rerender(entity._data)
+  entity._data.image_data:encode("png", "shadow.png")
   return love.graphics.newImage(entity._data.image_data), sprite.cell_size
 end
 
