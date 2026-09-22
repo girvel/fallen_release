@@ -112,6 +112,7 @@ end
 
 --- Removes & adds scheduled entities
 methods.flush = function(self)
+  local removed = {}
   for _, pair in ipairs(self._entities_to_remove) do
     local entity, silently = unpack(pair)
     if entity.on_remove then
@@ -138,18 +139,22 @@ methods.flush = function(self)
     if self.combat then
       self:remove_from_combat(entity)
     end
+
+    removed[entity] = true
   end
   self._entities_to_remove = {}
   self._world:refresh()
 
   for _, entity in ipairs(self._entities_to_add) do
-    self._world:add(entity)
-    self._entities[entity] = true
-    if entity.position and entity.grid_layer then
-      level.put(entity)
-    end
-    if entity.on_add then
-      entity:on_add()
+    if not removed[entity] then
+      self._world:add(entity)
+      self._entities[entity] = true
+      if entity.position and entity.grid_layer then
+        level.put(entity)
+      end
+      if entity.on_add then
+        entity:on_add()
+      end
     end
   end
   self._entities_to_add = {}
