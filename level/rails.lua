@@ -40,6 +40,7 @@ local rails = {}
 --- @field read_captain_door_note boolean?
 --- @field player_nickname string?
 --- @field did_dreamers_kill_possessed boolean?
+--- @field seen_water boolean?
 local methods = {}
 rails.mt = {__index = methods}
 

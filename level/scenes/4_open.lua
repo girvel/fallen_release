@@ -377,6 +377,7 @@ sp:finish_single_branch()
     _run = function(self, ch, ps, sp)
       api.order("Разблокируй желтый рычаг на правой панели")
       State.rails:set_quest("parasites", stages.parasites._0010_go_to_bridge)
+      State.rails.seen_water = true
     end,
   },
 
@@ -1264,6 +1265,125 @@ sp:finish_single_branch()
         sp:finish_option()
       end
       sp:finish_options()
+    end,
+  },
+
+  _460_lunch = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/460_lunch.ms",
+    characters = {
+      player = {},
+      soup_cauldron = {},
+      son_mary = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.rails.lunch_started and ch.soup_cauldron.was_interacted_by == State.player
+    end,
+
+    _on_add = function(self, ch, ps)
+      item.set_cue(ch.soup_cauldron, "highlight", true)
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp)
+      sp:start_single_branch()
+      if self._first_time then
+        self._first_time = false
+        sp:lines()
+      end
+      sp:finish_single_branch()
+
+      local n = sp:start_single_option()
+      if n == 2 then
+        sp:lines()
+        return
+      end
+      sp:finish_single_option()
+
+      State.runner:remove(self)
+      sp:lines()
+
+      local options = sp:start_options()
+      if not State.rails.seen_water then
+        options[3] = nil
+      end
+
+      n = api.options(options)
+      sp:start_option(n)
+      if n == 1 then
+        sp:lines()
+      elseif n == 2 then
+        api.curtain(.5, Vector.black):wait()
+        level.unsafe_move(State.player, ps.player_room_eating)
+        local door_open = State.grids.on_solids[ps.player_room_door]
+        if door_open then
+          State:remove(door_open)
+          State:add_at(solids.door(), ps.player_room_door, "solids")
+        end
+        State.camera:immediate_center()
+        api.curtain(.5, Vector.transparent)
+
+        State.runner.scenes._102_snoring.triggered = true
+        sp:lines()
+      else
+        api.curtain(.5, Vector.black):wait()
+        level.unsafe_move(State.player, ps.captain_deck_eating)
+        State.runner.scenes.deck_fov_enter:_run(ch, ps)
+        State.player:rotate(Vector.up)
+        State.camera:immediate_center()
+        api.curtain(.5, Vector.transparent)
+
+        State.audio:set_paused(true)
+        local ambient = sound.new("assets/sounds/eating_at_bridge.mp3", .1)
+          :set_looping(true)
+          :play()
+
+        sp:lines()
+        State.player:animate("hand_attack"):next(function()
+          sound.new("assets/sounds/hitting_window.mp3", .9):play()
+        end)
+
+        sp:lines()
+
+        local options_inner = sp:start_options()
+        if not State.rails.met_son_mary then
+          options_inner[2] = nil
+        end
+        
+        local m = api.options(options_inner)
+        sp:start_option(m)
+        if m == 1 then
+          sp:lines()
+          local curtain = api.curtain(.5, Vector.black)
+          ambient:stop()
+          local heaven_ambient = sound.new("assets/sounds/heaven_ambient.mp3", .1)
+            :set_looping(true)
+            :play()
+          sp:lines()
+
+          curtain:wait()
+          api.curtain(.5, Vector.transparent)
+          heaven_ambient:stop()
+          sound.new("assets/sounds/eating_at_bridge_hate.mp3", .4):play()
+          sp:lines()
+        elseif m == 2 then
+          sp:lines()
+        else
+          sp:lines()
+        end
+        sp:finish_option()
+        sp:finish_options()
+
+        ambient:stop()
+        State.audio:set_paused(false)
+      end
+      sp:finish_option()
+      sp:finish_options()
+
+      State.player:rest("long")
+      api.autosave("Поел")
     end,
   },
 

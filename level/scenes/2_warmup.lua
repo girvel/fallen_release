@@ -350,6 +350,10 @@ return {
     end,
 
     _condition = function(self, dt, ch, ps)
+      if State.rails.lunch_started then
+        State.runner:remove(self)
+        return false
+      end
       return ch.soup_cauldron.was_interacted_by == State.player
     end,
 
