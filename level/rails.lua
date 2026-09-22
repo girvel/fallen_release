@@ -1,3 +1,4 @@
+local async = require("engine.tech.async")
 local sprite = require("engine.tech.sprite")
 local health = require("engine.mech.health")
 local items = require("level.palette.items")
@@ -78,6 +79,7 @@ init_debug = function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
     item.give(State.player, items.gas_key())
+    level.unsafe_move(State.player, State.level.positions.checkpoint_2)
   end)
 end
 
@@ -87,12 +89,18 @@ init_factions = function()
 end
 
 init_audio = function()
-  State.audio:set_playlist({
-    sound.new("assets/sounds/music/doom.mp3", .1),
-    sound.new("assets/sounds/music/drone_ambience.mp3", .5),
-    sound.new("assets/sounds/music/drone_1.mp3", .1),
-    sound.new("assets/sounds/music/drone_2.mp3", .1),
-  })
+  -- loading audio takes a lot of time
+  local sometimes = async.sometimes(1)
+  local playlist = {}
+  table.insert(playlist, sound.new("assets/sounds/music/doom.mp3", .1))
+  sometimes:yield()
+  table.insert(playlist, sound.new("assets/sounds/music/drone_ambience.mp3", .5))
+  sometimes:yield()
+  table.insert(playlist, sound.new("assets/sounds/music/drone_1.mp3", .1))
+  sometimes:yield()
+  table.insert(playlist, sound.new("assets/sounds/music/drone_2.mp3", .1))
+  sometimes:yield()
+  State.audio:set_playlist(playlist)
 end
 
 init_characters = function()
