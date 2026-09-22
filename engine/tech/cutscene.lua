@@ -54,7 +54,7 @@ local select_characters = function(scene, scene_name)
         ok = false
       end
 
-      characters[name] = e
+      characters[name] = e or false
     end
   end
 

@@ -1267,6 +1267,61 @@ sp:finish_single_branch()
     end,
   },
 
+  _462_lunch_blood = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/462_lunch_blood.ms",
+    characters = {
+      player = {},
+      canteen_killer_1 = {dynamic = true},
+      canteen_killer_2 = {dynamic = true},
+      canteen_killer_3 = {dynamic = true, optional = true},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ch.canteen_killer_1) <= 5
+        and api.is_visible(ch.canteen_killer_1)
+    end,
+
+    _run = function(self, ch, ps, sp)
+      State.audio:set_paused(true)
+      local music = sound.new("assets/sounds/people_around_possessed_body.mp3", .3)
+        :set_looping(true)
+        :play()
+      api.move_camera(ch.canteen_killer_1.position)
+
+      local n = State.rails.did_dreamers_kill_possessed and 2 or 1
+      sp:start_single_branch(n)
+        local dreamer_lines = sp:literal():split("\n")
+        local dreamers_n = State:exists(ch.canteen_killer_3) and 3 or 2
+        local dreamers_talking = State.runner:run_task(function()
+          for i, line in ipairs(dreamer_lines) do
+            api.popup(line, ch["canteen_killer_"..Math.loopmod(i, dreamers_n)], 5)
+            async.sleep(3.5)
+          end
+        end, "dreamer_lines")
+        if n == 1 then
+          sp:lines()
+        else
+          sp:start_single_branch(State.player:ability_check("investigation", 12) and 1 or 2)
+            sp:lines()
+          sp:finish_single_branch()
+        end
+      sp:finish_single_branch()
+
+      api.free_camera()
+      State.runner:run_task(function()
+        while not dreamers_talking.is_resolved
+          and api.distance(State.player, ch.canteen_killer) <= 15
+        do
+          coroutine.yield()
+        end
+        music:set_looping(false)
+        while music.source:isPlaying() do coroutine.yield() end
+        State.audio:set_paused(false)
+      end)
+    end,
+  },
+
   _470_deck_sign = cutscene.make {
     enabled = true,
     screenplay = "assets/screenplay/470_deck_sign.ms",

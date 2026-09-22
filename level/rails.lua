@@ -39,6 +39,7 @@ local rails = {}
 --- @field source_of_first_alcohol rails.alcohol_source?
 --- @field read_captain_door_note boolean?
 --- @field player_nickname string?
+--- @field did_dreamers_kill_possessed boolean?
 local methods = {}
 rails.mt = {__index = methods}
 
@@ -245,8 +246,8 @@ methods.start_lunch = function(self)
     level.unsafe_move(ch.cook, ps.cook_chilling)
   end
 
-  local did_dreamers_kill_possessed = ch.possessed and ch.possessed.hp > 0
-  if did_dreamers_kill_possessed then
+  self.did_dreamers_kill_possessed = ch.possessed and ch.possessed.hp > 0
+  if self.did_dreamers_kill_possessed then
     health.damage(ch.possessed, 1000)
   end
 
@@ -263,7 +264,7 @@ methods.start_lunch = function(self)
   for p, e in bfs do
     if e then bfs:discard() end
     killer_counter = killer_counter + 1
-    if killer_counter == 3 and did_dreamers_kill_possessed then
+    if killer_counter == 3 and self.did_dreamers_kill_possessed then
       humanoid.add_body({position = p})  --- @diagnostic disable-line
       break
     end
