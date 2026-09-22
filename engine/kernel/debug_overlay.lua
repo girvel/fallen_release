@@ -14,6 +14,7 @@ local debug_overlay = {}
 --- @field _show_rails boolean
 --- @field _show_console boolean
 --- @field _show_shadows boolean
+--- @field _show_codename boolean
 local methods = {}
 local mt = {__index = methods}
 
@@ -30,10 +31,11 @@ debug_overlay.new = function(use_debug_setup)
     _show_rails = false,
     _show_console = false,
     _show_shadows = false,
+    _show_codename = false,
   }, mt)
 end
 
-local draw_points, report_fps, report_ai, report_scenes, report_rails, report_console, report_shadows
+local draw_points, report_fps, report_ai, report_scenes, report_rails, report_console, report_shadows, report_codename
 
 methods.draw = function(self, dt)
   self._show_points = self._show_points ~= ui.keyboard("f1")
@@ -44,6 +46,7 @@ methods.draw = function(self, dt)
   self._show_console = self._show_console ~= ui.keyboard("f6")
   ui.trace_frames = ui.trace_frames ~= ui.keyboard("f7")
   self._show_shadows = self._show_shadows ~= ui.keyboard("f8")
+  self._show_codename = self._show_codename ~= ui.keyboard("f9")
 
   if ui.keyboard("f12") then
     self._show_points = false
@@ -54,6 +57,7 @@ methods.draw = function(self, dt)
     self._show_console = false
     ui.trace_frames = false
     self._show_shadows = false
+  self._show_codename = false
   end
 
   if State and self._show_points then draw_points(self.points) end
@@ -63,6 +67,7 @@ methods.draw = function(self, dt)
   if State and self._show_rails then report_rails() end
   if self._show_console then report_console() end
   if self._show_shadows then report_shadows() end
+  if self._show_codename then report_codename() end
 end
 
 draw_points = function(points)
@@ -222,6 +227,12 @@ report_shadows = function()
       love.graphics.print(("%02x%02x"):format(px.r, px.a), sx, sy)
     end
   end
+end
+
+report_codename = function()
+  local x, y = State.camera:screen_to_game(love.mouse.getPosition())
+  local e = State.grids.solids:slow_get(V(x, y))
+  ui.text(e and Name.code(e) or "<no entity>")
 end
 
 --- @class overlay_point
