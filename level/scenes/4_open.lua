@@ -1416,7 +1416,7 @@ sp:finish_single_branch()
         local dreamers_n = State:exists(ch.canteen_killer_3) and 3 or 2
         local dreamers_talking = State.runner:run_task(function()
           for i, line in ipairs(dreamer_lines) do
-            api.popup(line, ch["canteen_killer_"..Math.loopmod(i, dreamers_n)], 5)
+            api.popup(line, ch["canteen_killer_"..Math.loopmod(i, dreamers_n)], 3.5)
             async.sleep(3.5)
           end
         end, "dreamer_lines")
@@ -1432,7 +1432,7 @@ sp:finish_single_branch()
       api.free_camera()
       State.runner:run_task(function()
         while not dreamers_talking.is_resolved
-          and api.distance(State.player, ch.canteen_killer) <= 15
+          and api.distance(State.player, ch.canteen_killer_1) <= 15
         do
           coroutine.yield()
         end
@@ -1469,6 +1469,113 @@ sp:finish_single_branch()
         pr:wait()
         api.free_camera()
       end
+    end,
+  },
+
+  _466_flask = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/466_flask.ms",
+    characters = {
+      canteen_dreamer_flask = {dynamic = true},
+      player = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return State.rails.quests.alcohol > 0
+        and ch.canteen_dreamer_flask.was_interacted_by == State.player
+    end,
+
+    _success = function(self)
+      local ch = State.level.entities
+      State.rails:alcohol_pick_up("flask")
+      State:remove(ch.canteen_dreamer_flask.inventory.right_pocket)
+      ch.canteen_dreamer_flask.inventory.right_pocket = nil
+      State.runner:remove(self)
+      State.level.entities.canteen_dreamer_flask.interact = nil
+    end,
+
+    _failure = function(self)
+      local ch = State.level.entities
+      State.hostility:set(ch.canteen_dreamer_flask.faction, "player", "enemy")
+      State:start_combat({State.player, ch.canteen_dreamer_flask})
+      State.runner:remove(self)
+      State.level.entities.canteen_dreamer_flask.interact = nil
+    end,
+
+    _disadvantage = false,
+    _run = function(self, ch, ps, sp)
+      sp:lines()
+
+      local options = sp:start_options()
+      if self._disadvantage then
+        options[2] = nil
+      end
+
+      while true do
+        local n = api.options(options, true)
+        if n == 3 then break end
+
+        sp:start_option(n)
+        if n == 1 then
+          local check = State.player:ability_check("sleight_of_hand", 14)
+            and (not self._disadvantage or State.player:ability_check("sleight_of_hand", 14))
+          sp:start_single_branch(check and 1 or 2)
+            self:_success()
+            sp:lines()
+            if not check then
+              self:_failure()
+            end
+            return
+          sp:finish_single_branch()
+        else
+          self._disadvantage = true
+          sp:lines()
+          local m = sp:start_single_option()
+          if m == 1 then
+            sp:lines()
+            local o = sp:start_single_option()
+            if o == 1 then
+              local check = State.player:ability_check("persuasion", 12)
+              sp:start_single_branch(check and 1 or 2)
+                sp:lines()
+                if check then
+                  self:_success()
+                else
+                  self:_failure()
+                end
+                return
+              sp:finish_single_branch()
+            else
+              sp:lines()
+            end
+            sp:finish_single_option()
+          elseif m == 2 then
+            sp:lines()
+            local o = sp:start_single_option()
+            if o == 1 then
+              local check = State.player:ability_check("investigation", 12)
+              sp:start_single_branch(check and 1 or 2)
+                sp:lines()
+                if check then
+                  self:_success()
+                else
+                  self:_failure()
+                end
+                return
+              sp:finish_single_branch()
+            else
+              sp:lines()
+            end
+            sp:finish_single_option()
+          else
+            sp:lines()
+          end
+          sp:finish_single_option()
+        end
+        sp:finish_option()
+      end
+      sp:finish_options()
     end,
   },
 

@@ -1,3 +1,4 @@
+local interactive = require("engine.tech.interactive")
 local async = require("engine.tech.async")
 local sprite = require("engine.tech.sprite")
 local health = require("engine.mech.health")
@@ -81,13 +82,15 @@ init_debug = function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
     item.give(State.player, items.gas_key())
-    level.unsafe_move(State.player, State.level.positions.checkpoint_2)
+    level.unsafe_move(State.player, State.level.entities.canteen_dreamer_flask.position+Vector.down)
   end)
 end
 
 init_factions = function()
   State.hostility:set("monsters", "player", "enemy")
   State.hostility:set("player", "monsters", "enemy")
+  State.hostility:set("canteen_dreamers", "canteen_dreamer_flask", "ally")
+  State.hostility:set("canteen_dreamer_flask", "canteen_dreamers", "ally")
 end
 
 init_audio = function()
@@ -288,9 +291,10 @@ methods.start_lunch = function(self)
 
   for p, e in State.grids.solids:bfs(ps.canteen_dreamer_spawn_flask) do
     if not e then
-      local dreamer = solids.dreamer({faction = "canteen_dreamers", race = "half_elf"})
+      local dreamer = solids.dreamer({faction = "canteen_dreamer_flask", race = "half_elf"})
       dreamer.inventory.right_pocket = items.flask()
       dreamer.portrait = sprite.image("assets/portraits/half_elf.png")
+      interactive.mix_in(dreamer)
       State:add_at(dreamer, p, "solids")
       ch.canteen_dreamer_flask = dreamer
       break

@@ -1,3 +1,5 @@
+local interactive = require("engine.tech.interactive")
+local animated = require("engine.tech.animated")
 local gear = require("engine.mech.gear")
 local item = require("engine.tech.item")
 
@@ -61,9 +63,14 @@ items.flask = function()
   local e = {
     name = "фляга",
     codename = "flask",
-    slot = "right_pocket",
   }
-  item.mix_in(e, "assets/animations/flask")
+  item.mix_min(e, "right_pocket")
+  item.set_cue(e, "highlight", true)
+  animated.mix_in(e, "assets/animations/flask")
+  interactive.mix_in(e, function(self)
+    State:remove(self)
+    State.rails:alcohol_pick_up("flask")
+  end)
   return e
 end
 
