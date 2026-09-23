@@ -104,18 +104,21 @@ cli.stat = function(args)
   end
 
   do
-    local the_fallen_2 = read_run("git log --oneline --graph | wc -l")
+    local fallen_release = read_run("git log --oneline --graph | wc -l")
+    local the_fallen_2 = 205
     local the_fallen_1 = 1602
     local fallen = 1321
     local fallen_python = 629
+    local total = fallen_release + the_fallen_2 + the_fallen_1 + fallen + fallen_python
 
     print()
     print("  COMMITS")
-    print("The Fallen II:   " .. the_fallen_2)
-    print("The Fallen I:    " .. the_fallen_1)
-    print("Fallen:          " .. fallen)
-    print("Fallen (python): " .. fallen_python)
-    print("Total:           " .. the_fallen_2 + the_fallen_1 + fallen + fallen_python)
+    print("Fallen (release): " .. fallen_release)
+    print("The Fallen II:    " .. the_fallen_2)
+    print("The Fallen I:     " .. the_fallen_1)
+    print("Fallen:           " .. fallen)
+    print("Fallen (python):  " .. fallen_python)
+    print("Total:            " .. total)
 
     -- local tags = read_run("git tag -l | wc -l")
     -- print("Tags:    " .. tags)
