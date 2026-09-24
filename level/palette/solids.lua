@@ -477,6 +477,7 @@ solids.dreamer = function(params)
     inventory = inventory,
     level = 1,
     xp_reward = 25,
+    direction = Random.item(Vector.directions),
   }
   creature.mix_in(e)
   humanoid.mix_in(e)
