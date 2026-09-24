@@ -350,6 +350,7 @@ draw_base_pane = function(self, dt)
       ui.text("Черта: ")
       ui.switch(FEATS, data, "feat", self.is_disabled)
     ui.finish_line()
+    ui.br()
 
     local description = data.feat.description
     if description then
