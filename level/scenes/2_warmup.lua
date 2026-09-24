@@ -507,6 +507,19 @@ return {
     end,
   },
 
+  _264_storage_sign = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/264_storage_sign.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return api.distance(State.player, ps.storage_room_message) <= 2
+    end,
+
+    _run = function(self, ch, ps, sp)
+      api.popup(sp:literal(), ps.storage_room_message)
+    end,
+  },
+
   _266_storage_container_1 = cutscene.make {
     enabled = true,
     screenplay = "assets/screenplay/266_storage_container_1.ms",
