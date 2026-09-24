@@ -79,10 +79,10 @@ end
 
 init_debug = function()
   State.runner:run_task(function()
-    Kernel.gui:open_menu("creator")
-    Kernel.gui._mode:submit()
+    -- Kernel.gui:open_menu("creator")
+    -- Kernel.gui._mode:submit()
     item.give(State.player, items.gas_key())
-    level.unsafe_move(State.player, State.level.entities.canteen_dreamer_flask.position+Vector.down)
+    State.player.xp = xp.for_level[5]
   end)
 end
 
@@ -174,7 +174,6 @@ checkpoints.cp5 = function(this_rails)
   State.runner:remove("_322_dwarf_start")
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
-  State.player.bag.alcohol = 1
   this_rails.met_son_mary = true
   this_rails:set_quest("alcohol", stages.alcohol._0030_return)
 

@@ -26,10 +26,14 @@ return {
       State.player:rotate(Vector.down)
       local prev_fov = State.player.fov_r
       State.player.fov_r = 0
+      State.player.incapacitated = true
       async.sleep(1)
 
       local logo_alpha = 0
       State.model.curtain_draw = function()
+        ui.start_color(V(0, 0, 0, logo_alpha))
+          love.graphics.rectangle("fill", 0, 0, love.graphics.getDimensions())
+        ui.finish_color()
         ui.start_color(V(1, 1, 1, logo_alpha))
           ui.start_alignment("center", "center")
           ui.start_font(100)
@@ -55,19 +59,17 @@ return {
         timeout = timeout - coroutine.yield()
       end
 
-      async.sleep(2)
-      max_timeout = 2
-      timeout = max_timeout
-      while timeout > 0 do
-        local v = timeout / max_timeout
-        logo_alpha = v
-        State.model.curtain_color = V(0, 0, 0, v)
-        timeout = timeout - coroutine.yield()
-      end
+      async.sleep(1)
+      State.model.curtain_color = Vector.transparent
+      State.runner:run_task(function()
+        max_timeout = 2
+        timeout = max_timeout
+        while timeout > 0 do
+          logo_alpha = timeout / max_timeout
+          timeout = timeout - coroutine.yield()
+        end
+      end)
 
-      async.sleep(2)
-
-      State.player.incapacitated = true
       State.model.suggestion = sp:literal()
       sp:lines()
 

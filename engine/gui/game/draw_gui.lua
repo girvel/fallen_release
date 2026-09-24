@@ -191,6 +191,10 @@ draw_gui = function(self, dt)
   draw_order()
   draw_suggestion()
 
+  if State.model.curtain_draw then
+    State.model.curtain_draw()
+  end
+
   if ui.keyboard("escape") then
     Kernel.gui:open_menu("escape_menu")
   end
@@ -202,10 +206,6 @@ draw_curtain = function()
   ui.start_color(State.model.curtain_color)
     love.graphics.rectangle("fill", 0, 0, w, h)
   ui.finish_color()
-
-  if State.model.curtain_draw then
-    State.model.curtain_draw()
-  end
 end
 
 local PADDING_LX = 48
