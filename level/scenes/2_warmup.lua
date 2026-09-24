@@ -1245,5 +1245,76 @@ return {
       ch.bird_cage.interact = nil
       xp.reward(State.player, 10)
     end,
-  }
+  },
+
+  loot = cutscene.make {
+    enabled = true,
+    mode = "sequential",
+    screenplay = "assets/screenplay/loot_decision.ms",
+    characters = {
+      player = {non_locking = true},
+    },
+
+    _on_add = function(self, ch, ps)
+      local file = assert(love.filesystem.read("assets/screenplay/loot.txt"))
+      self._contents = {}
+      while #file > 0 do
+        file = file:strip()
+        local _, finish, money, description = file:find("^(%d+) [^\n]+\n([^\n]+)")
+        assert(money)
+        assert(description)
+
+        local content = {
+          money = money,
+          description = description,
+          container = State.level.entities["loot_container_"..(#self._contents + 1)],
+        }
+        content.open = content.container.on_interact
+        content.container.on_interact = nil
+
+        table.insert(self._contents, content)
+        file = file:sub(finish + 1)
+      end
+    end,
+
+    _condition = function(self, dt, ch, ps)
+      local es = State.level.entities
+      for i, content in pairs(self._contents) do
+        if content.container.was_interacted_by == State.player then
+          self._contents[i] = nil
+          return true, content
+        end
+      end
+      return false
+    end,
+
+    _first_time = true,
+    _run = function(self, ch, ps, sp, content)
+      if self._first_time then
+        self._first_time = false
+
+        api.lock(State.player)
+        api.line(nil, content.description)
+        local n = sp:start_single_option()
+          sp:lines()
+        sp:finish_single_option()
+        api.unlock(State.player)
+
+        self._steals = n == 1
+      else
+        api.popup(content.description, content.container)
+      end
+
+      if self._steals then
+        State.player.bag.money = State.player.bag.money + content.money
+        sound.new("engine/assets/sounds/picking_up_loot.mp3", .8):play()
+      end
+
+      content.open(content.container, State.player)
+
+      if not next(self._contents) then
+        State.runner:remove(self)
+      end
+    end,
+  },
 }
