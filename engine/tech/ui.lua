@@ -28,13 +28,18 @@ local state = {
   selection = {
     i = 1, max_i = 0,
     is_pressed = false,
+    is_moved = false,
   },
   cursor = nil,
   time = love.timer.getTime(),
 
   active_frames_t = CompositeMap.new("weak"),
   are_pressed = CompositeMap.new("weak"),
+
+  --- (Negative)
   scrolls = setmetatable({}, {__mode = "k"}),
+
+  --- (Positive)
   scroll_maxs = setmetatable({}, {__mode = "k"}),
 }
 
@@ -314,6 +319,7 @@ ui.finish = function()
   end
 
   state.selection.is_pressed = false
+  state.selection.is_moved = false
   input.mouse.button_pressed = {}
   input.mouse.button_released = {}
   input.mouse.wheel_dx = 0
@@ -426,6 +432,8 @@ ui.start_frame = function(x, y, w, h, scroll_id)
   end
 end
 
+local SCROLL_INDICATOR_H = 2 * ui.SCALE
+
 --- @param push_y? "push_frame"|"push_cursor"
 --- @return ui_frame
 ui.finish_frame = function(push_y)
@@ -450,7 +458,7 @@ ui.finish_frame = function(push_y)
       ui.stack_push("cursor_y", 0)
       ui.start_frame(
         prev_frame.x, prev_frame.y,
-        prev_frame.w, 2 * ui.SCALE
+        prev_frame.w, SCROLL_INDICATOR_H
       )
         ui.tile("engine/assets/gui/scroll_indicator.png")
       ui.finish_frame()
@@ -463,7 +471,7 @@ ui.finish_frame = function(push_y)
       ui.stack_push("cursor_y", 0)
       ui.start_frame(
         prev_frame.x, prev_frame.y + prev_frame.h - 2 * ui.SCALE,
-        prev_frame.w, 2 * ui.SCALE
+        prev_frame.w, SCROLL_INDICATOR_H
       )
         ui.tile("engine/assets/gui/scroll_indicator.png")
       ui.finish_frame()
@@ -1089,6 +1097,22 @@ ui.choice = function(options)
     end
 
     if state.selection.max_i + i == state.selection.i then
+      if context.scroll_id and state.selection.is_moved then
+        local diff
+
+        diff = y + h - context.frame.y - context.frame.h
+        if diff > 0 then
+          if i < #options then diff = diff + SCROLL_INDICATOR_H end
+          state.scrolls[context.scroll_id] = state.scrolls[context.scroll_id] - diff
+        end
+
+        diff = y - context.frame.y
+        if diff < 0 then
+          if i > 1 then diff = diff - SCROLL_INDICATOR_H end
+          state.scrolls[context.scroll_id] = state.scrolls[context.scroll_id] - diff
+        end
+      end
+
       is_selected = true
       if button_out.is_active then
         option = "- " .. option
@@ -1186,8 +1210,10 @@ end
 ui.handle_keypress = function(key)
   if key == "up" then
     state.selection.i = Math.loopmod(state.selection.i - 1, state.selection.max_i)
+    state.selection.is_moved = true
   elseif key == "down" then
     state.selection.i = Math.loopmod(state.selection.i + 1, state.selection.max_i)
+    state.selection.is_moved = true
   elseif key == "return" then
     state.selection.is_pressed = true
   end

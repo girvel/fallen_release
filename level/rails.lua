@@ -79,6 +79,9 @@ end
 
 init_debug = function()
   State.runner:run_task(function()
+    api.lock(State.player)
+    api.options({"1", "2", "3", "4", "5", "6", "7", "8", "9"})
+    api.unlock(State.player)
     -- Kernel.gui:open_menu("creator")
     -- Kernel.gui._mode:submit()
   end)
