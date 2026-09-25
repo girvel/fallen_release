@@ -1297,7 +1297,6 @@ return {
     end,
 
     _condition = function(self, dt, ch, ps)
-      local es = State.level.entities
       for i, content in pairs(self._contents) do
         if content.container.was_interacted_by == State.player then
           self._contents[i] = nil
@@ -1327,6 +1326,7 @@ return {
       if self._steals then
         State.player.bag.money = State.player.bag.money + content.money
         sound.new("engine/assets/sounds/picking_up_loot.mp3", .8):play()
+        State:add(floater.new("+"..content.money, State.player.position, colors.white))
       end
 
       content.open(content.container, State.player)
