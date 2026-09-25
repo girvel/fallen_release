@@ -37,5 +37,7 @@ xp.reward = function(target, amount)
   target.xp = target.xp + amount
 end
 
+xp.check = 10
+
 Ldump.mark(xp, {}, ...)
 return xp

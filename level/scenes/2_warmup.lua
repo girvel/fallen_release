@@ -125,17 +125,18 @@ return {
         ch.colored_pipe.interact = nil
       sp:finish_single_option()
 
-      n = State.player:ability_check("dex", 12) and 1 or 2
-      sp:start_single_branch(n)
-        if n == 1 then
-          sp:lines()
-          item.give(State.player, items.knife())
-          sp:lines()
-        else
-          sp:lines()
-          on_solids.fs.burst(ch.colored_pipe.position)
-          sp:lines()
-        end
+      local check = State.player:ability_check("dex", 12)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
+      if check then
+        sp:lines()
+        item.give(State.player, items.knife())
+        sp:lines()
+      else
+        sp:lines()
+        on_solids.fs.burst(ch.colored_pipe.position)
+        sp:lines()
+      end
       sp:finish_single_branch()
     end,
   },
@@ -271,7 +272,9 @@ return {
     _run = function(self, ch, ps, sp)
       ch.dirty_magazine.interact = nil
       sp:lines()
-      sp:start_single_branch(State.player:ability_check("religion", 8) and 1 or 2)
+      local check = State.player:ability_check("religion", 8)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
     end,
@@ -290,7 +293,9 @@ return {
 
     _run = function(self, ch, ps, sp)
       sp:lines()
-      sp:start_single_branch(State.player:ability_check("history", 10) and 1 or 2)
+      local check = State.player:ability_check("history", 10)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
     end,
@@ -320,9 +325,11 @@ return {
       sp:lines()
       api.rotate(ch.cook, State.player)
       sp:lines()
-      local n = State.player:ability_check("cha", 14) and 1 or 2
-      sp:start_single_branch(n)
-      if n == 1 then
+      local check = State.player:ability_check("cha", 14)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
+      if check then
+        xp.reward(State.player, xp.check)
         sp:lines()
 
         local d = math.max(1, State.player:get_modifier("con"))
@@ -396,7 +403,9 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      sp:start_single_branch(State.player:ability_check("history", 16) and 1 or 2)
+      local check = State.player:ability_check("history", 16)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         api.popup(sp:literal())
       sp:finish_single_branch()
     end,
@@ -664,6 +673,7 @@ return {
         local check = State.player:ability_check("cha", 18)
         sp:start_single_branch(check and 1 or 2)
         if check then
+          xp.reward(State.player, xp.check)
           finish()
 
           ch.guard_a:rotate(Vector.left)
@@ -692,6 +702,7 @@ return {
         local check = State.player:ability_check("perception", 12)
         sp:start_single_branch(check and 1 or 2)
         if check then
+          xp.reward(State.player, xp.check)
           finish()
 
           sp:lines()
@@ -760,7 +771,9 @@ return {
         sp:start_option(n)
         if n == 1 then
           sp:lines()
-          sp:start_single_branch(State.player:ability_check("history", 8) and 1 or 2)
+          local check = State.player:ability_check("history", 8)
+          if check then xp.reward(State.player, xp.check) end
+          sp:start_single_branch(check and 1 or 2)
             sp:lines()  -- TODO SFX/SOUND for branch 2
           sp:finish_single_branch()
         elseif n == 2 then
@@ -771,6 +784,7 @@ return {
           local check = State.player:ability_check("insight", 12)
           sp:start_single_branch(check and 1 or 2)
             if check then
+              xp.reward(State.player, xp.check)
               sp:lines()
             else
               sp:lines()
@@ -791,6 +805,7 @@ return {
             local check = State.player:ability_check("intimidation", 12)
             sp:start_single_branch(check and 1 or 2)
             if check then
+              xp.reward(State.player, xp.check)
               sp:lines()
               ch.guard_b:animate("interact"):next(function()
                 State.rails:get_valve()
@@ -992,7 +1007,9 @@ return {
             phantom = State:add_at(solids.phantom(), ps.officer_room_enter, "solids")
             sp:lines()
 
-            sp:start_single_branch(State.player:ability_check("arcana", 10) and 1 or 2)
+            local check = State.player:ability_check("arcana", 10)
+            if check then xp.reward(State.player, xp.check) end
+            sp:start_single_branch(check and 1 or 2)
               sp:lines()
             sp:finish_single_branch()
             State.runner:remove(self)
@@ -1210,7 +1227,9 @@ return {
         local n = api.options(options, true)
         sp:start_option(n)
         if n == 1 then
-          sp:start_single_branch(State.player:ability_check("medicine", 12) and 1 or 2)
+          local check = State.player:ability_check("medicine", 12)
+          if check then xp.reward(State.player, xp.check) end
+          sp:start_single_branch(check and 1 or 2)
             sp:lines()
           sp:finish_single_branch()
         elseif n == 2 then

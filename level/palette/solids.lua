@@ -1,3 +1,4 @@
+local xp = require("engine.mech.xp")
 local janitor_ai = require("level.logic.janitor_ai")
 local rront_ai = require("level.logic.rront_ai")
 local item = require("engine.tech.item")
@@ -430,6 +431,7 @@ solids.player = function()
     faction = "player",
     incapacitated = false,
     souls_n = 2,
+    xp = xp.for_level[2],
   }
   player_base.mix_in(result)
   humanoid.mix_in(result)

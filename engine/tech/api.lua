@@ -1,3 +1,4 @@
+local xp = require("engine.mech.xp")
 local tk = require("engine.gui.tk")
 local translation = require("engine.tech.translation")
 local colors = require("engine.tech.colors")
@@ -674,6 +675,7 @@ api.popup_check = function(ability, dc, success, failure)
   local translated = (translation.skills[ability] or translation.abilities[ability]):utf_capitalize()
   local draw, life_time
   if State.player:ability_check(ability, dc) then
+    xp.reward(State.player, xp.check)
     draw = function()
       ui.start_line()
         ui.start_color(colors.light_green)

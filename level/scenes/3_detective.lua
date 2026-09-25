@@ -1,3 +1,4 @@
+local xp = require("engine.mech.xp")
 local item = require("engine.tech.item")
 local sprite = require("engine.tech.sprite")
 local interactive = require("engine.tech.interactive")
@@ -556,7 +557,9 @@ return {
       ch.engineer_4.interact = nil
       api.rotate(ch.engineer_4, State.player)
       sp:lines()
-      sp:start_single_branch(State.player:ability_check("perception", 10) and 1 or 2)
+      local check = State.player:ability_check("perception", 10)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
 
@@ -571,7 +574,9 @@ return {
 
       sp:lines({STATUS = is_rront_dead and "убил" or "отпустил"})
 
-      sp:start_single_branch(State.player:ability_check("religion", 16) and 1 or 2)
+      check = State.player:ability_check("religion", 16)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
 

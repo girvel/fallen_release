@@ -81,8 +81,6 @@ init_debug = function()
   State.runner:run_task(function()
     -- Kernel.gui:open_menu("creator")
     -- Kernel.gui._mode:submit()
-    item.give(State.player, items.gas_key())
-    State.player.xp = xp.for_level[5]
   end)
 end
 
@@ -332,10 +330,19 @@ methods.get_valve = function()
   item.set_cue(ch.bridge_megadoor3, "highlight", true)
 end
 
-methods.freedom = function()
-  if not State.rails.rront_status then
-    State.rails:rront_runs_away()
+methods.freedom = function(self)
+  if not self.rront_status then
+    self:rront_runs_away()
   end
+end
+
+methods.notice_flask = function(self)
+  if self.flask_noticed then return end
+  local dreamer = rawget(State.level.entities, "canteen_dreamer_flask")
+  if State:exists(dreamer) then
+    item.set_cue(dreamer, "highlight", true)
+  end
+  self.flask_noticed = true
 end
 
 Ldump.mark(rails, {mt = "const"}, ...)

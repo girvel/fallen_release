@@ -189,6 +189,13 @@ pages.index = function(codex)
       alcohol >= stages.alcohol._0020_search_again
     )
 
+    if State.rails.flask_noticed then
+      codex:li(
+        "Найти рабочего с флягой в кармане",
+        State.rails.source_of_first_alcohol == "flask" or alcohol >= stages.alcohol._0030_return
+      )
+    end
+
     if alcohol >= stages.alcohol._0020_search_again then
       codex:li(
         "Принести ещё один крепкий напиток грёбаному капитану в рубке.",

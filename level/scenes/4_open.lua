@@ -1,3 +1,4 @@
+local xp = require("engine.mech.xp")
 local name_menu = require("level.logic.name_menu")
 local animated = require("engine.tech.animated")
 local items = require("level.palette.items")
@@ -49,6 +50,7 @@ return {
           sp:finish_single_branch()
           sp:lines()
           self._nature_check = State.player:ability_check("nature", 18)
+          if self._nature_check then xp.reward(State.player, xp.check) end
           sp:start_single_branch(self._nature_check and 1 or 2)
             sp:lines()
           sp:finish_single_branch()
@@ -103,7 +105,9 @@ return {
                 sp:lines()
                 local o = sp:start_single_option()
                   if o == 1 then
-                    sp:start_single_branch(State.player:ability_check("persuasion", 12) and 1 or 2)
+                    local check = State.player:ability_check("persuasion", 12)
+                    if check then xp.reward(State.player, xp.check) end
+                    sp:start_single_branch(check and 1 or 2)
                       sp:lines()
                     sp:finish_single_branch()
                   else
@@ -123,9 +127,11 @@ return {
                 sp:lines()
               else
                 sp:lines()
-sp:start_single_branch(State.player:ability_check("wis", 14) and 1 or 2)
+                local check = State.player:ability_check("wis", 14)
+                if check then xp.reward(State.player, xp.check) end
+                sp:start_single_branch(check and 1 or 2)
                   sp:lines()
-sp:finish_single_branch()
+                sp:finish_single_branch()
               end
               sp:finish_single_option()
               goto out
@@ -145,7 +151,7 @@ sp:finish_single_branch()
             sp:start_single_branch(check and 1 or 2)
             local skill_subs = {SKILL = translation.skills[skill]:utf_capitalize()}
             if check then
-              sp:lines(skill_subs)
+              xp.reward(State.player, xp.check)
               local suboptions = sp:start_options()
               local looped = true
               while looped do
@@ -174,6 +180,7 @@ sp:finish_single_branch()
               sp:lines(skill_subs)
               sp:start_single_branch()
               if State.player:ability_check("nature", 10) then
+                xp.reward(State.player, xp.check)
                 sp:lines()
               end
               sp:finish_single_branch()
@@ -200,8 +207,14 @@ sp:finish_single_branch()
             if m == 1 then
               sp:lines()
             else
-              sp:start_single_branch(State.player:ability_check("intimidation", 12) and 1 or 2)
-                Log.warn("TODO")
+              local check = State.player:ability_check("intimidation", 12)
+              sp:start_single_branch(check and 1 or 2)
+                sp:lines()
+                if check then
+                  xp.reward(State.player, xp.check)
+                  State.rails:notice_flask()
+                else
+                end
               sp:finish_single_branch()
             end
             sp:finish_single_option()
@@ -312,9 +325,10 @@ sp:finish_single_branch()
             if m == 1 then
               sp:lines()
             else
-              local branch = State.player:ability_check("athletics", 18) and 1 or 2
-              sp:start_single_branch(branch)
-              if branch == 1 then
+              local check = State.player:ability_check("athletics", 18)
+              if check then xp.reward(State.player, xp.check) end
+              sp:start_single_branch(check and 1 or 2)
+              if check then
                 State.player.inventory.hand = nil
                 State.player:animate("holding", true, true)
                 for _ = 1, 5 do
@@ -439,7 +453,9 @@ sp:finish_single_branch()
       if self._first_time then
         self._first_time = false
         sp:lines()
-        sp:start_single_branch(State.player:ability_check("medicine", 8) and 1 or 2)
+        local check = State.player:ability_check("medicine", 8)
+        if check then xp.reward(State.player, xp.check) end
+        sp:start_single_branch(check and 1 or 2)
           sp:lines()
         sp:finish_single_branch()
         sp:lines()
@@ -484,7 +500,9 @@ sp:finish_single_branch()
 
       sp:lines()
 
-      sp:start_single_branch(State.player:ability_check("insight", 13) and 1 or 2)
+      local check = State.player:ability_check("insight", 13)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
 
@@ -666,7 +684,9 @@ sp:finish_single_branch()
 
       sp:lines()
 
-      sp:start_single_branch(State.player:ability_check("insight", 12) and 1 or 2)
+      local check = State.player:ability_check("insight", 12)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         sp:lines()
       sp:finish_single_branch()
 
@@ -973,6 +993,7 @@ sp:finish_single_branch()
               sp:lines()
               local check = State.player:ability_check("insight", 14)
                 or State.rails.resists_son_mary and State.player:ability_check("insight", 14)
+              if check then xp.reward(State.player, xp.check) end
               sp:start_single_branch(check and 1 or 2)
                 sp:lines()
               sp:finish_single_branch()
@@ -1013,6 +1034,7 @@ sp:finish_single_branch()
               options_2[4] = nil
               local check = State.player:ability_check("investigation", 13)
                 or State.rails.resists_son_mary and State.player:ability_check("investigation", 13)
+              if check then xp.reward(State.player, xp.check) end
               sp:start_single_branch(check and 1 or 2)
                 sp:lines(subs)
               sp:finish_single_branch()
@@ -1093,6 +1115,7 @@ sp:finish_single_branch()
     _run = function(self, ch, ps, sp)
       sp:lines()
       local check = State.player:ability_check("religion", 13)
+      if check then xp.reward(State.player, xp.check) end
       sp:start_single_branch(check and 1 or 2)
         api.move_camera(check and ps.fireplace_room_trigger or ps.fireplace_room_bed)
         sp:lines()
@@ -1207,6 +1230,7 @@ sp:finish_single_branch()
           local check = State.player:ability_check("medicine", 12)
           sp:start_single_branch(check and 1 or 2)
           if check then
+            xp.reward(State.player, xp.check)
             sp:lines()
 
             api.curtain(.5, Vector.black):wait()
@@ -1423,7 +1447,9 @@ sp:finish_single_branch()
         if n == 1 then
           sp:lines()
         else
-          sp:start_single_branch(State.player:ability_check("investigation", 12) and 1 or 2)
+          local check = State.player:ability_check("investigation", 12)
+          if check then xp.reward(State.player, xp.check) end
+          sp:start_single_branch(check and 1 or 2)
             sp:lines()
           sp:finish_single_branch()
         end
@@ -1464,6 +1490,7 @@ sp:finish_single_branch()
     _run = function(self, ch, ps, sp)
       local check = State.rails.flask_noticed or State.player:ability_check("perception", 12)
       if check then
+        xp.reward(State.player, xp.check)
         local pr = api.move_camera(ch.canteen_dreamer_flask)
         sp:lines()
         pr:wait()
@@ -1520,6 +1547,7 @@ sp:finish_single_branch()
         if n == 1 then
           local check = State.player:ability_check("sleight_of_hand", 14)
             and (not self._disadvantage or State.player:ability_check("sleight_of_hand", 14))
+          if check then xp.reward(State.player, xp.check) end
           sp:start_single_branch(check and 1 or 2)
             self:_success()
             sp:lines()
@@ -1537,6 +1565,7 @@ sp:finish_single_branch()
             local o = sp:start_single_option()
             if o == 1 then
               local check = State.player:ability_check("persuasion", 12)
+              if check then xp.reward(State.player, xp.check) end
               sp:start_single_branch(check and 1 or 2)
                 sp:lines()
                 if check then
@@ -1555,6 +1584,7 @@ sp:finish_single_branch()
             local o = sp:start_single_option()
             if o == 1 then
               local check = State.player:ability_check("investigation", 12)
+              if check then xp.reward(State.player, xp.check) end
               sp:start_single_branch(check and 1 or 2)
                 sp:lines()
                 if check then
@@ -1589,6 +1619,7 @@ sp:finish_single_branch()
 
     _run = function(self, ch, ps, sp)
       local check = State.player:ability_check("history", 12)
+      if check then xp.reward(State.player, xp.check) end
       sp:start_single_branch(check and 1 or 2)
         api.popup(sp:literal(), ps.captain_deck_message)
       sp:finish_single_branch()
@@ -1604,7 +1635,9 @@ sp:finish_single_branch()
     end,
 
     _run = function(self, ch, ps, sp)
-      sp:start_single_branch(State.player:ability_check("investigation", 10) and 1 or 2)
+      local check = State.player:ability_check("investigation", 10)
+      if check then xp.reward(State.player, xp.check) end
+      sp:start_single_branch(check and 1 or 2)
         api.popup(sp:literal())
       sp:finish_single_branch()
     end,
