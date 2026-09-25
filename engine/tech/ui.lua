@@ -17,6 +17,7 @@ local input = {
     button_released = {},
     wheel_dx = 0,
     wheel_dy = 0,
+    is_active = false,
   },
   keyboard = {
     pressed = {},
@@ -189,7 +190,7 @@ end
 local button = function(x, y, w, h)
   local result = {
     is_clicked = false,
-    is_mouse_over = get_mouse_over(x, y, w, h),
+    is_mouse_over = input.mouse.is_active and get_mouse_over(x, y, w, h),
   }
 
   result.is_active = result.is_mouse_over and state.are_pressed:get(x, y, w, h)
@@ -1211,9 +1212,11 @@ ui.handle_keypress = function(key)
   if key == "up" then
     state.selection.i = Math.loopmod(state.selection.i - 1, state.selection.max_i)
     state.selection.is_moved = true
+    input.mouse.is_active = false
   elseif key == "down" then
     state.selection.i = Math.loopmod(state.selection.i + 1, state.selection.max_i)
     state.selection.is_moved = true
+    input.mouse.is_active = false
   elseif key == "return" then
     state.selection.is_pressed = true
   end
@@ -1222,12 +1225,13 @@ ui.handle_keypress = function(key)
 end
 
 ui.handle_textinput = function(text)
-  input.keyboard.input = input.keyboard.input .. text
+  input.keyboard.input = input.keyboard.input..text
 end
 
 ui.handle_mousemove = function(x, y)
   input.mouse.x = x
   input.mouse.y = y
+  input.mouse.is_active = true
 end
 
 ui.handle_mousepress = function(button_i)
