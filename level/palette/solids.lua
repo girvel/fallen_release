@@ -452,6 +452,7 @@ solids.mannequin = function()
     boring_flag = true,
     sounds = mannequin_sounds,
     faction = "monsters",
+    xp_reward = 10,
   }
   animated.mix_in(e, "assets/animations/mannequin", "no_atlas")
   return e
@@ -570,6 +571,7 @@ solids.hauler = function()
     base_abilities = abilities.new(16, 10, 10, 10, 10, 10),
     ai = hauler_ai.new(),
     faction = "haulers",
+    xp_reward = 25,
   }
   creature.mix_in(e)
   humanoid.mix_in(e)
@@ -605,6 +607,7 @@ solids.engineer = function(n)
       inventory = {hand = items.gas_key()},
       direction = Vector.down,
       ai = combat_ai.new(),
+      xp_reward = 33,
     }
   elseif n == 2 then
     e = {
@@ -616,6 +619,7 @@ solids.engineer = function(n)
       race = races.halfling,
       direction = Vector.down,
       ai = combat_ai.new(),
+      xp_reward = 33,
     }
   elseif n == 3 then
     e = {
@@ -653,6 +657,7 @@ solids.engineer = function(n)
       race = races.dwarf,
       direction = Vector.up,
       ai = combat_ai.new(),
+      xp_reward = 34,
     }
   else
     Error("Invalid n=%s parameter for solids.engineer, expected 1-4 integer", n)
@@ -708,7 +713,7 @@ solids.possessed = function()
     race = Random.item(dreamer_races),
     max_hp = 18,
     level = 2,
-    xp_reward = 50,
+    xp_reward = 100,
     base_abilities = abilities.new(14, 13, 12, 9, 11, 10),
     faction = "monsters",
     inventory = {
