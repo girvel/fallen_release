@@ -667,43 +667,6 @@ api.popup = function(text, target, life_time)
   })
 end
 
---- @param ability skill|ability
---- @param dc integer
---- @param success string
---- @param failure string
-api.popup_check = function(ability, dc, success, failure)
-  local translated = (translation.skills[ability] or translation.abilities[ability]):utf_capitalize()
-  local draw, life_time
-  if State.player:ability_check(ability, dc) then
-    xp.reward(State.player, xp.check)
-    draw = function()
-      ui.start_line()
-        ui.start_color(colors.light_green)
-          ui.text("[%s] ", translated)
-        ui.finish_color()
-        ui.text(success)
-      ui.finish_line()
-    end
-    life_time = get_time(success)
-  else
-    draw = function()
-      ui.start_line()
-        ui.start_color(colors.light_green)
-          ui.text("[%s] ", translated)
-        ui.finish_color()
-        ui.text(success)
-      ui.finish_line()
-    end
-    life_time = get_time(failure)
-  end
-
-  table.insert(State.model.popups, {
-    position = State.player.position,
-    draw = draw,
-    life_time = life_time,
-  })
-end
-
 api.lock = function(entity)
   assert(not State.level.locked_entities[entity])
   State.level.locked_entities[entity] = true
