@@ -65,6 +65,7 @@ local context
 --- @field color vector
 --- @field canvas love.Canvas
 --- @field scroll_id any
+--- @field shader love.Shader
 
 --- @class ui_styles
 --- @field link_color vector
@@ -239,15 +240,18 @@ ui.get_context = function()
   return context
 end
 
+local nil_sub = {}
+
 --- @param key ui.context.key|string
 --- @param value any
 ui.stack_push = function(key, value)
   if not stack[key] then
     stack[key] = {}
-    context[key] = value
   end
 
-  table.insert(stack[key], context[key])
+  local prev = context[key]
+  if prev == nil then prev = nil_sub end
+  table.insert(stack[key], prev)
   context[key] = value
 end
 
@@ -265,7 +269,9 @@ ui.stack_pop = function(key)
   end
 
   local prev = context[key]
-  context[key] = table.remove(stack[key])
+  local current = table.remove(stack[key])
+  if current == nil_sub then current = nil end
+  context[key] = current
   return prev
 end
 
@@ -298,6 +304,7 @@ ui.start = function()
     color = V(love.graphics.getColor()),
     canvas = love.graphics.getCanvas(),
     scroll_id = false,
+    shader = love.graphics.getShader(),
   }
 
   stack = {}
@@ -591,6 +598,28 @@ ui.finish_canvas = function()
   love.graphics.setCanvas(context.canvas)
 
   return love.graphics.newQuad(0, 0, max_x, max_y, rendered_canvas)
+end
+
+local shaders_cache = {}
+
+--- @param path string
+--- @return love.Shader
+ui.start_shader = function(path)
+  local shader = shaders_cache[path]
+  if not shader then
+    local code = love.filesystem.read(path)
+    shader = love.graphics.newShader(code)
+    shaders_cache[path] = shader
+  end
+
+  ui.stack_push("shader", shader)
+  love.graphics.setShader(shader)
+  return shader
+end
+
+ui.finish_shader = function()
+  ui.stack_pop("shader")
+  love.graphics.setShader(context.shader)
 end
 
 ----------------------------------------------------------------------------------------------------

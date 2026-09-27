@@ -115,6 +115,9 @@ tk.draw_entity = function(entity, x, y, scale)
   end
 end
 
+local bar_prev_values = setmetatable({}, {__mode = "k"})
+local bar_animation_value = setmetatable({}, {__mode = "k"})
+
 --- @param w integer
 --- @param h integer
 --- @param value integer
@@ -122,7 +125,8 @@ end
 --- @param bar string
 --- @param bar_small string
 --- @param bar_extra string
-tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra)
+--- @param bar_id any
+tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra, bar_id)
   ui.start_frame(nil, nil, w, h + 16)
 
   ui.tile(gui_elements.bar_bg)
@@ -134,7 +138,10 @@ tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra)
 
   if bar_w > 0 then
     ui.start_frame(8, 8, bar_w, h)
+    local shader = ui.start_shader("engine/tech/brightness.frag")
+      shader:send("k", 2)
       ui.tile(bar_w > 16 and bar or bar_small)
+    ui.finish_shader()
     ui.finish_frame()
 
     if extra_saturation then
@@ -153,6 +160,8 @@ tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra)
     end
   ui.finish_font()
   ui.finish_alignment()
+
+  bar_prev_values[bar_id] = value
 end
 
 tk.finish_bar = function()

@@ -244,6 +244,9 @@ end
 local HP_BAR_W = SIDEBAR_INNER_W - 64
 local HP_BAR_H = 10 * 4
 
+local hp_bar_id = {}
+local xp_bar_id = {}
+
 draw_top_bars = function()
   local player = State.player
 
@@ -265,7 +268,8 @@ draw_top_bars = function()
   tk.start_bar(
     HP_BAR_W, HP_BAR_H,
     player.hp, player:get_max_hp(),
-    gui.hp_bar, gui.hp_bar_min, gui.hp_bar_extra
+    gui.hp_bar, gui.hp_bar_min, gui.hp_bar_extra,
+    hp_bar_id
   )
     if ui.mouse().is_mouse_over then
       hint = "здоровье"
@@ -277,7 +281,8 @@ draw_top_bars = function()
   tk.start_bar(
     SIDEBAR_INNER_W, 24,
     player.xp, xp.to_reach(State.player.level + 1),
-    gui.xp_bar, gui.xp_bar_min, gui.hp_bar_extra
+    gui.xp_bar, gui.xp_bar_min, gui.hp_bar_extra,
+    xp_bar_id
   )
     if ui.mouse().is_mouse_over then
       hint = "опыт"
