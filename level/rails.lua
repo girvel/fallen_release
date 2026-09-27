@@ -317,6 +317,7 @@ end
 
 --- @param source rails.alcohol_source
 methods.alcohol_pick_up = function(self, source)
+  xp.reward(State.player, 100)
   State.player.bag.alcohol = State.player.bag.alcohol + 1
   if not self.source_of_first_alcohol then
     self.source_of_first_alcohol = source

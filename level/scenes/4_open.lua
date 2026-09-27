@@ -1264,6 +1264,7 @@ return {
 
             sp:lines()
 
+            xp.reward(State.player, 150)
             api.autosave("Полурослик вылечен")
           else
             sp:lines()

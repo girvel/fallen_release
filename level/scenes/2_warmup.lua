@@ -1162,6 +1162,7 @@ return {
           State:remove(self)
           ch.bird_cage.interact = nil
           State.player.bag.bird_food = 0
+          xp.reward(State.player, 200)
           State.rails:set_quest("warmup", stages.warmup._1000_bird_fed)
           State.rails:transition_3_detective()
         else

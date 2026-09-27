@@ -343,6 +343,9 @@ return {
     _run = function(self, ch, ps, sp)
       State.rails:rront_runs_away()
       api.autosave("Диверсант сбежал")
+      if State.rails.let_rront_go then
+        xp.reward(State.player, 200)
+      end
     end,
   },
 
