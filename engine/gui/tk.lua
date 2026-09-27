@@ -127,22 +127,58 @@ local bar_animation_value = setmetatable({}, {__mode = "k"})
 --- @param bar_extra string
 --- @param bar_id any
 tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra, bar_id)
-  ui.start_frame(nil, nil, w, h + 16)
-
-  ui.tile(gui_elements.bar_bg)
-
   local saturation = value / max
   local base_saturation = math.min(saturation, 1)
   local extra_saturation = saturation > 1 and (1 - 1 / saturation)
   local bar_w = math.floor((w - 16) * base_saturation / ui.SCALE) * ui.SCALE
 
+  local animation_value, prev_value
+  if bar_id then
+    prev_value = bar_prev_values[bar_id]
+    if not prev_value then
+      prev_value = value
+      bar_prev_values[bar_id] = value
+    end
+
+    if prev_value ~= value then
+      animation_value = bar_animation_value[bar_id]
+      if animation_value and animation_value > 1 then
+        animation_value = math.max(1, animation_value - ui.get_state().dt)
+        if animation_value == 1 then
+          bar_prev_values[bar_id] = value
+        end
+      else
+        animation_value = 2
+      end
+      bar_animation_value[bar_id] = animation_value
+    else
+      animation_value = 1
+    end
+  end
+
+  ui.start_frame(nil, nil, w, h + 16)
+  ui.tile(gui_elements.bar_bg)
+
   if bar_w > 0 then
-    ui.start_frame(8, 8, bar_w, h)
-    local shader = ui.start_shader("engine/tech/brightness.frag")
-      shader:send("k", 2)
-      ui.tile(bar_w > 16 and bar or bar_small)
-    ui.finish_shader()
-    ui.finish_frame()
+    if bar_id and animation_value > 1 then
+      ui.start_frame(8, 8, bar_w, h)
+      local shader = ui.start_shader("engine/tech/brightness.frag")
+        shader:send("k", animation_value)
+        ui.tile(bar_w > 16 and bar or bar_small)
+      ui.finish_shader()
+      ui.finish_frame()
+
+      local prev_bar_w = math.floor((w - 16) * prev_value / max / ui.SCALE) * ui.SCALE
+      if prev_bar_w >= 16 then
+        ui.start_frame(8, 8, prev_bar_w, h)
+          ui.tile(bar)
+        ui.finish_frame()
+      end
+    else
+      ui.start_frame(8, 8, bar_w, h)
+        ui.tile(bar_w > 16 and bar or bar_small)
+      ui.finish_frame()
+    end
 
     if extra_saturation then
       ui.start_frame(8, 8, math.floor((w - 16) * extra_saturation / ui.SCALE) * ui.SCALE, h)
@@ -160,8 +196,6 @@ tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra, bar_id)
     end
   ui.finish_font()
   ui.finish_alignment()
-
-  bar_prev_values[bar_id] = value
 end
 
 tk.finish_bar = function()

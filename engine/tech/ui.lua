@@ -25,6 +25,7 @@ local input = {
   },
 }
 
+--- @class ui.state
 local state = {
   selection = {
     i = 1, max_i = 0,
@@ -33,6 +34,7 @@ local state = {
   },
   cursor = nil,
   time = love.timer.getTime(),
+  dt = 0,
 
   active_frames_t = CompositeMap.new("weak"),
   are_pressed = CompositeMap.new("weak"),
@@ -236,9 +238,11 @@ ui.trace_frames = false
 
 --- @return ui.context
 --- @nodiscard
-ui.get_context = function()
-  return context
-end
+ui.get_context = function() return context end
+
+--- @return ui.state
+--- @nodiscard
+ui.get_state = function() return state end
 
 local nil_sub = {}
 
@@ -1285,6 +1289,7 @@ ui.handle_update = function(dt)
     state.active_frames_t:set(next_v, unpack(k))
   end
   state.time = love.timer.getTime()
+  state.dt = dt
 end
 
 ui.reset_caches = function()
