@@ -62,6 +62,7 @@ actions.move = Memoize(function(direction)
               and e.resources
               and e.hp
               and e.hp > 0
+              and not State.level.locked_entities[e]
               and State.hostility:get(e, entity) == "enemy"
           end)
           :each(function(e, d)
