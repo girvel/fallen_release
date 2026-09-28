@@ -4,7 +4,48 @@ local name = require("engine.lib.name")
 
 local log = {}
 
-log.usecolor = true
+if not love then
+  print("no love")
+  log.usecolor = true
+elseif love.system.getOS() == "Windows" then
+  log.usecolor = false
+
+  -- Windows would literally lie that it supports color codes and then render garbage characters
+  -- instead. See the previous attempt:
+
+  -- local term = os.getenv("TERM")
+  -- local colorterm = os.getenv("COLORTERM")
+  -- log.usecolor = not not (colorterm or (term and term ~= "dumb"))
+  -- if log.usecolor then
+  --   local ffi = require("ffi")
+  --   ffi.cdef[[
+  --       typedef void* HANDLE;
+  --       typedef unsigned long DWORD;
+  --       typedef int BOOL;
+  --       
+  --       HANDLE GetStdHandle(DWORD nStdHandle);
+  --       BOOL GetConsoleMode(HANDLE hConsoleHandle, DWORD* lpMode);
+  --       BOOL SetConsoleMode(HANDLE hConsoleHandle, DWORD dwMode);
+  --   ]]
+
+  --   local STD_OUTPUT_HANDLE = ffi.cast("DWORD", -11)
+  --   local ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
+
+  --   local hOut = ffi.C.GetStdHandle(STD_OUTPUT_HANDLE)
+  --   if hOut ~= ffi.cast("HANDLE", -1) then
+  --       local mode = ffi.new("DWORD[1]")
+  --       if ffi.C.GetConsoleMode(hOut, mode) ~= 0 then
+  --           -- Bitwise OR to enable ANSI color sequences
+  --           local newMode = bit.bor(mode[0], ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+  --           ffi.C.SetConsoleMode(hOut, newMode)
+  --       end
+  --   end
+  -- end
+else
+  print("linux")
+  local term = os.getenv("TERM")
+  log.usecolor = term and term ~= "dumb"
+end
 log.level = "trace"
 
 local levels, count, pretty
