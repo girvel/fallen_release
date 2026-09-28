@@ -275,6 +275,25 @@ return {
     end,
   },
 
+  _404_sigs = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/404_sigs.ms",
+    characters = {
+      player = {},
+      sigi_crate = {},
+    },
+
+    _condition = function(self, dt, ch, ps)
+      return ch.sigi_crate.was_interacted_by == State.player
+    end,
+
+    _run = function(self, ch, ps, sp)
+      ch.sigi_crate.interact = nil
+      sp:lines()
+      State.player.bag.sigs = State.player.bag.sigs + 1
+    end,
+  },
+
   _410_captain_door = cutscene.make {
     enabled = true,
     mode = "sequential",
