@@ -56,7 +56,10 @@ local rerender = function(data)
   local map = State.player.ai._vision_map
   for x = start.x, finish.x do
     for y = start.y, finish.y do
-      if not map:is_visible_unsafe(x, y) then goto continue end
+      if not map:is_visible_unsafe(x, y) then
+        pixels[y * grid_size.x + x].a = 0
+        goto continue
+      end
 
       local shadow_value = data.static:unsafe_get(x, y)
       local light_value = data.dynamic:unsafe_get(x, y)
