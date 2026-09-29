@@ -119,6 +119,7 @@ local skip_intro = function(self)
   self.intro_note_status = "picked_up"
   State:remove(State.level.entities.intro_note)
   self:set_quest("warmup", stages.warmup._0010_intro_heard)
+  State.runner.scenes._102_snoring.enabled = true
 end
 
 --- @param this_rails rails

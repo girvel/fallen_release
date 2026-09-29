@@ -13,11 +13,20 @@ return Tiny.sortedProcessingSystem {
   end,
 
   process = function(_, entity, dt)
-    local x, y = unpack(entity.position)
-    local ax, ay = unpack(State.camera.vision_start)
-    local bx, by = unpack(State.camera.vision_end)
-    local distance = math.max(0, ax - x, x - bx) + math.max(0, ay - y, y - by)
-    if distance <= (entity.render_size or 1) then
+    local condition
+
+    if entity.render_size == math.huge then
+      condition = true
+    else
+      local x, y = unpack(entity.position)
+      local ax, ay = unpack(State.camera.vision_start)
+      local bx, by = unpack(State.camera.vision_end)
+      local distance = math.max(0, ax - x, x - bx) + math.max(0, ay - y, y - by)
+      condition = distance <= (entity.render_size or 1)
+        and State.player.ai._vision_map:is_visible_unsafe(x, y)
+    end
+
+    if condition then
       Kernel.gui:draw_entity(entity, dt)
     end
   end,
