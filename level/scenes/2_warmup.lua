@@ -422,7 +422,7 @@ return {
         return false
       end
 
-      local period = 6  -- NEXT .
+      local period = 6
       self._t = self._t + dt
       if self._t >= period then
         self._t = self._t - period

@@ -877,9 +877,14 @@ draw_order = function()
   end
 
   local H = 100
+  local windows_anchors_text_differently = 0
+  if love.system.getOS() == "Windows" then
+    windows_anchors_text_differently = 7
+  end
+
   ui.start_frame("center", dialogue_y - H - 20, 800, H)
     ui.start_color(colors.yellow)
-    ui.start_frame(10, 36)
+    ui.start_frame(10, 36 - windows_anchors_text_differently)
     ui.start_font(36)
       ui.text(text:utf_upper())
     ui.finish_font()
