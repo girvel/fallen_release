@@ -62,7 +62,7 @@ love.graphics.newCanvasRaw = love.graphics.newCanvas
 love.graphics.newImageRaw = love.graphics.newImage
 
 do
-  local cache = {}
+  love.graphics.newImageCache = {children = {}}
 
   --- @diagnostic disable-next-line:duplicate-set-field
   love.graphics.newImage = function(arg1, ...)
@@ -77,14 +77,14 @@ do
       return result
     end
 
-    local cache_hit = cache[arg1]
+    local cache_hit = love.graphics.newImageCache.children[arg1]
     if cache_hit then return cache_hit end
 
     local result = love.graphics.newImageRaw(arg1)
     Ldump.serializer.handlers[result] = function()
       return love.graphics.newImage(arg1)
     end
-    cache[arg1] = result
+    love.graphics.newImageCache.children[arg1] = result
     return result
   end
 end

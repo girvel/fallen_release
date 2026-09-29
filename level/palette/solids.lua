@@ -235,6 +235,19 @@ do
   solids.bucket = solids[i_intact]
 end
 
+do
+  local i, this_sprite = packer:geti(24)
+  solids[i] = function()
+    return {
+      boring_flag = true,
+      transparent_flag = true,
+      codename = "fireplace_active",
+      sprite = this_sprite,
+      light_intensity = .3,
+    }
+  end
+end
+
 for _, tuple in ipairs {
   {3, "locker_damaged"},
   {5, "panel_damaged"},

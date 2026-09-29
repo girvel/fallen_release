@@ -1,3 +1,4 @@
+local animated = require("engine.tech.animated")
 local api = require("engine.tech.api")
 local items = require("level.palette.items")
 local item = require("engine.tech.item")
@@ -36,15 +37,29 @@ methods.control = function(self, entity)
     return self.combat_module:control(entity)
   end
 
-  if entity.position == State.level.positions[travel_points[self.point_i]] then
-    async.sleep(3)
-    self.point_i = 3 - self.point_i
+  local destination = State.level.positions[travel_points[self.point_i]]
+  if entity.position == destination then
     if self.point_i == 1 then
-      State:remove(entity.inventory.bag)
-      entity.inventory.bag = nil
-    else
+      entity:animate("interact"):wait()
       item.give(entity, State:add(items.coal()))
+      async.sleep(.5)
+    else
+      entity.direction = Vector.up
+      entity:animate("interact"):wait()
+      local furnace = State.grids.solids[destination + Vector.up]
+      animated.add_fx("assets/animations/furnace_fire", furnace.position, "fx_over")
+      State.runner:run_task(function()
+        furnace.light_intensity = .5
+        async.sleep(.5)
+        furnace.light_intensity = .4
+        async.sleep(.33)
+        furnace.light_intensity = .3
+      end, "furnace_fire")
+      State:remove(entity.inventory.bag)
+      async.sleep(.5)
+      entity.inventory.bag = nil
     end
+    self.point_i = 3 - self.point_i
   end
 
   api.travel(entity, State.level.positions[travel_points[self.point_i]], false, 4)
