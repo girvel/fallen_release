@@ -14,7 +14,8 @@ local read_run = function(command, ...)
 end
 
 local run = function(command, ...)
-  command = command:format(...)
+  if select("#", ...) then command = command:format(...) end
+  command = command:gsub("%s*\n%s*", " ")
   log.log("debug", 2, command)
   local _, _, exit_code = os.execute(command)
   if exit_code ~= 0 then
@@ -25,7 +26,7 @@ end
 
 --- @param path string
 --- @return string
-local read_file = function(path)
+local file_read = function(path)
   local f = assert(io.open(path, "r"))
   local result = f:read("*a")
   f:close()
@@ -38,6 +39,14 @@ local write_file = function(path, content)
   local f = assert(io.open(path, "w"))
   f:write(content)
   f:close()
+end
+
+--- @param path string
+--- @return boolean
+local file_exists = function(path)
+  local f = io.open(path, "r")
+  if f then f:close() end
+  return not not f
 end
 
 local parse_cli = function()
@@ -180,10 +189,15 @@ cli.exe = function(args)
   run("rm -rf .build/*")
   run("echo '*' > .build/.gitignore")
 
+  run("mv conf.lua conf.lua_")
+  run("mv conf_release.lua conf.lua")
+
   -- build .love
   -- TODO do not include engine/docs and assets/build
   run("zip -9 -r%s .build/%s.love assets engine level conf.lua main.lua",
     args.verbose and "" or " -q", name)
+  run("mv conf.lua conf_release.lua")
+  run("mv conf.lua_ conf.lua")
 
   -- pack linux
   run("mkdir -p .build/%s_linux", versioned_name)
@@ -191,13 +205,20 @@ cli.exe = function(args)
   run("cp engine/lib/*.so .build/%s_linux", versioned_name)
   write_file(
     (".build/%s_linux/README.txt"):format(versioned_name),
-    read_file("engine/assets/build/README-linux.txt"):gsub("%%NAME%%", name)
+    file_read("engine/assets/build/README-linux.txt"):gsub("%%NAME%%", name)
   )
   run("cd .build; zip -9 -r %s_linux.zip %s_linux", versioned_name, versioned_name)
 
   -- pack win64
   run("cat '%s/love.exe' .build/%s.love > .build/%s.exe", include, name, name)
-  run("convert engine/assets/sprites/icon.png +clone -sample 256x256 +clone -sample 48x48 +clone -sample 32x32 -colorspace sRGB .build/dot.ico")
+  run [[
+    convert
+      assets/sprites/icon_16.png
+      \( +clone -sample 32x32 \)
+      \( +clone -sample 48x48 \)
+      assets/sprites/icon_256.png
+      -colorspace sRGB .build/dot.ico
+  ]]
   run("wine '%s/rcedit-x64.exe' .build/%s.exe --set-icon .build/dot.ico", include, name)
   run("mkdir -p .build/%s_win64", versioned_name)
   run("mv .build/%s.exe .build/%s_win64/%s.exe", name, versioned_name, name)
@@ -205,7 +226,7 @@ cli.exe = function(args)
   run("cp engine/lib/*.dll .build/%s_win64/", versioned_name)
   write_file(
     (".build/%s_win64/README.txt"):format(versioned_name),
-    read_file("engine/assets/build/README-windows.txt"):gsub("%%NAME%%", name)
+    file_read("engine/assets/build/README-windows.txt"):gsub("%%NAME%%", name)
   )
   run("cd .build; zip -9 -r %s_win64.zip %s_win64", versioned_name, versioned_name)
 

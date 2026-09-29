@@ -1,6 +1,5 @@
 --- @diagnostic disable-next-line:duplicate-set-field
 love.conf = function(t)
-  t.console = true
   t.window.title = "Fallen"
   t.window.icon = "assets/sprites/icon_16.png"
   t.window.width = 720
