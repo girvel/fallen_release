@@ -256,6 +256,7 @@ methods.start_combat = function(self, list)
     :totable()
 
   if #list == 0 then return end
+  State.model.popups = {}
 
   self.runner:run_task_sync(function()
     list = Fun.iter(list)

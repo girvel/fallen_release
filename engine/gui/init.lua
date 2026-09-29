@@ -152,6 +152,7 @@ methods.player_has_died = function(self)
   end
 
   Log.info("Player dies")
+  State.model.popups = {}
   self._player_dying = State.runner:run_task(function()
     api.lock(State.player)
     State.player:animate("lying", false, true)
