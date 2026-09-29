@@ -262,6 +262,7 @@ cli.exe = function(args)
   -- build .love --
   run("cd .build/target; zip -9 -r%s %s.love ./*", args.verbose and "" or " -q", name)
   run("mv .build/target/%s.love .build/", name)
+  run("rm -r .build/target")
 
   -- pack linux
   run("mkdir -p .build/%s_linux", versioned_name)

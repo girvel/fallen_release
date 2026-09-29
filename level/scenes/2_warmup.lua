@@ -399,6 +399,69 @@ return {
     end,
   },
 
+  engine_damage = {
+    _t = 0,
+    condition = function(self, _, dt)
+      if State.runner:is_running(self) then return false end
+      local ps = State.level.positions
+      local start = ps.engine_damage_start
+      local finish = ps.engine_damage_finish
+      local pos = State.player.position
+
+      if pos == start
+        or pos == finish
+        or pos.x == start.x and pos.y == finish.y
+        or pos.x == finish.x and pos.y == start.x
+      then
+        return false
+      end
+
+      if not (pos >= start)
+        or not (pos <= finish)
+      then
+        return false
+      end
+
+      local period = 6  -- NEXT .
+      self._t = self._t + dt
+      if self._t >= period then
+        self._t = self._t - period
+        return true
+      end
+      return false
+    end,
+
+    run = function(self)
+      local pos = State.player.position
+      local start = State.level.positions.engine_damage_start
+      local finish = State.level.positions.engine_damage_finish
+
+      local direction
+      if pos.x == start.x then
+        direction = Vector.right
+      elseif pos.x == finish.x then
+        direction = Vector.left
+      elseif pos.y == start.y then
+        direction = Vector.down
+      else
+        direction = Vector.up
+      end
+
+      local fx = animated.add_fx(
+        "assets/animations/zap", State.player.position, "fx_under", "directional"
+      )
+      fx.direction = direction
+      fx:animate()
+
+      if State.player:saving_throw("con", 15) then
+        health.damage(State.player, 1)
+      end
+
+      coroutine.yield()
+      while State:exists(fx) do coroutine.yield() end
+    end,
+  },
+
   _230_engine = cutscene.make {
     enabled = true,
     screenplay = "assets/screenplay/230_engine.ms",

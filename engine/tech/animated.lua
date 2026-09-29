@@ -51,9 +51,10 @@ end
 --- @param path string
 --- @param position vector
 --- @param layer? layer
+--- @param atlas_n? atlas_n
 --- @return entity
-animated.add_fx = function(path, position, layer)
-  return State:add(animated.fx(path, position, layer))
+animated.add_fx = function(path, position, layer, atlas_n)
+  return State:add(animated.fx(path, position, layer, atlas_n))
 end
 
 --- @param path string
@@ -72,8 +73,9 @@ end
 --- @param path string
 --- @param position vector
 --- @param layer? layer
+--- @param atlas_n? atlas_n
 --- @return entity
-animated.fx = function(path, position, layer)
+animated.fx = function(path, position, layer, atlas_n)
   local result = {}
 
   local head = path:match("/?([^/]+)/?$")
@@ -82,7 +84,7 @@ animated.fx = function(path, position, layer)
   result.position = position
   result.layer = layer or "fx_under"
 
-  animated.mix_in(result, path, "no_atlas")
+  animated.mix_in(result, path, atlas_n or "no_atlas")
   result.animation._fx_flag = true
 
   return result
