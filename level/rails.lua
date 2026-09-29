@@ -80,16 +80,8 @@ end
 
 init_debug = function()
   State.runner:run_task(function()
-    level.unsafe_move(State.player, State.level.positions.engine_damage_finish)
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-
-    coroutine.yield()
-    coroutine.yield()
-    coroutine.yield()
-    coroutine.yield()
-    coroutine.yield()
-    State.model.popups = {}
   end)
 end
 

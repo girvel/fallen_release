@@ -1070,6 +1070,23 @@ return {
           elseif n == 2 then
             sp:lines()
 
+            State.runner:run_task(function()
+              local duration, t
+
+              duration = 0
+              t = duration
+              while t > 0 do
+                ch.mirage_block.light_intensity = math.floor(10 * (1 - t / duration)) / 10
+                t = t - coroutine.yield()
+              end
+
+              duration = 1
+              t = duration
+              while t > 0 do
+                ch.mirage_block.light_intensity = .5 * math.floor(10 * t / duration) / 10
+                t = t - coroutine.yield()
+              end
+            end)
             animated.add_fx("assets/animations/mirage_spawn", ps.officer_room_enter, "fx_under")
             async.sleep(.5)
             sound.new("assets/sounds/phantom_appearing.mp3", .1):play()
