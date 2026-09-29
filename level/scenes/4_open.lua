@@ -79,7 +79,7 @@ return {
         end
 
         local sigi = State.rails.quests.sigi
-        if sigi == 0 or sigi == stages.sigi._1000_completed or State.player.bag.sigs == 0 then
+        if sigi == 0 or sigi >= stages.sigi._1000_completed or State.player.bag.sigs == 0 then
           options[7] = nil
         end
 
@@ -213,15 +213,24 @@ return {
                 if check then
                   xp.reward(State.player, xp.check)
                   State.rails:notice_flask()
+                elseif State.player.bag.sigs == 0 then
+                  State.rails:set_quest("sigi", stages.sigi._0010_search)
                 else
+                  State.rails:set_quest("sigi", stages.sigi._0020_return)
                 end
               sp:finish_single_branch()
             end
             sp:finish_single_option()
 
           elseif n == 7 then
-            Log.warn("TODO")
-          
+            State.player.bag.sigs = 0
+            sp:lines()
+            sp:start_single_branch(State.rails.lunch_started and 1 or 2)
+              sp:lines()
+            sp:finish_single_branch()
+            State.rails:notice_flask()
+            State.rails:set_quest("sigi", stages.sigi._1000_completed)
+
           elseif n == 8 then
             sp:lines()
             State.rails.did_markiss_help = true
@@ -291,6 +300,9 @@ return {
       ch.sigi_crate.interact = nil
       sp:lines()
       State.player.bag.sigs = State.player.bag.sigs + 1
+      if State.rails.quests.sigi > 0 then
+        State.rails:set_quest("sigi", stages.sigi._0020_return)
+      end
     end,
   },
 

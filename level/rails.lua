@@ -175,7 +175,7 @@ checkpoints.cp5 = function(this_rails)
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
   this_rails.met_son_mary = true
-  this_rails:set_quest("alcohol", stages.alcohol._0030_return)
+  this_rails:set_quest("alcohol", stages.alcohol._0010_search)
 
   local ch = State.level.entities
   ch.bridge_megadoor3._locked = false
