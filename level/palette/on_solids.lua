@@ -161,6 +161,10 @@ for _, tuple in ipairs {
   end
 end
 
+on_solids.food = function()
+  return on_solids[64 + Random.choice(5, 6, 7)]()
+end
+
 do
   local i, this_sprite = packer:get(5, 3)
   on_solids[i] = function()

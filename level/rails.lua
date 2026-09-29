@@ -1,3 +1,4 @@
+local on_solids = require("level.palette.on_solids")
 local interactive = require("engine.tech.interactive")
 local async = require("engine.tech.async")
 local sprite = require("engine.tech.sprite")
@@ -303,6 +304,9 @@ methods.start_lunch = function(self)
   if self.flask_noticed then
     item.set_cue(ch.canteen_dreamer_flask, "highlight", true)
   end
+
+  State:add_at(on_solids.food(), ps.canteen_food_spawn_1, "on_solids")
+  State:add_at(on_solids.food(), ps.canteen_food_spawn_2, "on_solids")
 end
 
 --- @param i number
