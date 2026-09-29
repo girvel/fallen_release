@@ -403,8 +403,25 @@ draw_keyboard_action_grid = function(self)
     ui.offset(4)
 
     -- TODO handle warlock hit die
-    action_button(class.hit_dice(fighter.hit_die), "h")
-    ui.offset(4)
+    if State.player.level > 0 then
+      local all_classes = {}
+      for _, lvl in ipairs(State.player.creator_model or {}) do
+        if not Table.contains(all_classes, lvl.class) then
+          table.insert(all_classes, lvl.class)
+        end
+      end
+
+      local hit_die = fighter.hit_die
+      for _, this_class in ipairs(all_classes) do
+        local resource = State.player.resources["hit_dice_"..this_class.hit_die]
+        if resource and resource > 0 then
+          hit_die = this_class.hit_die
+          break
+        end
+      end
+      action_button(class.hit_dice(hit_die), "h")
+      ui.offset(4)
+    end
   ui.finish_line()
   ui.offset(0, 4)
 
@@ -503,7 +520,14 @@ draw_resources = function()
       table.insert(displayed_resources, r)
     end
   end
-  if #displayed_resources == 0 then return end
+
+  local hit_dice_n = 0
+  for key, n in pairs(State.player.resources) do
+    if key:starts_with("hit_dice_") then
+      hit_dice_n = hit_dice_n + n
+    end
+  end
+  if #displayed_resources == 0 and hit_dice_n == 0 then return end
 
   ui.br()
   if not is_compact then ui.br() end
@@ -544,6 +568,20 @@ draw_resources = function()
       local translated = translation.resources[r] or r
       ui.text(translated:utf_capitalize())
     end
+
+    if hit_dice_n > 0 then
+      ui.start_frame(180)
+      ui.start_line()
+        if hit_dice_n <= 12 then
+          ui.text(DEFAULT_ICON * hit_dice_n)
+        else
+          ui.text("x" .. hit_dice_n)
+        end
+      ui.finish_line()
+      ui.finish_frame()
+      ui.text("Перевязать раны")
+    end
+
     love.graphics.setColor(Vector.white)
   finish_block()
 end

@@ -79,8 +79,10 @@ end
 
 init_debug = function()
   State.runner:run_task(function()
-    Kernel.gui:open_menu("creator")
-    Kernel.gui._mode:submit()
+    -- Kernel.gui:open_menu("creator")
+    -- Kernel.gui._mode:submit()
+    while State.player.level == 0 do coroutine.yield() end
+    health.set_hp(State.player, 1)
   end)
 end
 

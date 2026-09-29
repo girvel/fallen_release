@@ -11,6 +11,7 @@ local class = {}
 --- @param is_base? boolean
 --- @return action
 class.hit_dice = Memoize(function(die, is_base)
+  local id = "hit_dice_"..die
   return Table.extend({
     name = "перевязать раны",
     codename = "hit_dice",
@@ -25,13 +26,13 @@ class.hit_dice = Memoize(function(die, is_base)
 
     modify_resources = function(self, entity, resources, rest_type)
       if rest_type == "long" then
-        resources.hit_dice = (resources.hit_dice or 0) + 1
+        resources[id] = (resources[id] or 0) + 1
       end
       return resources
     end,
 
     cost = {
-      hit_dice = 1,
+      [id] = 1,
     },
 
     sounds = sound.multiple("engine/assets/sounds/hit_dice", .3),

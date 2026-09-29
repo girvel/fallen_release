@@ -6,7 +6,6 @@ local translation = {
     actions = "действия",
     second_wind = "второе дыхание",
     action_surge = "всплеск действий",
-    hit_dice = "перевязать раны",
     fighting_spirit = "боевой дух",
     spell_slots_1 = "заклинания ур. 1",
     spell_slots_2 = "заклинания ур. 2",
