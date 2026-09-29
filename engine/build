@@ -3,6 +3,34 @@
 local log = require("engine.lib.log")
 local argparse = require("engine.lib.argparse")
 
+
+--- @param str string
+--- @param prefix string
+--- @return boolean
+local starts_with = function(str, prefix)
+  return str:sub(1, #prefix) == prefix
+end
+
+--- @param str string
+--- @param pat string
+--- @param plain boolean?
+--- @return string[]
+local split = function(str, pat, plain)
+  local t = {}
+
+  while true do
+    local pos1, pos2 = str:find(pat, 1, plain or false)
+
+    if not pos1 or pos1 > pos2 then
+      t[#t + 1] = str
+      return t
+    end
+
+    t[#t + 1] = str:sub(1, pos1 - 1)
+    str = str:sub(pos2 + 1)
+  end
+end
+
 local read_run = function(command, ...)
   local f = assert(io.popen("zsh -c '" .. command:format(...) .. "' 2>/dev/null"))
   local result = f:read("*a")
@@ -164,7 +192,7 @@ cli.exe = function(args)
 
   local name do
     love = {}
-    local ok, msg = pcall(require, "conf")  ---@diagnostic disable-line:undefined-global
+    local ok, msg = pcall(require, "conf_release")  ---@diagnostic disable-line:undefined-global
     if ok then
       local config = {window = {}}
       love.conf(config)
@@ -184,20 +212,56 @@ cli.exe = function(args)
   end
   local versioned_name = name .. version_suffix
 
-  -- prep folder
+  -- prep folder --
   run("mkdir -p .build")
   run("rm -rf .build/*")
   run("echo '*' > .build/.gitignore")
 
-  run("mv conf.lua conf.lua_")
-  run("mv conf_release.lua conf.lua")
+  -- copy only the needed files --
+  local dirs = {
+    "assets",
+    "engine",
+    "level",
+  }
 
-  -- build .love
-  -- TODO do not include engine/docs and assets/build
-  run("zip -9 -r%s .build/%s.love assets engine level conf.lua main.lua",
-    args.verbose and "" or " -q", name)
-  run("mv conf.lua conf_release.lua")
-  run("mv conf.lua_ conf.lua")
+  local ignored_paths = {
+    "assets/press_kit",
+    "assets/sketches",
+    "engine/assets/build",
+    "engine/docs",
+    "engine/lib/_tests",
+    "engine/lib/ldump",
+    "engine/lib/moonspeak",
+    "engine/build",
+  }
+
+  local all_files = {
+    "engine/lib/ldump/init.lua",
+    "engine/lib/moonspeak/init.lua",
+  }
+
+  for _, dir in ipairs(dirs) do
+    for _, file in ipairs(split(read_run("find %s -type f", dir), "\n")) do
+      for _, ignored in ipairs(ignored_paths) do
+        if file == ignored or starts_with(file, ignored.."/") then
+          goto next
+        end
+      end
+      table.insert(all_files, file)
+      ::next::
+    end
+  end
+
+  run("mkdir .build/target")
+  for _, file in ipairs(all_files) do
+    os.execute("cp --parents "..file.." .build/target")
+  end
+  run("cp main.lua .build/target/")
+  run("cp conf_release.lua .build/target/conf.lua")
+
+  -- build .love --
+  run("cd .build/target; zip -9 -r%s %s.love ./*", args.verbose and "" or " -q", name)
+  run("mv .build/target/%s.love .build/", name)
 
   -- pack linux
   run("mkdir -p .build/%s_linux", versioned_name)
