@@ -939,6 +939,7 @@ return {
     _run = function(self, ch, ps, sp)
       State:remove(ch.fighting_guide)
       State.rails.fighting_guide_status = "picked_up"
+      State.model.has_new_task = true
     end,
   },
 

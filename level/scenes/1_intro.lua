@@ -204,6 +204,7 @@ return {
     _run = function(self, ch, ps, sp)
       State:remove(ch.intro_note)
       State.rails.intro_note_status = "picked_up"
+      State.model.has_new_task = true
       State.model.suggestion = "Нажмите [J] чтобы открыть журнал"
       local timeout = 10
       while not Kernel.gui:is_opened("journal") and timeout > 0 do
