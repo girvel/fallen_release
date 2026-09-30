@@ -1023,7 +1023,7 @@ return {
       async.sleep(3)
       api.order(sp:literal())
       State.rails:set_quest("warmup", stages.warmup._0060_practiced)
-      if not State.runner:is_running("_244_phantom") then
+      if not State.runner:is_running("_244_phantom") and ch.mirage_block.interact then
         item.set_cue(ch.mirage_block, "highlight", true)
       end
       State.hostility:unsubscribe(self._sub)
