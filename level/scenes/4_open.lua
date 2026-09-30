@@ -439,10 +439,12 @@ return {
 
     _prev_distance = 100,
     _condition = function(self, dt, ch, ps)
+      if State.rails.met_son_mary then
+        State.runner:remove(self)
+        return false
+      end
       local distance = api.distance(State.player, ch.son_mary)
-      local result = not State.rails.met_son_mary
-        and distance <= 3
-        and self._prev_distance > 3
+      local result = distance <= 3 and self._prev_distance > 3
       self._prev_distance = distance
       return result
     end,
@@ -501,6 +503,7 @@ return {
       sp:finish_single_option()
 
       State.runner:remove(self)
+      State.rails.met_son_mary = true
       sp:lines()
 
       sound.new("assets/sounds/son_mary_spell.mp3"):play()
