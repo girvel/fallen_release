@@ -231,9 +231,9 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      State.rails:transition_2_warmup()
       if State.rails.intro_note_status ~= "none" then return end
       sp:lines()
-      State.rails:transition_2_warmup()
     end,
   },
 
