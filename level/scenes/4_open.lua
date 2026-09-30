@@ -120,37 +120,39 @@ return {
           elseif n == 2 then
             sp:lines()
             local m = sp:start_single_option()
-            if m == 1 then
-              sp:lines()
-              local o = sp:start_single_option()
-              if o == 1 then
+              if m == 1 then
                 sp:lines()
-              else
-                sp:lines()
-                local check = State.player:ability_check("wis", 14)
-                if check then xp.reward(State.player, xp.check) end
-                sp:start_single_branch(check and 1 or 2)
+                local o = sp:start_single_option()
+                if o == 1 then
                   sp:lines()
-                sp:finish_single_branch()
+                else
+                  sp:lines()
+                  local check = State.player:ability_check("wis", 14)
+                  if check then xp.reward(State.player, xp.check) end
+                  sp:start_single_branch(check and 1 or 2)
+                    sp:lines()
+                  sp:finish_single_branch()
+                end
+                sp:finish_single_option()
+                sp:finish_single_option()
+                goto out
               end
-              sp:finish_single_option()
-              goto out
-            end
 
-            local skill, dc
-            if m == 2 then
-              skill = "religion"
-              dc = 10
-            else
-              skill = "persuasion"
-              dc = 12
-            end
+              local skill, dc
+              if m == 2 then
+                skill = "religion"
+                dc = 10
+              else
+                skill = "persuasion"
+                dc = 12
+              end
             sp:finish_single_option()
 
             local check = self._nature_check or State.player:ability_check(skill, dc)
             sp:start_single_branch(check and 1 or 2)
             local skill_subs = {SKILL = translation.skills[skill]:utf_capitalize()}
             if check then
+              sp:lines()
               xp.reward(State.player, xp.check)
               local suboptions = sp:start_options()
               local looped = true
