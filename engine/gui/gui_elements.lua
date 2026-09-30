@@ -79,6 +79,13 @@ gui_elements.assign = function()
   gui_elements.hold_person_2_inactive = nth(80)
   gui_elements.hold_person_3_inactive = nth(80)
 
+  gui_elements.hex_1 = nth(81)
+  gui_elements.hex_2 = nth(81)
+  gui_elements.hex_3 = nth(81)
+  gui_elements.hex_1_inactive = nth(89)
+  gui_elements.hex_2_inactive = nth(89)
+  gui_elements.hex_3_inactive = nth(89)
+
   gui_elements.window_bg = "engine/assets/gui/window_bg.png"
   gui_elements.bar_bg = "engine/assets/gui/bar_bg.png"
   gui_elements.hp_bar = "engine/assets/gui/hp_bar.png"
