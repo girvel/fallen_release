@@ -27,7 +27,7 @@ local input_state = {
 }
 
 local cost, hint, mouse_task, mouse_task_path, is_compact
-local dialogue_y = 0
+local dialogue_x, dialogue_y, dialogue_w, dialogue_h
 
 ----------------------------------------------------------------------------------------------------
 -- [SECTION] Helper functions
@@ -178,8 +178,10 @@ draw_gui = function(self, dt)
   is_compact = love.graphics.getHeight() < 900
   hint = nil
 
-  local dialogue_h = is_compact and 190 or 300
   local bottom_gap = is_compact and 0 or 50
+  dialogue_w = math.min(love.graphics.getWidth(), ui.MAX_READABLE_W)
+  dialogue_h = is_compact and 190 or 300
+  dialogue_x = (love.graphics.getWidth() - dialogue_w) / 2
   dialogue_y = love.graphics.getHeight() - dialogue_h - bottom_gap
 
   use_mouse(self)
@@ -685,7 +687,7 @@ end
 local draw_line, draw_options
 local dialogue_scroll, prev_hears
 
-draw_dialogue = function(h)
+draw_dialogue = function()
   local this_line = State.model.hears
   if not this_line then
     return
@@ -697,22 +699,19 @@ draw_dialogue = function(h)
   end
 
   local font_size = is_compact and 26 or 32
-  local w = math.min(love.graphics.getWidth(), ui.MAX_READABLE_W)
-  local y = dialogue_y
-  local x = (love.graphics.getWidth() - w) / 2
 
   local portrait = this_line.source and this_line.source.portrait
   if portrait then
     local scale = is_compact and 1 or 2
     local GAP = 20
 
-    ui.start_frame(x - portrait.image:getWidth() * scale - GAP, y)
+    ui.start_frame(dialogue_x - portrait.image:getWidth() * scale - GAP, dialogue_y)
       ui.image(portrait.image, scale)
     ui.finish_frame()
   end
 
   local bg = State.player.incapacitated and "none" or nil
-  tk.start_window(x, y, w, h, bg, dialogue_scroll)
+  tk.start_window(dialogue_x, dialogue_y, dialogue_w, dialogue_h, bg, dialogue_scroll)
   ui.start_font(font_size)
     if this_line.type == "plain_line" then
       draw_line(this_line)
@@ -882,7 +881,7 @@ draw_order = function()
     windows_anchors_text_differently = 7
   end
 
-  ui.start_frame("center", dialogue_y - H - 20, 800, H)
+  ui.start_frame(dialogue_x, dialogue_y - H - 20, nil, H)
     ui.start_color(colors.yellow)
     ui.start_frame(10, 36 - windows_anchors_text_differently)
     ui.start_font(36)

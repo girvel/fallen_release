@@ -82,6 +82,8 @@ init_debug = function()
   State.runner:run_task(function()
     -- Kernel.gui:open_menu("creator")
     -- Kernel.gui._mode:submit()
+    State.player.bag.alcohol = 2
+    State.player.bag.amulet = 1
   end)
 end
 
@@ -174,8 +176,8 @@ checkpoints.cp5 = function(this_rails)
   State.runner:remove("_322_dwarf_start")
   State.player.xp = xp.for_level[3]
   item.give(State.player, items.greatsword())
-  this_rails.met_son_mary = true
-  this_rails:set_quest("alcohol", stages.alcohol._0010_search)
+  -- this_rails.met_son_mary = true
+  -- this_rails:set_quest("alcohol", stages.alcohol._0010_search)
 
   local ch = State.level.entities
   ch.bridge_megadoor3._locked = false

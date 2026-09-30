@@ -250,7 +250,7 @@ creature.methods.saving_throw = function(self, to_check, dc)
   local success = result >= dc
 
   Log.debug(
-    "%s %s %s / %s | Saving throw for %s",
+    "%s (%s) %s / %s | Saving throw for %s",
     to_check:utf_upper(), success and "+" or "-", result, dc, self
   )
 
