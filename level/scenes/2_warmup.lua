@@ -1190,8 +1190,9 @@ return {
     },
 
     _on_add = function(self, ch, ps)
+      self._open_bird_food = ch.bird_food.on_interact
       ch.bird_food.interact = nil
-        -- disables default crate's interact
+      -- interactive is mixed in again by a phantom scene
     end,
 
     _condition = function(self, dt, ch, ps)
@@ -1208,6 +1209,7 @@ return {
           State.runner:remove(self)
           State.player.bag.bird_food = 1
           ch.bird_food.interact = nil
+          self._open_bird_food(ch.bird_food, State.player)
         else
           break
         end
