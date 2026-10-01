@@ -146,7 +146,7 @@ inotify.update = function()
     local ui = require("engine.tech.ui")
 
     --- @diagnostic disable-next-line:undefined-field
-    love.graphics.newImageCache.children = nil
+    Table.clear(love.graphics.newImageCache.children)
     ui.reset_caches()
     gui_elements.assign()
     Log.info("Reloaded images")

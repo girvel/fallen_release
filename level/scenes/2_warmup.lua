@@ -454,7 +454,7 @@ return {
       fx.direction = direction
       fx:animate()
 
-      if State.player:saving_throw("con", 15) then
+      if not State.player:saving_throw("con", 15) then
         health.damage(State.player, 1)
       end
 
