@@ -164,7 +164,7 @@ health.attack_precog = function(source, target, attack_roll, damage_roll)
   end
 
   if target.modify then
-    damage_roll = target:modify("outgoing_attack_damage_roll", damage_roll, source)
+    damage_roll = target:modify("incoming_attack_damage_roll", damage_roll, source)
   end
   local damage_amount = damage_roll:roll()
   if source.modify then

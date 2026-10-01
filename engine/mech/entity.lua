@@ -34,7 +34,7 @@
 --- @field max_hp integer max health points, overrides base :get_max_hp value
 --- @field armor integer static armor class; less priority than :get_armor
 --- @field perks table[] all class, feat, race perks that modify default creature behavior
---- @field conditions table[] like .perks, but temporary
+--- @field conditions condition[] like .perks, but temporary
 ---
 --- @field was_interacted_by entity?
 --- @field on_interact fun(self: entity, other: entity)?

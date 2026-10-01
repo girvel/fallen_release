@@ -1,5 +1,4 @@
-local paralyzed = require("engine.mech.conditions.paralyzed")
-local blinded = require("engine.mech.conditions.blinded")
+local conditions = require("engine.mech.conditions")
 local monsters = require("engine.mech.monsters")
 local api = require("engine.tech.api")
 local animated = require("engine.tech.animated")
@@ -125,7 +124,7 @@ local hexed = function(spell_source)
   return {
     codename = "hexed",
     life_time = 3600,
-    modify_outgoing_attack_damage_roll = function(self, entity, damage_roll, source)
+    modify_incoming_attack_damage_roll = function(self, entity, damage_roll, source)
       if source == spell_source then
         return damage_roll + D(6)
       end
@@ -154,8 +153,8 @@ spells.hex = action.leveled_spell(1, function(mod, cast_level)
       local target = params.entity_targets[1]
       api.rotate(entity, target)
       entity:animate("hand_attack")
-      if target.conditions then
-        table.insert(target.conditions, hexed(entity))
+      if target.add_condition then
+        target:add_condition(hexed(entity))
       end
       animated.add_fx("engine/assets/animations/hex", target.position, "fx_over")
       return true
@@ -193,7 +192,7 @@ spells.hold_person = action.leveled_spell(2, function(mod, cast_level)
       local dc = entity:get_spell_dc(mod)
       local targets = {}
       for _, target in ipairs(params.entity_targets) do
-        targets[target] = target.conditions
+        targets[target] = target.add_condition
           and target.saving_throw
           and not target:saving_throw("wis", dc)
       end
@@ -202,7 +201,7 @@ spells.hold_person = action.leveled_spell(2, function(mod, cast_level)
           State.hostility:register(entity, target)
           if failed then
             animated.add_fx("engine/assets/animations/hold_person", target.position, "fx_over")
-            table.insert(target.conditions, paralyzed.new(60, "wis", dc))
+            target:add_condition(conditions.paralyzed(60, "wis", dc))
           end
         end
       end)
@@ -251,7 +250,7 @@ spells.spray_of_cards = action.leveled_spell(2, function(mod, cast_level)
         for target, t in pairs(damages) do
           health.attack_save_enact(entity, target, unpack(t))
           if target.conditions then
-            table.insert(target.conditions, blinded.new())
+            target:add_condition(conditions.blinded())
           end
         end
       end)

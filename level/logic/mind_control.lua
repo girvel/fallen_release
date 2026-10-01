@@ -59,6 +59,7 @@ mind_control.new = function()
     sprite = this_sprite,
     layer = "fx_over_shadows",
     position = Vector.zero,
+    render_size = math.huge,
     _canvases = {},
     _shader = love.graphics.newShader(
       love.filesystem.read("level/shaders/smoke.frag"):format(#palette),

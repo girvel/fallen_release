@@ -79,18 +79,6 @@ fighter.second_wind = Table.extend({
   end,
 }, action.base)
 
-local fighting_spirit_condition = function()
-  return {
-    codename = "fighting_spirit_condition",
-
-    life_time = 6,
-
-    modify_attack_roll = function(self, entity, roll, slot)
-      return roll:set("advantage")
-    end,
-  }
-end
-
 fighter.fighting_spirit = Table.extend({
   name = "боевой дух",
   codename = "fighting_spirit",
@@ -119,7 +107,14 @@ fighter.fighting_spirit = Table.extend({
   _act = function(self, entity)
     State:add(animated.fx("engine/assets/animations/fighting_spirit", entity.position))
     self.sounds:play_at(entity.position)
-    table.insert(entity.conditions, fighting_spirit_condition())
+    entity:add_condition({
+      codename = "fighting_spirit_condition",
+      life_time = 6,
+
+      modify_attack_roll = function(self_, entity_, roll, slot)
+        return roll:set("advantage")
+      end,
+    })
     health.set_hp(entity, entity.hp + 5)
     return true
   end,

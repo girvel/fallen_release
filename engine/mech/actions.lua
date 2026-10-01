@@ -1,3 +1,4 @@
+local conditions = require("engine.mech.conditions")
 local floater = require("engine.tech.floater")
 local level = require("engine.tech.level")
 local action = require "engine.tech.action"
@@ -130,18 +131,6 @@ actions.dash = Table.extend({
   end,
 }, action.base)
 
-local disengaged = function()
-  return {
-    codename = "disengaged",
-
-    life_time = 6,
-
-    modify_opportunity_attack_trigger = function(self, entity, triggered)
-      return false
-    end,
-  }
-end
-
 actions.disengage = Table.extend({
   name = "отступление",
   codename = "disengage",
@@ -153,7 +142,9 @@ actions.disengage = Table.extend({
   _is_available = function() return State.combat end,
 
   _act = function(self, entity)
-    table.insert(entity.conditions, disengaged())
+    if entity.add_condition then
+      entity:add_condition(conditions.disengaged())
+    end
     return true
   end,
 }, action.base)

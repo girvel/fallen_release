@@ -86,7 +86,8 @@ end
 --- @return act_function
 action.make_act = function(f)
   return function(self, entity, parameter)
-    if entity.modify and not entity:modify("activation", true, self) then return false end
+    if not entity.creature_flag then return false end
+    if not entity:modify("activation", true, self) then return false end
     if not safety.call(self.is_available, self, entity) then return false end
     if f then
       local result = safety.call(f, self, entity, parameter)

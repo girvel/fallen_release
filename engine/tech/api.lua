@@ -485,7 +485,7 @@ api.order = function(text)
   local promise
   promise, last_order_scene = State.runner:run_task(function()
     State.model.order = text
-    async.sleep(4)
+    async.sleep(400)
     State.model.order = nil
   end)
 
@@ -632,7 +632,7 @@ end
 
 local SLOW_READING_SPEED = 10
 local get_time = function(text)
-  return math.max(5, text:utf_len() / SLOW_READING_SPEED + 2)
+  return text:utf_len() / SLOW_READING_SPEED + 2
 end
 
 --- @param text string|fun()

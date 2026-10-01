@@ -42,6 +42,7 @@ creature.mix_in_perks = function(entity)
   if entity.perks == nil then entity.perks = {} end
   if entity.conditions == nil then entity.conditions = {} end
   entity.modify = creature.methods.modify
+  entity.add_condition = creature.methods.add_condition
 end
 
 --- @alias creature_modification
@@ -99,6 +100,24 @@ creature.methods.modify = function(self, modname, value, ...)
   end
 
   return value
+end
+
+--- @param self entity
+--- @param new_condition condition
+creature.methods.add_condition = function(self, new_condition)
+  local collision_i
+  for i, condition in ipairs(self.conditions) do
+    if condition.codename == new_condition.codename then
+      collision_i = i
+      break
+    end
+  end
+
+  if collision_i then
+    table.remove(self.conditions, collision_i)
+  end
+
+  table.insert(self.conditions, new_condition)
 end
 
 --- @alias rest_type "move"|"short"|"long"|"full"

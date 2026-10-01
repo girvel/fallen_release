@@ -1,3 +1,4 @@
+local conditions = require("engine.mech.conditions")
 local health = require("engine.mech.health")
 local animated = require("engine.tech.animated")
 
@@ -52,6 +53,17 @@ perks.hardness = {
 perks.invincible = {
   modify_incoming_damage = function(self, entity, damage, source, is_critical)
     return 0
+  end,
+}
+
+perks.poisoned = {
+  modify_outgoing_damage = function(damage)
+    return function(self, entity, _damage, target, is_critical)
+      if target.add_condition then
+        target:add_condition(conditions.poisoned(damage, entity))
+      end
+      return damage
+    end
   end,
 }
 
