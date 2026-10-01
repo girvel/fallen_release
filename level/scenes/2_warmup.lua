@@ -1088,7 +1088,7 @@ return {
                 t = t - coroutine.yield()
               end
             end)
-            animated.add_fx("assets/animations/mirage_spawn", ps.officer_room_enter, "fx_under")
+            animated.add_fx("engine/assets/animations/level_up", ps.officer_room_enter, "fx_under")
             async.sleep(.5)
             sound.new("assets/sounds/phantom_appearing.mp3", .1):play()
             phantom = State:add_at(solids.phantom(), ps.officer_room_enter, "solids")

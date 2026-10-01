@@ -6,7 +6,6 @@ local health = require "engine.mech.health"
 local sound  = require "engine.tech.sound"
 local animated = require "engine.tech.animated"
 local interactive = require "engine.tech.interactive"
-local tcod        = require "engine.tech.tcod"
 local projectile  = require "engine.tech.projectile"
 
 
