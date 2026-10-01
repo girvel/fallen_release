@@ -19,7 +19,7 @@ local translation = {
   },
   bag = {
     money = "Финансы",
-    alcohol = "Бутылки с алкоголем",
+    alcohol = "Алкоголь",
     valve = "Вентиль",
     sigs = "Сигареты",
     amulet = "Амулет",

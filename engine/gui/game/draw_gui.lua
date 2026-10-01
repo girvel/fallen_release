@@ -649,13 +649,12 @@ end
 
 draw_bag = function()
   --- @type [string, integer][], integer
-  local sorted, max_length do
+  local sorted do
     sorted = {}
-    max_length = 0
     for k, v in pairs(State.player.bag) do
       if v > 0 then
-        table.insert(sorted, {k, v})
-        max_length = math.max(max_length, k:utf_len())
+        local k_translated = translation.bag[k] or k
+        table.insert(sorted, {k_translated, v})
       end
     end
 
@@ -677,11 +676,20 @@ draw_bag = function()
       ui.br()
     end
 
-    for _, t in ipairs(sorted) do
-      local k, v = unpack(t)
-      ui.text("%s:%s %s", translation.bag[k] or k, " " * (max_length - k:utf_len()), v)
-    end
-  finish_block()  -- TODO UI make this stateless?
+    ui.start_frame()
+      for _, t in ipairs(sorted) do
+        local k, _ = unpack(t)
+        ui.text(k..":")
+      end
+    ui.finish_frame()
+
+    ui.start_frame(180)
+      for _, t in ipairs(sorted) do
+        local _, v = unpack(t)
+        ui.text(v)
+      end
+    ui.finish_frame("push_cursor")
+  finish_block()
 end
 
 local draw_line, draw_options
