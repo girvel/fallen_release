@@ -12,7 +12,9 @@ warlock.dark_ones_blessing = function(class_level)
     name = "Благословение Тёмного",
     codename = "dark_ones_blessing",
     modify_on_kill = function(self, entity, _, target)
-      health.push_temp_hp(entity, math.max(1, entity:get_modifier("cha") + class_level))
+      if target.creature_flag then
+        health.push_temp_hp(entity, math.max(1, entity:get_modifier("cha") + class_level))
+      end
     end,
   }
 end
