@@ -326,13 +326,13 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      -- NOTICE no "interact" animation for cook, because the cauldron is too far; it looks silly
       ch.cook.interact = nil
 
       sp:lines()
       api.rotate(ch.cook, State.player)
       sp:lines()
       local check = State.player:ability_check("cha", 14)
-      if check then xp.reward(State.player, xp.check) end
       sp:start_single_branch(check and 1 or 2)
       if check then
         xp.reward(State.player, xp.check)
