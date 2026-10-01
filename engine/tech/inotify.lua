@@ -111,6 +111,9 @@ local module_map = setmetatable({}, {__mode = "k"})
 --- @param key any
 --- @return any
 inotify.require = function(modpath, base, key)
+  -- TODO do inotify.require(modpath) that would replace the keys? would not work w/ functions
+  --   though
+
   local result = require(modpath)
   if not is_available() then return result end
 

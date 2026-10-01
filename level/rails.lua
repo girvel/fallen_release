@@ -82,8 +82,6 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-    State.player.bag.alcohol = 2
-    State.player.bag.amulet = 1
   end)
 end
 

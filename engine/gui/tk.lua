@@ -132,6 +132,7 @@ tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra, bar_id)
   local extra_saturation = saturation > 1 and (1 - 1 / saturation)
   local bar_w = math.floor((w - 16) * base_saturation / ui.SCALE) * ui.SCALE
 
+  -- animation math --
   local animation_value, prev_value
   if bar_id then
     prev_value = bar_prev_values[bar_id]
@@ -140,7 +141,10 @@ tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra, bar_id)
       bar_prev_values[bar_id] = value
     end
 
-    if prev_value ~= value then
+    if prev_value > value then
+      animation_value = 1
+      bar_animation_value[bar_id] = animation_value
+    elseif prev_value < value then
       animation_value = bar_animation_value[bar_id]
       if animation_value and animation_value > 1 then
         animation_value = math.max(1, animation_value - ui.get_state().dt)
@@ -169,9 +173,9 @@ tk.start_bar = function(w, h, value, max, bar, bar_small, bar_extra, bar_id)
       ui.finish_frame()
 
       local prev_bar_w = math.floor((w - 16) * prev_value / max / ui.SCALE) * ui.SCALE
-      if prev_bar_w >= 16 then
+      if prev_bar_w > 0 then
         ui.start_frame(8, 8, prev_bar_w, h)
-          ui.tile(bar)
+          ui.tile(prev_bar_w > 16 and bar or bar_small)
         ui.finish_frame()
       end
     else
