@@ -358,4 +358,7 @@ _table.keys = function(t) -- map
   return result
 end
 
+_table.clear = require("table.clear")
+_table.new = require("table.new")
+
 return _table
