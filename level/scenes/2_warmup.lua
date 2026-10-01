@@ -422,7 +422,7 @@ return {
         return false
       end
 
-      local period = 6
+      local period = 3
       self._t = self._t + dt
       if self._t >= period then
         self._t = self._t - period
@@ -450,6 +450,7 @@ return {
       local fx = animated.add_fx(
         "assets/animations/zap", State.player.position, "fx_under", "directional"
       )
+      sound.new("assets/sounds/zap.mp3"):play()
       fx.direction = direction
       fx:animate()
 
@@ -475,7 +476,7 @@ return {
       local check = State.player:ability_check("history", 16)
       if check then xp.reward(State.player, xp.check) end
       sp:start_single_branch(check and 1 or 2)
-        api.popup(sp:literal())
+        api.popup(sp:literal(), ps.engine_message)
       sp:finish_single_branch()
     end,
   },
