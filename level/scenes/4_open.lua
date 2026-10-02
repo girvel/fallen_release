@@ -425,7 +425,7 @@ return {
 
     _run = function(self, ch, ps, sp)
       api.order("Разблокируй желтый рычаг на правой панели")
-      State.rails:set_quest("parasites", stages.parasites._0010_go_to_bridge)
+      State.rails:set_quest("parasites", stages.parasites._0020_unlock_starboard)
       State.rails.seen_water = true
     end,
   },

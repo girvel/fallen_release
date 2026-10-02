@@ -588,4 +588,21 @@ return {
       end
     end,
   },
+
+  _330_detective_next = cutscene.make {
+    enabled = true,
+    screenplay = "assets/screenplay/330_detective_next.ms",
+
+    _condition = function(self, dt, ch, ps)
+      return State.rails.rront_status
+    end,
+
+    _run = function(self, ch, ps, sp)
+      async.sleep(30)
+      api.order(sp:literal())
+      async.sleep(3)
+      api.order(sp:literal())
+      State.rails:set_quest("parasites", stages.parasites._0010_go_to_bridge)
+    end,
+  },
 }

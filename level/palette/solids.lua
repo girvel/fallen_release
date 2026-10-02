@@ -659,6 +659,7 @@ solids.engineer = function(n)
       direction = Vector.up,
 
       ai = rront_ai.new(),
+      xp_reward = 100,
     }
   elseif n == 4 then
     e = {
