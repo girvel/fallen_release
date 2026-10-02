@@ -352,6 +352,7 @@ return {
           if n == 1 then
             looped = false
           elseif n == 2 then
+            self._tried_brute_force = true
             State.player:animate("interact")
             sp:lines()
             local m = sp:start_single_option()

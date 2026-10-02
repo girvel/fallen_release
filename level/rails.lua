@@ -228,7 +228,7 @@ methods.rront_runs_away = function(self)
   self:set_quest("detective", stages.detective._2000_failed)
   self:start_lunch()
   self.rront_status = "ran_away"
-  if State.rails.let_rront_go then
+  if self.let_rront_go then
     xp.reward(State.player, 200)
   end
 end
