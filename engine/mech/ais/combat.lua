@@ -2,8 +2,8 @@ local ai = require("engine.tech.ai")
 local async = require("engine.tech.async")
 local api = require("engine.tech.api")
 local tcod = require("engine.tech.tcod")
-local animated  = require("engine.tech.animated")
-local actions   = require("engine.mech.actions")
+local animated = require("engine.tech.animated")
+local actions = require("engine.mech.actions")
 
 
 local combat_ai = {}
@@ -66,30 +66,50 @@ end
 
 local get_speed = function() return #State.combat.list > 8 and 9 or 7 end
 
+methods._target_criteria = function(self, entity, target)
+  return State:exists(target)
+    and State.hostility:get(entity, target) == "enemy"
+    and api.distance(entity, target) <= self.targeting.follow_range
+    and api.traveling_distance(entity, target) <= self.targeting.sane_traveling_distance
+end
+
 --- @param entity entity
 methods._target_search = function(self, entity)
-  if State:exists(self.target)
-    and api.distance(entity, self.target) <= self.targeting.follow_range
-    and api.traveling_distance(entity, self.target) >= self.targeting.sane_traveling_distance
-  then return end
+  if self:_target_criteria(self.target) then return end
+  if self.target then
+    Log.debug("Invalid target")
+  else
+    Log.debug("No target, searching...")
+  end
 
   self.target = ai.find_target(entity, self.targeting.scan_range, self._vision_map)
-  if self.target then return end
+  if self.target then
+    Log.debug("Found a target %s at %s", Name.code(self.target), self.target.position)
+    return
+  end
+  Log.debug("Direct search provided no result")
 
   for _, e in ipairs(State.combat.list) do
     if State.hostility:get(entity, e) == "ally"
-      and e.ai and e.ai.target
+      and e.ai
+      and e.ai.target
+      and api.traveling_distance(entity, e) <= self.targeting.sane_traveling_distance
     then
-      if not api.travel(entity, e.position, true, get_speed()) then break end
-
-      self.target = ai.find_target(entity, self.targeting.scan_range, self._vision_map)
-      if self.target then return end
+      Log.debug(
+        "Ally %s's has target %s at %s, going there",
+        Name.code(e), Name.code(e.ai.target), e.ai.target.position
+      )
+      api.travel(entity, e.position, true)
+      break
     end
   end
 
   if not ai.sees_enemies(entity, self.targeting.scan_range, self._vision_map) then
+    Log.debug("Can not find any target")
     State:remove_from_combat(entity)
   end
+
+  do return end
 end
 
 --- @param entity entity
@@ -107,11 +127,22 @@ methods.control = function(self, entity)
   if bow and bow.tags.ranged then
     ai.preserve_line_of_fire(entity, self.target, self._vision_map, get_speed())
     local bow_attack = actions.bow_attack(self.target)
+    local did_shoot = false
     while bow_attack:act(entity) do
+      Log.debug("Shooting...")
       async.sleep(.66)
+      did_shoot = true
+    end
+
+    if not did_shoot then
+      Log.debug("Did not shoot once")
     end
   else
-    api.travel(entity, self.target.position, true, get_speed())
+    if api.distance(entity, self.target) > 1 then
+      Log.debug("Traveling to the target...")
+      api.travel(entity, self.target.position, true, get_speed())
+    end
+    Log.debug("Attacking the target...")
     api.attack(entity, self.target)
   end
 end
