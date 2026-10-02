@@ -14,6 +14,7 @@ local combat_ai = {}
 --- @field targeting ai_targeting
 --- @field target entity?
 --- @field starts_no_fights boolean
+--- @field source_of_last_attack vector?
 --- @field _hostility_subscription function
 --- @field _vision_map tcod_map
 local methods = {}
@@ -42,12 +43,17 @@ end
 methods.init = function(self, entity)
   self._hostility_subscription = State.hostility:subscribe(function(attacker, target)
     if entity.hp <= 0 then return end
-    if State.hostility:get(entity, attacker) == "ally" then return end
-
-    if State.hostility:get(entity, target) == "ally"
+    if target == entity then
+      self.source_of_last_attack = attacker.position
+    end
+    local hostility_to_attacker = State.hostility:get(entity, attacker)
+    if hostility_to_attacker ~= "ally"
+      and State.hostility:get(entity, target) == "ally"
       and (target.position - entity.position):abs2() <= self.targeting.support_range
     then
-      State.hostility:set(entity.faction, attacker.faction, "enemy")
+      if hostility_to_attacker ~= "enemy" then
+        State.hostility:set(entity.faction, attacker.faction, "enemy")
+      end
       if not State:in_combat(entity) then
         State:add(animated.fx("engine/assets/animations/aggression", entity.position))
         State:start_combat({entity, attacker})
@@ -96,11 +102,22 @@ methods._target_search = function(self, entity)
       and api.traveling_distance(entity, e) <= self.targeting.sane_traveling_distance
     then
       Log.debug(
-        "Ally %s's has target %s at %s, going there",
+        "Ally %s's has target %s at %s, traveling there...",
         Name.code(e), Name.code(e.ai.target), e.ai.target.position
       )
       api.travel(entity, e.position, true)
       break
+    end
+  end
+
+  if self.source_of_last_attack then
+    Log.debug("The last attack came from %s, traveling there...", self.source_of_last_attack)
+    if api.travel(entity, self.source_of_last_attack, true) then
+      Log.debug("Reached.")
+      self.source_of_last_attack = nil
+    else
+      Log.debug("Yet to reach.")
+      return
     end
   end
 
