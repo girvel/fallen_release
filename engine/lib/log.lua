@@ -5,7 +5,6 @@ local name = require("engine.lib.name")
 local log = {}
 
 if not love then
-  print("no love")
   log.usecolor = true
 elseif love.system.getOS() == "Windows" then
   log.usecolor = false
@@ -42,7 +41,6 @@ elseif love.system.getOS() == "Windows" then
   --   end
   -- end
 else
-  print("linux")
   local term = os.getenv("TERM")
   log.usecolor = term and term ~= "dumb"
 end
