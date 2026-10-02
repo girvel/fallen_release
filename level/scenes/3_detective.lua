@@ -343,9 +343,6 @@ return {
     _run = function(self, ch, ps, sp)
       State.rails:rront_runs_away()
       api.autosave("Диверсант сбежал")
-      if State.rails.let_rront_go then
-        xp.reward(State.player, 200)
-      end
     end,
   },
 
@@ -487,11 +484,11 @@ return {
             sp:lines()
           else
             sp:lines()
-            local n = api.options(sp:start_options())
+            local m = api.options(sp:start_options())
             sp:finish_options()
             api.unlock(State.player)
 
-            if n == 1 or n == 2 then
+            if m == 1 or m == 2 then
               State.hostility:set("half_orc", "player", "enemy")
               State:start_combat({State.player, ch.engineer_3})
               coroutine.yield()
