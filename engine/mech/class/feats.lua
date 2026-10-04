@@ -1,3 +1,5 @@
+local actions = require("engine.mech.actions")
+local action = require("engine.tech.action")
 local feats = {}
 
 feats.savage_attacker = {
@@ -13,12 +15,11 @@ feats.savage_attacker = {
   end,
 }
 
--- TODO bonus action attack
 -- TODO passive
 feats.great_weapon_master = {
   name = "Мастер большого оружия",
   codename = "great_weapon_master",
-  description = "Шанс попадания двуручным оружием меньше на 25%, урон выше на 10",
+  description = "Попадание двуручным оружием -25%, урон +10; доп аттака при убийстве.",
 
   modify_attack_roll = function(self, entity, roll, slot)
     local item = entity.inventory[slot]
@@ -35,6 +36,41 @@ feats.great_weapon_master = {
     end
     return roll
   end,
+
+  modify_on_kill = function(self, entity, _, target)
+    if target.creature_flag then
+      entity:add_condition(self:has_bonus_attack())
+    end
+  end,
+
+  modify_additional_actions = function(self, entity, list)
+    table.insert(list, self.toggle)
+    return list
+  end,
+
+  has_bonus_attack = function(self)
+    return {
+      codename = "gwm_has_bonus_attack",
+      life_time = 6,
+      modify_additional_actions = function(self_condition, entity, list)
+        table.insert(list, feats.great_weapon_master.bonus_attack)
+        return list
+      end,
+    }
+  end,
+
+  bonus_attack = action.plain {
+    name = "дополнительная атака",
+    codename = "gwm_bonus_attack",
+
+    cost = {
+      bonus_actions = 1,
+    },
+
+    _is_available = actions.hand_attack._is_available,
+    _act = actions.hand_attack._act,
+    get_hint = actions.hand_attack.get_hint,
+  },
 }
 
 feats.sharpshooter = {

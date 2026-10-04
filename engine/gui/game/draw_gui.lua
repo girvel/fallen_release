@@ -446,8 +446,8 @@ draw_keyboard_action_grid = function(self)
     end
     ui.offset(4)
 
-    for i, action in ipairs(additional_actions) do
-      action_button(action, tostring(2 + i), upcasts[action])
+    for i, this_action in ipairs(additional_actions) do
+      action_button(this_action, tostring(2 + i), upcasts[this_action])
       if i % 5 == 3 then
         ui.finish_line()
         ui.offset(0, 4)
