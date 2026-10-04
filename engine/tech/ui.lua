@@ -446,7 +446,11 @@ end
 
 local SCROLL_INDICATOR_H = 2 * ui.SCALE
 
---- @param push_y? "push_frame"|"push_cursor"
+--- @alias ui.push_type
+--- | '"push_cursor"' # Continue where the finished frame stopped
+--- | '"push_frame"' # Move the cursor by the whole frame size
+
+--- @param push_y? ui.push_type
 --- @return ui_frame
 ui.finish_frame = function(push_y)
   local prev_frame = ui.stack_pop("frame")

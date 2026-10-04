@@ -64,9 +64,23 @@ methods.draw = function(self, dt)
     ui.finish_font()
 
     first_header = true
-    ui.start_frame(nil, nil, nil, nil, codex_scroll)
+    local before_page = ui.get_context()
+    local footer_h = 40
+    ui.start_frame(
+      nil, nil, nil,
+      before_page.frame.h - (before_page.cursor_y - before_page.frame.y) - footer_h,
+      codex_scroll
+    )
       pages[self.history[self.history_i]](self)
-    ui.finish_frame()
+    ui.finish_frame("push_frame")
+
+    ui.start_alignment("center", "bottom")
+    ui.start_font(28)
+      if ui.choice({"OK"}) then
+        Kernel.gui:close_menu()
+      end
+    ui.finish_font()
+    ui.finish_alignment()
   tk.finish_window()
 end
 
@@ -334,6 +348,18 @@ local p = function(text)
   ui.br()
 end
 
+--- @diagnostic disable-next-line:newline-call
+local intro_note_lines = ([[
+С пробуждением, брат.
+Сейчас ты в смятении и это нормально. Моя смена начиналась в такой же растерянности, за этим я и составляю этот текст. читай внимательно, и все вопросы исчезнут.
+Первое: выполняй задания, что приходят сверху.
+Второе: следи за состоянием здоровья, соблюдай осторожность в работе.
+Третие: не беспокой работающих без крайней нужды.
+Четвёртое: очень важно, записывай в свой журнал указания сверху, очень просто забыть важное в работе.
+Пятое и последнее: бывает, задания не сразу понятны. тут придется подумать, снова проверить журнал, что-то поискать или опросить других (смотри третий пункт).
+Удачной работы, я от усталости уже вырубаюсь.
+]]):strip():split("\n")
+
 pages.intro_note = function(codex)
   if State.rails.intro_note_status == "picked_up" then
     State.rails.intro_note_status = "read"
@@ -341,15 +367,13 @@ pages.intro_note = function(codex)
   end
 
   ui.h1("Записка коллеги")
-
-  p("С пробуждением, брат.")
-  p("Сейчас ты в смятении и это нормально. Моя смена начиналась в такой же растерянности, за этим я и составляю этот текст. читай внимательно, и все вопросы исчезнут.")
-  p("Первое: выполняй задания, что приходят сверху.")
-  p("Второе: следи за состоянием здоровья, соблюдай осторожность в работе.")
-  p("Третие: не беспокой работающих без крайней нужды.")
-  p("Четвёртое: очень важно, записывай в свой журнал указания сверху, очень просто забыть важное в работе.")
-  p("Пятое и последнее: бывает, задания не сразу понятны. тут придется подумать, снова проверить журнал, что-то поискать или опросить других (смотри третий пункт).")
-  p("Удачной работы, я от усталости уже вырубаюсь.")
+  for i, line in ipairs(intro_note_lines) do
+    if i < #intro_note_lines then
+      p(line)
+    else
+      ui.text(line)
+    end
+  end
 end
 
 pages.fighting_guide = function(codex)
