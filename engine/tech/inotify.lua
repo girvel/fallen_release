@@ -34,13 +34,8 @@ get_subdirectories_recursively = function(base, result)
 end
 
 local is_available do
-  local cache
-  is_available = function()
-    if cache == nil then
-      cache = love.system.getOS() == "Linux"
-    end
-    return cache
-  end
+  local info = love.filesystem.getInfo(love.filesystem.getSource())
+  is_available = love.system.getOS() == "Linux" and info and info.type == "directory"
 end
 
 local inotify_fd, fd_to_dir, buffer
@@ -115,7 +110,7 @@ inotify.require = function(modpath, base, key)
   --   though
 
   local result = require(modpath)
-  if not is_available() then return result end
+  if not is_available then return result end
 
   key = key or assert(modpath:match("%.?([^%.]+)$"))
   module_map[result] = {
@@ -130,7 +125,7 @@ inotify.require = function(modpath, base, key)
 end
 
 inotify.update = function()
-  if not is_available() then return end
+  if not is_available then return end
 
   local changed_files = {}
   local modules_changed = false
