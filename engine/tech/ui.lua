@@ -1012,7 +1012,15 @@ end
 --- @param values string[]
 local max_length = Memoize(function(values)
   return Fun.iter(values)
-    :map(function(v) return (type(v) == "string" and v or Name.game(v)):utf_len() end)
+    :map(function(v)
+      local str = type(v) == "string" and v or Name.game(v)
+      local len = str:utf_len()
+      if not len then
+        Error("Impossible to know the length of invalid UTF string %q", str)
+        return 0
+      end
+      return len
+    end)
     :max()
 end)
 

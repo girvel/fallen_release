@@ -1,3 +1,4 @@
+local translation = require("engine.tech.translation")
 local actions = require("engine.mech.actions")
 local action = require("engine.tech.action")
 local feats = {}
@@ -132,6 +133,34 @@ feats.durable = {
     return score
   end,
 }
+
+--- @param mod ability
+local ranged_expert = function(mod)
+  local mod_translated = translation.abilities[mod]:utf_sub(1, 3):utf_upper()
+  return {
+    name = "Эксперт дальнего боя ("..mod_translated..")",
+    codename = "ranged_expert_"..mod,
+    description = "Нет помехи если противник стоит вплотную; +1 к "..mod_translated,
+
+    modify_ability_score = function(self, entity, score, ability)
+      if ability == mod then
+        return score + 1
+      end
+      return score
+    end,
+
+    modify_ranged_disadvantage = function(self, entity, has_disadvantage, target)
+      return false
+    end,
+  }
+end
+
+feats.ranged_expert_str = ranged_expert("str")
+feats.ranged_expert_dex = ranged_expert("dex")
+feats.ranged_expert_con = ranged_expert("con")
+feats.ranged_expert_int = ranged_expert("int")
+feats.ranged_expert_wis = ranged_expert("wis")
+feats.ranged_expert_cha = ranged_expert("cha")
 
 feats.tough = {
   name = "Крепкий",

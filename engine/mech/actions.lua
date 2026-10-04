@@ -384,7 +384,9 @@ actions.bow_attack = {
 
       local attack_roll = entity:get_attack_roll("offhand")
       local damage_roll = entity:get_damage_roll("offhand")
-      if d:abs2() == 1 then
+      if d:abs2() == 1
+        and entity:modify("ranged_disadvantage", true, target)
+      then
         attack_roll = attack_roll:set("disadvantage")
       end
       local did_hit, is_crit, damage = health.attack_precog(entity, target, attack_roll, damage_roll)

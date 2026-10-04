@@ -69,7 +69,7 @@ end
 --- | '"on_kill"'
 
 --- @param self entity
---- @param modname creature_modification
+--- @param modname creature_modification|string
 --- @param value any
 --- @param ... any
 creature.methods.modify = function(self, modname, value, ...)

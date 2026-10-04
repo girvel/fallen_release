@@ -54,10 +54,30 @@ local SKILLS = Fun.iter(abilities.skill_bases)
   :totable()
 table.sort(SKILLS, function(a, b) return a.name < b.name end)
 
+local abilities_order = Fun.iter(abilities.list)
+  :enumerate()
+  :map(function(i, a) return translation.abilities[a]:utf_sub(1, 3):utf_upper(), i end)
+  :tomap()
+
 local FEATS = Fun.pairs(feats)
   :map(function(k, v) return v end)
   :totable()
-table.sort(FEATS, function(a, b) return a.name < b.name end)
+table.sort(FEATS, function(a, b)
+  local a_len = #a.name
+  local b_len = #b.name
+  if a_len ~= b_len then return a_len < b_len end
+
+  local a_ability = a.name:match("%(([^%)]+)%)$")
+  local b_ability = b.name:match("%(([^%)]+)%)$")
+  if a_ability and b_ability and a.name:utf_sub(1, -6) == b.name:utf_sub(1, -6) then
+    local a_index = abilities_order[a_ability] or 0
+    local b_index = abilities_order[b_ability] or 0
+    Log.tracel(a_ability, b_ability, a_index, b_index)
+    return a_index < b_index
+  end
+
+  return a.name < b.name
+end)
 
 local RACES = {
   races.human,
@@ -563,6 +583,9 @@ methods.get_bonus = function(self, ability)
   end
 
   if self:has_feat(feats.durable) and ability == "con" then
+    bonus = bonus + 1
+  end
+  if self:has_feat(feats["ranged_expert_"..ability]) then
     bonus = bonus + 1
   end
   return bonus

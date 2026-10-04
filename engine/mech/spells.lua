@@ -47,7 +47,9 @@ spells.eldritch_blast = action.plain {
       local attack_roll = D(20)
         + entity:get_modifier("cha")
         + xp.get_proficiency_bonus(entity.level or 1)
-      if api.distance(entity, target) == 1 then
+      if api.distance(entity, target) == 1
+        and entity:modify("ranged_disadvantage", true, target)
+      then
         attack_roll = attack_roll:set("disadvantage")
       end
       local damage_roll = entity:modify("eldritch_blast_damage", D(10))
