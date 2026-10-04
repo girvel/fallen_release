@@ -72,7 +72,6 @@ table.sort(FEATS, function(a, b)
   if a_ability and b_ability and a.name:utf_sub(1, -6) == b.name:utf_sub(1, -6) then
     local a_index = abilities_order[a_ability] or 0
     local b_index = abilities_order[b_ability] or 0
-    Log.tracel(a_ability, b_ability, a_index, b_index)
     return a_index < b_index
   end
 

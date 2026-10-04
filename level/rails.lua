@@ -82,7 +82,6 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-    xp.reward(State.player, 9999)
   end)
 end
 

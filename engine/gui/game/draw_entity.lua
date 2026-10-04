@@ -9,15 +9,18 @@ local tmp_canvas
 --- @param entity table
 --- @param dt number
 local draw_entity = function(self, entity, dt)
-  if entity.sprite.type == "grid" then
-    return self:draw_grid(entity.layer, entity.sprite.grid, dt)
+  local this_sprite = entity.sprite
+  if this_sprite.type == "grid" then
+    return self:draw_grid(entity.layer, this_sprite.grid, dt)
   end
 
   local x, y = unpack(entity.position)
-  local dx, dy = unpack(State.camera.offset)
-  local k = State.camera.scale * sprite.cell_size
-  x = x * k - dx
-  y = y * k - dy
+  if this_sprite.anchor ~= "screen" then
+    local dx, dy = unpack(State.camera.offset)
+    local k = State.camera.scale * sprite.cell_size
+    x = x * k - dx
+    y = y * k - dy
+  end
 
   local canvas
   if entity.shader then
@@ -35,7 +38,6 @@ local draw_entity = function(self, entity, dt)
     State.shader:preprocess(entity, dt)
   end
 
-  local this_sprite = entity.sprite
   if this_sprite.type == "image"
     or (this_sprite.type == "atlas" and (entity.shader or entity.inventory or entity.layer))
   then
@@ -47,10 +49,11 @@ local draw_entity = function(self, entity, dt)
     love.graphics.print({this_sprite.color, this_sprite.text}, x, y)
   elseif this_sprite.type == "rendered" then
     local drawable, scale = this_sprite:render(entity, dt)
+    scale = scale or 1
     if this_sprite.anchor == "screen" then
       love.graphics.draw(drawable, x, y, 0, scale, scale)
     elseif this_sprite.anchor == "world" then
-      love.graphics.draw(drawable, x, y, 0, State.camera.scale * (scale or 1))
+      love.graphics.draw(drawable, x, y, 0, State.camera.scale * scale)
     else
       Error("Unknown rendered sprite .anchor %q", this_sprite.anchor)
     end
