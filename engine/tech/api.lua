@@ -485,7 +485,7 @@ api.order = function(text)
   local promise
   promise, last_order_scene = State.runner:run_task(function()
     State.model.order = text
-    async.sleep(400)
+    async.sleep(4)
     State.model.order = nil
   end)
 
