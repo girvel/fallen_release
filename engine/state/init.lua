@@ -110,6 +110,16 @@ methods.exists = function(self, entity)
   return not not self._entities[entity]
 end
 
+--- @param entity entity?
+--- @return boolean
+methods.removing = function(self, entity)
+  for _, t in ipairs(self._entities_to_remove) do
+    local e = unpack(t)
+    if e == entity then return true end
+  end
+  return false
+end
+
 --- Removes & adds scheduled entities
 methods.flush = function(self)
   local removed = {}

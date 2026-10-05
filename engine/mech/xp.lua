@@ -45,6 +45,9 @@ local LEVEL_UP_SOUND = sound.new("assets/sounds/level_up.mp3")
 --- @param target entity
 --- @param amount number
 xp.reward = function(target, amount)
+  if target == State.player then
+    Log.debug("%s XP", amount)
+  end
   State:add(floater.new("+"..amount, target.position, colors.yellow))
 
   local xp_to_next_level = xp.to_reach(target.level + 1)

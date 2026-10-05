@@ -85,26 +85,16 @@ health.set_hp = function(target, value)
     return false
   end
 
-  if before and before > 0 then
-    if target.on_death then
-      target:on_death()
-    end
+  --- Entity can have its HP < 0 but not be dead; death can happen only once
+  local genuine_death = State:exists(target) and not State:removing(target)
+  if not genuine_death then return false end
 
-    if target.player_flag then
-      Kernel.gui:player_has_died()
-      return false
-    end
-  else
-    if target.player_flag then
-      return false
-    end
+  if target.on_death then
+    target:on_death()
   end
 
-  if target.essential_flag then
-    target:animation_freeze("lying")
-    if State:in_combat(target) then
-      State:remove_from_combat(target)
-    end
+  if target.player_flag then
+    Kernel.gui:player_has_died()
     return false
   end
 
@@ -119,10 +109,19 @@ health.set_hp = function(target, value)
     item.drop(target, unpack(to_drop))
   end
 
+  if target.essential_flag then
+    target:animation_freeze("lying")
+    if State:in_combat(target) then
+      State:remove_from_combat(target)
+    end
+    return false
+  end
+
   State:remove(target)
   if not target.boring_flag then
     Log.info(Name.code(target) .. " is killed")
   end
+
   return true
 end
 
