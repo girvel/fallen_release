@@ -81,7 +81,7 @@ end
 init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
-    -- Kernel.gui._mode:submit()
+    Kernel.gui._mode:submit()
   end)
 end
 
@@ -268,7 +268,10 @@ methods.start_lunch = function(self)
   local bfs = State.grids.solids:bfs(possessed_position)
   bfs()
   for p, e in bfs do
-    if e then bfs:discard() end
+    if e then
+      bfs:discard()
+      goto continue
+    end
     killer_counter = killer_counter + 1
     if killer_counter == 3 and self.did_dreamers_kill_possessed then
       humanoid.add_body({position = p})  --- @diagnostic disable-line
@@ -280,6 +283,7 @@ methods.start_lunch = function(self)
     ch["canteen_killer_"..killer_counter] = State:add_at(killer, p, "solids")
 
     if killer_counter == 3 then break end
+    ::continue::
   end
 
   for i = 1, 3 do
