@@ -1058,7 +1058,8 @@ end
 --- @param ... string|table exceptions
 --- @return boolean did_change
 ui.arrow_left = function(possible_values, container, key, disabled, ...)
-  local is_scrollable = not disabled and #possible_values - select("#", ...) > 1
+  if select("#", ...) > 0 then possible_values = Table.removed(possible_values, ...) end
+  local is_scrollable = not disabled and #possible_values > 1
   local did_change
   if is_scrollable then
     did_change = ui.text_button(" < ").is_clicked
