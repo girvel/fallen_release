@@ -33,7 +33,14 @@ name.code = function(entity, ...)
   else
     default = NO_NAME
   end
-  return rawget(entity, "codename") or rawget(entity, "name") or default
+  local result = rawget(entity, "codename") or rawget(entity, "name") or default
+  if result == nil then return result end
+
+  local position = rawget(entity, "position")
+  if position then
+    result ..= "@"..tostring(position)
+  end
+  return result
 end
 
 return name
