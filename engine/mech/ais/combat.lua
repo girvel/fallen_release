@@ -47,17 +47,26 @@ methods.init = function(self, entity)
       self.source_of_last_attack = attacker.position
     end
     local hostility_to_attacker = State.hostility:get(entity, attacker)
-    if hostility_to_attacker ~= "ally"
-      and State.hostility:get(entity, target) == "ally"
-      and (target.position - entity.position):abs2() <= self.targeting.support_range
-    then
-      if hostility_to_attacker ~= "enemy" then
-        State.hostility:set(entity.faction, attacker.faction, "enemy")
-      end
-      if not State:in_combat(entity) then
-        State:add(animated.fx("engine/assets/animations/aggression", entity.position))
-        State:start_combat({entity, attacker})
-      end
+    if hostility_to_attacker == "ally"
+      or State.hostility:get(entity, target) ~= "ally"
+      or not ai.sees(entity, self.targeting.support_range, self._vision_map, attacker.position)
+    then return end
+
+    if not State:in_combat(entity) then
+      Log.debug(
+        "%s sees its ally %s being attacked by %s and joins combat",
+        Name.code(entity), Name.code(target), Name.code(attacker)
+      )
+      State:add(animated.fx("engine/assets/animations/aggression", entity.position))
+      State:start_combat({entity, attacker})
+    end
+
+    if hostility_to_attacker ~= "enemy" then
+      Log.debug(
+        "%s sees its ally %s being attacked by %s and becomes its enemy",
+        Name.code(entity), Name.code(target), Name.code(attacker)
+      )
+      State.hostility:set(entity.faction, attacker.faction, "enemy")
     end
   end)
 
@@ -73,15 +82,18 @@ end
 local get_speed = function() return #State.combat.list > 8 and 9 or 7 end
 
 methods._target_criteria = function(self, entity, target)
-  return State:exists(target)
+  local c = State:exists(target)
     and State.hostility:get(entity, target) == "enemy"
-    and api.distance(entity, target) <= self.targeting.follow_range
     and api.traveling_distance(entity, target) <= self.targeting.sane_traveling_distance
+  if not c then return false end
+  if entity.blind_sight_flag then return true end
+  self._vision_map:refresh_fov_if_needed(entity.position, self.targeting.follow_range)
+  return self._vision_map:is_visible_unsafe(unpack(target.position))
 end
 
 --- @param entity entity
 methods._target_search = function(self, entity)
-  if self:_target_criteria(self.target) then return end
+  if self:_target_criteria(entity, self.target) then return end
   if self.target then
     Log.debug("Invalid target")
   else
@@ -102,8 +114,8 @@ methods._target_search = function(self, entity)
       and api.traveling_distance(entity, e) <= self.targeting.sane_traveling_distance
     then
       Log.debug(
-        "Ally %s's has target %s at %s, traveling there...",
-        Name.code(e), Name.code(e.ai.target), e.ai.target.position
+        "Ally %s's has target %s, traveling there...",
+        Name.code(e), Name.code(e.ai.target)
       )
       api.travel(entity, e.position, true)
       break
@@ -171,10 +183,18 @@ methods.observe = function(self, entity, dt)
   if not Random.chance(dt / self.targeting.scan_period) then return end
 
   if State.combat and not State:in_combat(entity) then
+    self._vision_map:refresh_fov_if_needed(entity.position, self.targeting.support_range)
+
     for _, e in ipairs(State.combat.list) do
       if State.hostility:get(entity, e) == "ally"
-        and (entity.position - e.position):abs2() <= self.targeting.support_range
+        and api.distance(entity, e) <= self.targeting.support_range
+        and (entity.blind_sight_flag or self._vision_map:is_visible_unsafe(unpack(e.position)))
       then
+        Log.tracel(self.targeting)
+        Log.debug(
+          "%s sees the %s in combat and wants to help them",
+          Name.code(entity), Name.code(e)
+        )
         State:add(animated.fx("engine/assets/animations/aggression", entity.position))
         State:start_combat({entity})
       end
@@ -184,6 +204,10 @@ methods.observe = function(self, entity, dt)
   if not self.starts_no_fights then
     local new_target = ai.find_target(entity, self.targeting.scan_range, self._vision_map)
     if new_target and not State:in_combat(new_target) then
+      Log.debug(
+        "%s sees its enemy %s and wants to fight them",
+        entity, new_target
+      )
       State:add(animated.fx("engine/assets/animations/aggression", entity.position))
       State:start_combat({new_target, entity})
     end

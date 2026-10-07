@@ -589,6 +589,7 @@ api.can_see = function(source, target, range)
   local source_v = api.to_vector(source)
   local target_v = api.to_vector(target)
   local result
+  -- TODO maybe do entity.vision_map instead of entity.ai._vision_map and use it here
   local vision_map = tcod.map(State.grids.solids)
   vision_map:refresh_fov(source_v, range)
   result = vision_map:is_visible_unsafe(unpack(target_v))

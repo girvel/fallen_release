@@ -54,7 +54,10 @@ monsters.bat = function()
     codename = "bat",
     base_abilities = abilities.new(6, 15, 8, 2, 12, 4),
     level = 1,
-    ai = combat_ai.new(),
+    ai = combat_ai.new({
+      scan_range = 5,
+      support_range = 7,
+    }),
     speed = 8,
     max_hp = 1,
     faction = "monsters",
@@ -62,7 +65,6 @@ monsters.bat = function()
       hand = item.natural_weapon(D.new({}, 3)),
     },
     on_death = humanoid.add_blood_mark,
-    blind_sight_flag = true,
     no_sound_flag = true,
     xp_reward = 10,
   }

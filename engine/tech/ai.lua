@@ -31,14 +31,14 @@ local ai = {}
 --- @param vision_map tcod.map
 --- @return entity?
 ai.find_target = function(entity, r, vision_map, sane_traveling_distance)
-  vision_map:refresh_fov(entity.position, r)
+  vision_map:refresh_fov_if_needed(entity.position, r)
 
   for x, y, e in State.grids.solids:rhombus(entity.position, r) do
     if not e then goto continue end
 
     if State.hostility:get(entity, e) == "enemy"
       and e.hp and e.hp > 0
-      and (entity.blind_sight_flag or vision_map:is_visible_unsafe(unpack(e.position)))
+      and (entity.blind_sight_flag or vision_map:is_visible_unsafe(x, y))
       and (not State.level.locked_entities[e])
       and api.traveling_distance(entity, e) < (sane_traveling_distance or 48)
     then
@@ -50,11 +50,25 @@ ai.find_target = function(entity, r, vision_map, sane_traveling_distance)
 end
 
 --- @param entity entity
+--- @param vision_map tcod.map?
+--- @param position vector
+--- @return boolean
+ai.sees = function(entity, r, vision_map, position)
+  if entity.blind_sight_flag then
+    return api.distance(entity, position) <= r
+  else
+    assert(vision_map) --- @cast vision_map tcod.map
+    vision_map:refresh_fov_if_needed(entity.position, r)
+    return vision_map:is_visible_unsafe(unpack(position))
+  end
+end
+
+--- @param entity entity
 --- @param r number
 --- @param vision_map tcod.map
 --- @return boolean
 ai.sees_enemies = function(entity, r, vision_map, sane_traveling_distance)
-  vision_map:refresh_fov(entity.position, r)
+  vision_map:refresh_fov_if_needed(entity.position, r)
   for d in Iteration.rhombus(r) do
     local e = State.grids.solids:slow_get(entity.position + d)
     if e
@@ -78,7 +92,7 @@ ai.preserve_line_of_fire = function(entity, target, vision_map, speed)
     local p = entity.position + d
     if not State.grids.solids:can_fit(p) then goto continue end
 
-    vision_map:refresh_fov(p, actions.BOW_ATTACK_RANGE)
+    vision_map:refresh_fov_if_needed(p, actions.BOW_ATTACK_RANGE)
 
     if vision_map:is_visible_unsafe(unpack(target.position)) then
       best_p = p

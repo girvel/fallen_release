@@ -173,6 +173,14 @@ end
 
 --- @param position vector
 --- @param r integer
+map_methods.refresh_fov_if_needed = function(self, position, r)
+  if self._fov_center ~= position or self._fov_r ~= r then
+    self:refresh_fov(position, r)
+  end
+end
+
+--- @param position vector
+--- @param r integer
 map_methods.refresh_fov = function(self, position, r)
   assert_is_not_freed(self)
 
