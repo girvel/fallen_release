@@ -46,6 +46,18 @@ do
   end
 end
 
+do
+  local i, this_sprite = packer:geti(33)
+  on_solids[i] = function()
+    return {
+      codename = "vines_blooming",
+      boring_flag = true,
+      light_intensity = 0.3,
+      sprite = this_sprite,
+    }
+  end
+end
+
 for _, tuple in ipairs {
   {2, "grime"},
   {3, "airway", true},
@@ -76,7 +88,7 @@ for _, tuple in ipairs {
   {29, "vines"},
   {30, "note", false, "записка"},
   {31, "booklet"},
-  {33, "vines"},
+  -- {33, "vines"}, -- now manual
   {34, "vines"},
   {35, "vines"},
   {36, "vines"},
