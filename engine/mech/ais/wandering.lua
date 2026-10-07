@@ -13,7 +13,7 @@ local wandering = {}
 --- @field _frequency_k number
 --- @field _target? entity
 --- @field _hostility_sub function
---- @field _vision_map tcod_map
+--- @field _vision_map tcod.map
 local methods = {}
 wandering.mt = {__index = methods}
 

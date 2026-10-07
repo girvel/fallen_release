@@ -31,7 +31,7 @@ local state = {}
 --- @field _entities table<entity, true>
 --- @field _entities_to_add entity[]
 --- @field _entities_to_remove [entity, boolean][]
---- @field _travel_map tcod_map
+--- @field _travel_map tcod.map
 local methods = {}
 state.mt = {__index = methods}
 

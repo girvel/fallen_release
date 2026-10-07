@@ -16,7 +16,7 @@ local combat_ai = {}
 --- @field starts_no_fights boolean
 --- @field source_of_last_attack vector?
 --- @field _hostility_subscription function
---- @field _vision_map tcod_map
+--- @field _vision_map tcod.map
 local methods = {}
 combat_ai.mt = {__index = methods}
 

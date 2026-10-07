@@ -82,6 +82,7 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
+    level.unsafe_move(State.player, State.level.positions.parasites_test)
   end)
 end
 

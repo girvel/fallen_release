@@ -28,7 +28,7 @@ local ai = {}
 
 --- @param entity entity
 --- @param r number
---- @param vision_map tcod_map
+--- @param vision_map tcod.map
 --- @return entity?
 ai.find_target = function(entity, r, vision_map, sane_traveling_distance)
   vision_map:refresh_fov(entity.position, r)
@@ -51,7 +51,7 @@ end
 
 --- @param entity entity
 --- @param r number
---- @param vision_map tcod_map
+--- @param vision_map tcod.map
 --- @return boolean
 ai.sees_enemies = function(entity, r, vision_map, sane_traveling_distance)
   vision_map:refresh_fov(entity.position, r)
@@ -71,7 +71,7 @@ end
 
 --- @param entity entity
 --- @param target entity
---- @param vision_map tcod_map
+--- @param vision_map tcod.map
 ai.preserve_line_of_fire = function(entity, target, vision_map, speed)
   local best_p
   for d in Iteration.rhombus(entity.resources.movement) do

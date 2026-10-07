@@ -57,18 +57,18 @@ tcod.ok = not not tcod._c
 -- [SECTION] Observer
 ----------------------------------------------------------------------------------------------------
 
---- @class tcod_observer
---- @field _maps table<tcod_map, true>
+--- @class tcod.observer
+--- @field _maps table<tcod.map, true>
 --- @field _grid grid<any>
 
 tcod.observer_mt = {}
 
---- @param self tcod_observer
+--- @param self tcod.observer
 tcod.observer_mt.__index = function(self, index)
   return self._grid[index]
 end
 
---- @param self tcod_observer
+--- @param self tcod.observer
 tcod.observer_mt.__newindex = function(self, index, value)
   self._grid[index] = value
   local x, y = unpack(index)
@@ -99,7 +99,7 @@ end
 --- @param grid grid<any>
 tcod.update_transparency = function(grid)
   --- @diagnostic disable-next-line
-  --- @cast grid tcod_observer
+  --- @cast grid tcod.observer
 
   for map in pairs(grid._maps) do
     map:update_transparency()
@@ -110,19 +110,19 @@ end
 -- [SECTION] Map
 ----------------------------------------------------------------------------------------------------
 
---- @class tcod_map
+--- @class tcod.map
 --- @field _map any
---- @field _parent tcod_observer
+--- @field _parent tcod.observer
 --- @field _fov_center vector
 --- @field _fov_r integer
 local map_methods = {}
 tcod.map_mt = {__index = map_methods}
 
 --- @param grid grid Actually, not grid but a tcod.observer
---- @return tcod_map
+--- @return tcod.map
 tcod.map = function(grid)
   --- @diagnostic disable-next-line
-  --- @cast grid tcod_observer
+  --- @cast grid tcod.observer
 
   local result = setmetatable({
     _map = tcod._c.TCOD_map_new(unpack(grid._grid.size)),
@@ -140,7 +140,7 @@ tcod.map = function(grid)
   return result
 end
 
---- @param self tcod_map
+--- @param self tcod.map
 local assert_is_not_freed = function(self)
   if self._map == nil then
     Error("Attempt to use tcod.map after free")
@@ -243,7 +243,7 @@ end
 --
 -- See girvel/engine#78.
 
---- @param self tcod_map
+--- @param self tcod.map
 tcod.map_mt.__serialize = function(self)
   local fov_center = self._fov_center
   local fov_r = self._fov_r
@@ -256,7 +256,7 @@ tcod.map_mt.__serialize = function(self)
   end
 end
 
---- @param self tcod_observer
+--- @param self tcod.observer
 tcod.observer_mt.__serialize = function(self)
   local grid = self._grid
   local maps = self._maps

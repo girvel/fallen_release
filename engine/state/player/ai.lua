@@ -9,7 +9,7 @@ local ai = {}
 --- @field _next_actions action[]
 --- @field _next_parameters {value: any}[]
 --- @field _action_promises promise[]
---- @field _vision_map tcod_map
+--- @field _vision_map tcod.map
 local methods = {}
 ai.mt = {__index = methods}
 
