@@ -7,23 +7,20 @@ typedef struct DiscordRichPresence {
     const char* details; /* max 128 bytes */
     int64_t startTimestamp;
     int64_t endTimestamp;
-    const char* largeImageKey;  /* max 32 bytes */
-    const char* largeImageText; /* max 128 bytes */
-    const char* smallImageKey;  /* max 32 bytes */
-    const char* smallImageText; /* max 128 bytes */
-    const char* partyId;        /* max 128 bytes */
+    const char* largeImageKey;               /* max 32 bytes */
+    const char* largeImageText;              /* max 128 bytes */
+    const char* smallImageKey;               /* max 32 bytes */
+    const char* smallImageText;              /* max 128 bytes */
+    const char* partyId;                     /* max 128 bytes */
+    const char *button1_label, *button1_url; /* max 128 bytes */
+    const char *button2_label, *button2_url; /* max 128 bytes */
     int partySize;
     int partyMax;
+    int partyPrivacy;
     const char* matchSecret;    /* max 128 bytes */
     const char* joinSecret;     /* max 128 bytes */
     const char* spectateSecret; /* max 128 bytes */
     int8_t instance;
-	
-	/* FORK EXTENSION */
-	const char *button1_label;
-	const char *button1_url;
-	const char *button2_label;
-	const char *button2_url;
 } DiscordRichPresence;
 
 typedef struct DiscordUser {
@@ -197,6 +194,10 @@ function discordRPC.updatePresence(presence)
     checkStrArg(presence.smallImageKey, 31, "presence.smallImageKey", func, true)
     checkStrArg(presence.smallImageText, 127, "presence.smallImageText", func, true)
     checkStrArg(presence.partyId, 127, "presence.partyId", func, true)
+	checkStrArg(presence.button1_label, 127, "presence.button1_label", func, true)
+	checkStrArg(presence.button1_url, 127, "presence.button1_url", func, true)
+	checkStrArg(presence.button2_label, 127, "presence.button2_label", func, true)
+	checkStrArg(presence.button2_url, 127, "presence.button2_url", func, true)
 
     checkIntArg(presence.partySize, 32, "presence.partySize", func, true)
     checkIntArg(presence.partyMax, 32, "presence.partyMax", func, true)
@@ -223,6 +224,10 @@ function discordRPC.updatePresence(presence)
     cpresence.joinSecret = presence.joinSecret
     cpresence.spectateSecret = presence.spectateSecret
     cpresence.instance = presence.instance or 0
+	cpresence.button1_label = presence.button1_label
+	cpresence.button1_url = presence.button1_url
+	cpresence.button2_label = presence.button2_label
+	cpresence.button2_url = presence.button2_url
 
     discordRPClib.Discord_UpdatePresence(cpresence)
 end
