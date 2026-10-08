@@ -38,7 +38,7 @@ name.code = function(entity, ...)
 
   local position = rawget(entity, "position")
   if position then
-    result ..= "@"..tostring(position)
+    result = result.."@"..tostring(position)
   end
   return result
 end
