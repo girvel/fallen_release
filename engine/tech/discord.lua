@@ -63,18 +63,37 @@ presence_state.details = "..."
 presence_state.button1_label = "Дискорд конфа"
 presence_state.button1_url = "https://discord.gg/9G7VD9bqMy"
 
---- @param application_id string|integer
+--- @param application_id string
+--- @param button1_label? string
+--- @param button1_url? string
+--- @param button2_label? string
+--- @param button2_url? string
 discord.init = function(application_id, top_line,
                         button1_label, button1_url,
                         button2_label, button2_url)
-  if type(application_id) ~= "string"
-    and (type(application_id) ~= "number" or math.floor(application_id) ~= application_id) 
-  then
-    Error("Expected application_id to be string or integer, got %s", type(application_id))
+  if type(application_id) ~= "string" then
+    Error("Expected application_id to be string, got %s", type(application_id))
     return
   end
   
-  presence_state.details = top_line
+  if love.filesystem.getInfo("main.lua", "file") then
+    local last_commit do
+      local f = assert(io.popen("git log -1 --pretty=%s"))
+      last_commit = f:read("*a")
+      if not f:close() then
+        last_commit = nil
+      end
+    end
+    
+    if last_commit then
+      presence_state.details = "Пилит \""..last_commit.."\", что бы это ни было"
+    else
+      presence_state.details = "Пилит движок"
+    end
+  else
+    presence_state.details = "Гоняет пиратку"
+  end
+
   presence_state.button1_label = button1_label
   presence_state.button1_url = button1_url
   presence_state.button2_label = button2_label
@@ -103,7 +122,6 @@ end
 discord.update = function()
   c_lib.Discord_RunCallbacks()
 end
-
 
 --- @param status string?
 discord.set_status = function(status)

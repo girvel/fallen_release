@@ -64,6 +64,12 @@ love.load = function(args)
     love.window.updateMode(w, h, mode)
     dynamic_canvas.handle_resize(love.graphics.getDimensions())
   end
+  
+  discord.init("1282966796533501953", "Дискорд игры", "https://discord.gg/9G7VD9bqMy")
+  discord.set_status("В главном меню")
+
+  -- state = "Работает над 'Discord Rich Presence POC', что бы это ни было",
+  -- details = "Пишет коды для игры",
 
   if args.playground then
     love.filesystem.load("engine/kernel/playground.lua")()
