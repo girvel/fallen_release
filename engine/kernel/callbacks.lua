@@ -7,6 +7,7 @@ local saves = require("engine.kernel.saves")
 local safety = require "engine.tech.safety"
 local cli = require "engine.kernel.cli"
 local async = require "engine.tech.async"
+local discord = require("engine.tech.discord")
 
 
 --- @diagnostic disable-next-line:duplicate-set-field
@@ -97,11 +98,9 @@ local handle_event = function(event, a,b,c,d,e,f)
     ui.handle_wheelmove(a, b)
   elseif event == "update" then
     ui.handle_update(a)
-	local discord_rpc = require("engine.lib.discordRPC")
-	discord_rpc.runCallbacks()
+    discord.update()
   elseif event == "quit" then
-	local discord_rpc = require("engine.lib.discordRPC")
-	discord_rpc.shutdown()
+	  discord.deinit()
   end
 
   if State and State.is_loaded then
