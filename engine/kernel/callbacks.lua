@@ -97,6 +97,11 @@ local handle_event = function(event, a,b,c,d,e,f)
     ui.handle_wheelmove(a, b)
   elseif event == "update" then
     ui.handle_update(a)
+	local discord_rpc = require("engine.lib.discordRPC")
+	discord_rpc.runCallbacks()
+  elseif event == "quit" then
+	local discord_rpc = require("engine.lib.discordRPC")
+	discord_rpc.shutdown()
   end
 
   if State and State.is_loaded then
@@ -136,6 +141,7 @@ love.run = function()
       love.event.pump()
       for name in love.event.poll() do
         if name == "quit" then
+		  handle_event("quit")
           return 0
         end
       end
