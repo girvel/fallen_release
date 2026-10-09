@@ -74,6 +74,12 @@ local finish = function(scene, key, ch)
   
   if rawget(ch, "player") and not scene.characters.non_locking then
     discord.set_large_image(nil)
+    for capture_name, character in pairs(ch) do
+      if capture_name ~= "player" then
+        discord.pop_status()
+        break
+      end
+    end
   end
 
   if Table.key_of(ch, State.player) then
@@ -114,14 +120,25 @@ methods.condition = function(self, name, dt)
   if ok then
     local is_player_present = not not rawget(ch, "player")
       and not self.characters.player.non_locking
+    local changed_portrait = false
+    
+    if is_player_present then
+      for capture_name, character in pairs(ch) do
+        if capture_name ~= "player" then
+          discord.push_status("Говорит с "..Name.game(character))
+          break
+        end
+      end
+    end
     
     -- done in condition to prevent the next condition possibly triggering
     for capture_name, character in pairs(ch) do
       if not self.characters or not self.characters[capture_name].non_locking then
         State.level.locked_entities[character] = true
       end
-      if is_player_present and character.discord_portrait then
+      if not changed_portrait and is_player_present and character.discord_portrait then
         discord.set_large_image(character.discord_portrait)
+        changed_portrait = true
       end
     end
   end

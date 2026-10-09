@@ -461,6 +461,7 @@ return {
       State.hostility:set("half_orc", "player", nil)
       ch.engineer_3.portrait = sprite.image("assets/portraits/half_orc.png")
       discord.set_large_image("half_orc")
+      discord.push_status("Говорит с "..Name.game(ch.engineer_3))
 
       api.rotate(ch.engineer_3, State.player)
       api.lock(State.player)
@@ -512,6 +513,8 @@ return {
         sp:finish_option()
       end
       sp:finish_options()
+      
+      discord.pop_status()
     end,
   },
 

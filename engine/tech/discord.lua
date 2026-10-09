@@ -135,7 +135,19 @@ local sync_presence = function()
   c_lib.Discord_UpdatePresence(presence)
 end
 
---- @param status string?
+local status_stack = {}
+
+--- @param status string
+discord.push_status = function(status)
+  table.insert(status_stack, state.state)
+  discord.set_status(status)
+end
+
+discord.pop_status = function()
+  discord.set_status(table.remove(status_stack) or state.state)
+end
+
+--- @param status string
 discord.set_status = function(status)
   local STATUS_LEN = 127
   if #status > STATUS_LEN then
