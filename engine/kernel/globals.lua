@@ -21,7 +21,12 @@ Fun = require("engine.lib.fun")
 Grid = require("engine.lib.grid")
 Ldump.mark_module("engine.lib.grid", "const")
 
-Inspect = function(x) return require("engine.lib.inspect")(x, {keys_limit = 20, depth = 4}) end
+Inspect = function(x, opts)
+  opts = opts or {}
+  opts.keys_limit = opts.keys_limit or 20
+  opts.depth = opts.depth or 4
+  return require("engine.lib.inspect")(x, opts)
+end
 
 Iteration = require("engine.lib.iteration")
 

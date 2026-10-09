@@ -1,3 +1,4 @@
+local console = require("engine.tech.console")
 local inotify = require("engine.tech.inotify")
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
 local colors = require("engine.tech.colors")
@@ -250,7 +251,11 @@ love.errorhandler = function(msg)
   -- saves.write({State}, "last_crash.ldump.gz")
   -- love.window.requestAttention()
 
-  if Kernel.debug then return end
+  if Kernel.debug then
+    discord.set_status("Расследует краш")
+    console.run()
+    return
+  end
 
   local FONT = love.graphics.newFont("engine/assets/fonts/clacon2.ttf", 48)
 
