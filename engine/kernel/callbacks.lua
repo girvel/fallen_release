@@ -246,15 +246,15 @@ love.quit = function()
 end
 
 love.errorhandler = function(msg)
-  Log.fatal(debug.traceback(msg, 2))
-  Kernel:report()
-
   if Kernel.debug then
+    Log.fatal(msg)
+    Kernel:report()
     discord.set_status("Расследует краш")
     console.run(msg)
     return
   end
 
+  Log.fatal(debug.traceback(msg, 2))
   local FONT = love.graphics.newFont("engine/assets/fonts/clacon2.ttf", 48)
 
   return function()

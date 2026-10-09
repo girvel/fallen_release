@@ -1,3 +1,4 @@
+local discord = require("engine.tech.discord")
 local shadow = require("engine.state.shadow")
 local async = require("engine.tech.async")
 local level = require("engine.tech.level")
@@ -266,7 +267,7 @@ methods.start_combat = function(self, list)
     :totable()
 
   if #list == 0 then return end
-  State.model.popups = {}
+  self.model.popups = {}
 
   self.runner:run_task_sync(function()
     list = Fun.iter(list)
@@ -288,12 +289,26 @@ methods.start_combat = function(self, list)
       end
     end
 
-    if State.combat then
+    if self.combat then
       Log.info("Joining the combat: %s", repr)
       Table.concat(State.combat.list, list)
     else
       Log.info("--- Combat starts: %s ---", repr)
-      State.combat = combat.new(list)
+      self.combat = combat.new(list)
+      
+      local enemy
+      for _, e in ipairs(list) do
+        if self.hostility:get(e, self.player) == "enemy" then
+          enemy = e
+          break
+        end
+      end
+      
+      if enemy then
+        discord.push_status("Сражается с "..Name.game(enemy))
+      else
+        discord.push_status("Сражается")
+      end
     end
   end, "start_combat")
 end

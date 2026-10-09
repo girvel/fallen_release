@@ -1,3 +1,4 @@
+local discord = require("engine.tech.discord")
 local async = require "engine.tech.async"
 local animated = require "engine.tech.animated"
 
@@ -186,6 +187,7 @@ return Tiny.processingSystem {
     end
     State.combat = nil
     self._move_start_t = nil
+    discord.pop_status()
   end,
 
   _process_outside_combat = function(self, entity, dt)
