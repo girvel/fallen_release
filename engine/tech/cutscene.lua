@@ -62,6 +62,8 @@ local select_characters = function(scene, scene_name)
   return ok, Table.strict(characters, ("scene %q's character"):format(scene_name))
 end
 
+local pushed_status = {}
+
 --- @param scene cutscene
 --- @param key string
 --- @param ch ch
@@ -74,12 +76,10 @@ local finish = function(scene, key, ch)
   
   if rawget(ch, "player") and not scene.characters.non_locking then
     discord.set_large_image(nil)
-    for capture_name, character in pairs(ch) do
-      if capture_name ~= "player" then
-        discord.pop_status()
-        break
-      end
-    end
+  end
+  
+  if pushed_status[scene] then
+    discord.pop_status()
   end
 
   if Table.key_of(ch, State.player) then
@@ -126,6 +126,7 @@ methods.condition = function(self, name, dt)
       for capture_name, character in pairs(ch) do
         if capture_name ~= "player" then
           discord.push_status("Говорит с "..Name.game(character))
+          pushed_status[self] = true
           break
         end
       end
