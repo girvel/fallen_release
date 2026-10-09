@@ -28,6 +28,12 @@ items.yellow_gloves = function()
     name = "Огнеупорные перчатки",
     codename = "yellow_gloves",
     slot = "gloves",
+    tags = {armor = true},
+    perks = {{
+      modify_armor = function(self, entity, armor)
+        return armor + 1
+      end,
+    }},
   }
   item.mix_in(e, "assets/animations/yellow_gloves")
   return e
@@ -83,6 +89,7 @@ items.protective_robe = function()
       gear.heavy_armor,
     },
     no_drop_flag = true,
+    tags = {armor = true},
   }
   item.mix_in(e, "assets/animations/protective_robe")
   return e

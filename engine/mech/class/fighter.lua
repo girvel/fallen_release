@@ -141,9 +141,15 @@ fighter.fighting_styles.defence = {
   codename = "defence",
 
   modify_armor = function(self, entity, value)
-    if entity.inventory.body or entity.inventory.head then
-      return value + 1
-    end
+    local body = entity.inventory.body
+    if body and body.tags.armor then return value + 1 end
+    
+    local head = entity.inventory.head
+    if head and head.tags.armor then return value + 1 end
+    
+    local gloves = entity.inventory.gloves
+    if gloves and gloves.tags.armor then return value + 1 end
+    
     return value
   end,
 }

@@ -8,12 +8,20 @@ local item = {}
 
 item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "body", "inside"}
 
---- @alias item item_strict|table
 
+--- @class item.tags
+--- @field light boolean?
+--- @field finesse boolean?
+--- @field two_handed boolean?
+--- @field ranged boolean?
+--- @field heavy boolean?
+--- @field armor boolean?
+
+--- @alias item item_strict|table
 --- @class item_strict: entity_strict
 --- @field damage_roll? d present only in weapons
 --- @field bonus? integer bonus damage
---- @field tags table<string, true>
+--- @field tags item.tags
 --- @field slot item_slot
 --- @field anchor? anchor overrides .slot for anchoring
 --- @field projectile_factory? fun(): entity present only in ranged weapons
