@@ -64,7 +64,7 @@ local state = {}
 --- @param button1_url? string
 --- @param button2_label? string
 --- @param button2_url? string
-discord.init = function(application_id, top_line,
+discord.init = function(application_id,
                         button1_label, button1_url,
                         button2_label, button2_url)
   if type(application_id) ~= "string" then
