@@ -237,6 +237,7 @@ return {
 
   _308_interrogation_half_orc = cutscene.make {
     enabled = true,
+    mode = "sequential",
     screenplay = "assets/screenplay/308_interrogation_half_orc.ms",
     characters = {
       player = {},
@@ -269,6 +270,7 @@ return {
 
   _309_interrogation_dwarf = cutscene.make {
     enabled = true,
+    mode = "sequential",
     screenplay = "assets/screenplay/309_interrogation_dwarf.ms",
     characters = {
       player = {},
