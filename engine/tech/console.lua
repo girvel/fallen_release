@@ -26,10 +26,16 @@ console.run = function()
   while true do
     io.write("lua> ")
     local input = io.read()
-    if input == ":trace" then
+    local cmd = input:lower()
+    if cmd == ":trace" then
       for i, locals in ipairs(Stack) do
         print(locals[POS_KEY])
       end
+      goto continue
+    elseif cmd == "help" or cmd == "h" or cmd == ":help" or cmd == ":h" then
+      print("Use :trace to display the trace of the stack")
+      print("Stack global contains the copy of the stack itself")
+      print("Shell accepts lua expressions & statements")
       goto continue
     end
     
