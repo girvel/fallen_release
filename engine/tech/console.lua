@@ -2,11 +2,19 @@ local console = {}
 
 local POS_KEY = "(pos)"
 
-console.run = function()
-  Stack = {}
+--- @param thread thread?
+--- @return table<string, any>[]
+console.capture_stack = function(thread)
+  local result = {}
   for level = 1, math.huge do
-    local info = debug.getinfo(level)
+    local info
+    if thread then
+      info = debug.getinfo(thread, level)
+    else
+      info = debug.getinfo(level)
+    end
     if not info then break end
+    
     local repr = level..". "..info.short_src..":"..info.currentline
     if info.name then
       repr = repr.." in "..info.namewhat.." '"..info.name.."'"
@@ -16,36 +24,63 @@ console.run = function()
     }
     
     for local_i = 1, math.huge do
-      local k, v = debug.getlocal(level, local_i)
+      local k, v
+      if thread then
+        k, v = debug.getlocal(thread, level, local_i)
+      else
+        k, v = debug.getlocal(level, local_i)
+      end
       if not k then break end
+      
       locals[k] = v
     end
-    Stack[level] = locals
+    result[level] = locals
   end
+  return result
+end
+
+local print_trace = function()
+  if CoStack then
+    print("CoStack:")
+    for i, locals in ipairs(CoStack) do
+      print(locals[POS_KEY])
+    end
+    print("Stack:")
+  end
+  for i, locals in ipairs(Stack) do
+    print(locals[POS_KEY])
+  end
+end
+
+console.run = function()
+  Stack = console.capture_stack()
+  print_trace()
 
   while true do
     io.write("lua> ")
     local input = io.read()
     local cmd = input:lower()
     if cmd == ":trace" then
-      for i, locals in ipairs(Stack) do
-        print(locals[POS_KEY])
-      end
+      print_trace()
       goto continue
     elseif cmd == "help" or cmd == "h" or cmd == ":help" or cmd == ":h" then
       print("Use :trace to display the trace of the stack")
-      print("Stack global contains the copy of the stack itself")
+      print("Last global contains the value of the last expression")
+      print("Stack global contains a copy of the stack")
+      print("CoStack global contains a copy of the coroutine stack")
       print("Shell accepts lua expressions & statements")
       goto continue
     end
     
-    local f, err = loadstring("return "..input)
+    local is_expr = true
+    local f, err = loadstring("Last = "..input)
     if err then
       f, err = loadstring(input)
       if err then
         print(err)
         goto continue
       end
+      is_expr = false
     end
     
     local ok, result = pcall(f)
@@ -54,7 +89,9 @@ console.run = function()
       goto continue
     end
     
-    print(Inspect(result, {depth = 1, keys_limit = 20}))
+    if is_expr then
+      print(Inspect(Last, {depth = 1, keys_limit = 20}))
+    end
     
     ::continue::
   end

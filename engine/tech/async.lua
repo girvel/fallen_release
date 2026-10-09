@@ -20,6 +20,8 @@ async.resume = function(coroutine_, ...)
   if not ok then
     local message = ("Coroutine error:\n\t%s\ncoroutine %s"):format(result[1], debug.traceback(coroutine_))
     if Kernel.debug then
+      console = require("engine.tech.console")
+      CoStack = console.capture_stack(coroutine_)
       error(message)
     else
       Log.error(message)
