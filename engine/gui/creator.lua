@@ -1,3 +1,4 @@
+local discord = require("engine.tech.discord")
 local gui_elements = require("engine.gui.gui_elements")
 local warlock = require("engine.mech.class.warlock")
 local class = require("engine.mech.class")
@@ -494,6 +495,20 @@ methods.submit = function(self)
   Table.extend(State.player, mixin)
   State.player:rest("full")
   Kernel.gui:close_menu()
+  
+  local classes_sorted = {}
+  for this_class, datas in pairs(class_datas) do
+    table.insert(classes_sorted, {class = this_class, level = #datas})
+  end
+  table.sort(classes_sorted, function(a, b) return a.level > b.level end)
+  
+  local repr = ""
+  for i, entry in ipairs(classes_sorted) do
+    if i > 1 then repr = repr..", " end
+    repr = repr..entry.class.name.." "..entry.level
+  end
+  
+  discord.set_small_image(classes_sorted[1].class.codename, repr)
 end
 
 reassign_model = function(model, assigned_class, level_from, level_to)

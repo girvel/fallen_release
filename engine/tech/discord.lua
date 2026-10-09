@@ -170,6 +170,17 @@ discord.set_large_image = function(large_image)
   Log.info("Pushed Discord presence large image %q", large_image)
 end
 
+discord.set_small_image = function(small_image, text)
+  if state.smallImageKey == small_image and state.smallImageText == text then
+    return
+  end
+  
+  state.smallImageKey = small_image
+  state.smallImageText = text
+  sync_presence()
+  Log.info("Pushed Discord presence small image %q, text %q", small_image, text)
+end
+
 -- Calls lua callbacks passed to C code => should not be compiled
 jit.off(discord.update)
 
