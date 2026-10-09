@@ -528,6 +528,12 @@ return {
     },
 
     _condition = function(self, dt, ch, ps)
+      if State.rails.rront_status == "ran_away" and not State.rails.let_rront_go then
+        State.runner:remove(self)
+        State.runner:remove("_324_dwarf")
+        return false
+      end
+    
       return api.distance(State.player, ch.engineer_4) >= 7
         and (State.rails.rront_status == "ran_away" or ch.engineer_4.inventory.gloves)
         and api.is_visible(ch.engineer_4)
