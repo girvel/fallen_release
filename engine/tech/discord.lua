@@ -57,11 +57,7 @@ void Discord_RunCallbacks(void);
 void Discord_UpdatePresence(const DiscordRichPresence* presence);
 ]]
 
-local presence_state = ffi.new("struct DiscordRichPresence")
-presence_state.state = "Катает"
-presence_state.details = "..."
-presence_state.button1_label = "Дискорд конфа"
-presence_state.button1_url = "https://discord.gg/9G7VD9bqMy"
+local state = {}
 
 --- @param application_id string
 --- @param button1_label? string
@@ -86,18 +82,19 @@ discord.init = function(application_id, top_line,
     end
     
     if last_commit then
-      presence_state.details = "Пилит \""..last_commit.."\", что бы это ни было"
+      state.details = "Пилит \""..last_commit.."\", что бы это ни было"
     else
-      presence_state.details = "Пилит движок"
+      state.details = "Пилит движок"
     end
   else
-    presence_state.details = "Гоняет пиратку"
+    state.details = "Гоняет пиратку"
   end
 
-  presence_state.button1_label = button1_label
-  presence_state.button1_url = button1_url
-  presence_state.button2_label = button2_label
-  presence_state.button2_url = button2_url
+  state.button1_label = button1_label
+  state.button1_url = button1_url
+  state.button2_label = button2_label
+  state.button2_url = button2_url
+  state.startTimestamp = os.time()
   
   local eventHandlers = ffi.new("struct DiscordEventHandlers")
   eventHandlers.errored = ffi.cast("erroredPtr", function(error_code, message)
@@ -123,13 +120,22 @@ discord.update = function()
   c_lib.Discord_RunCallbacks()
 end
 
+local sync_presence = function()
+  local presence = ffi.new("struct DiscordRichPresence")
+  presence.state = state.status
+  presence.details = state.details
+  presence.startTimestamp = state.startTimestamp
+  presence.button1_label = state.button1_label
+  presence.button1_url = state.button1_url
+  presence.button2_label = state.button2_label
+  presence.button2_url = state.button2_url
+  c_lib.Discord_UpdatePresence(presence)
+end
+
 --- @param status string?
 discord.set_status = function(status)
-  if presence_state.startTimestamp == 0 then
-    presence_state.startTimestamp = os.time()
-  end
-  presence_state.state = status
-  c_lib.Discord_UpdatePresence(presence_state)
+  state.status = status
+  sync_presence()
   Log.info("Pushed Discord presence status %q", status)
 end
 

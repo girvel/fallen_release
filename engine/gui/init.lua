@@ -6,6 +6,7 @@ local sound    = require("engine.tech.sound")
 local saves = require("engine.kernel.saves")
 local api = require("engine.tech.api")
 local async = require("engine.tech.async")
+local discord = require("engine.tech.discord")
 
 local gui = {}
 
@@ -118,6 +119,7 @@ methods.start_game = function(self)
   assert(self._mode.type == "loading_screen")
   Log.info("Game started")
   self:_set_mode(STATES.game.new())
+  discord.set_status("Бродит по коридорам")
 end
 
 --- @alias gui.menu_type "escape_menu"|"journal"|"creator"|"save_menu"|"load_menu"|"appearance_editor"
@@ -152,6 +154,7 @@ methods.player_has_died = function(self)
   end
 
   Log.info("Player dies")
+  discord.set_status("Погиб")
   State.model.popups = {}
   self._player_dying = State.runner:run_task(function()
     api.lock(State.player)
@@ -182,6 +185,7 @@ end
 methods.to_start_screen = function(self)
   self:_set_mode(STATES.start_menu.new())
   State = (nil --[[@as state]])
+  discord.set_status("В главном меню")
 end
 
 methods.ending = function(self, is_good)
