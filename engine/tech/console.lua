@@ -6,7 +6,7 @@ local POS_KEY = "(pos)"
 --- @return table<string, any>[]
 console.capture_stack = function(thread)
   local result = {}
-  for level = 1, math.huge do
+  for level = 0, math.huge do
     local info
     if thread then
       info = debug.getinfo(thread, level)
@@ -52,8 +52,10 @@ local print_trace = function()
   end
 end
 
-console.run = function()
+--- @param msg string
+console.run = function(msg)
   Stack = console.capture_stack()
+  print(msg)
   print_trace()
 
   while true do

@@ -79,7 +79,6 @@ rails.new = function(checkpoint)
 end
 
 init_debug = function()
-  Error("Testing")
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
