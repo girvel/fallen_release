@@ -57,6 +57,11 @@ cli.parse = function(args)
     "-f --fixed-size",
     "Disable resizing of the window"
   )
+  
+  parser:flag(
+    "-C --force-color",
+    "Color logs forcefully"
+  )
 
   args[-2] = nil
   args[-1] = nil

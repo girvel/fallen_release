@@ -15,6 +15,7 @@ love.load = function(args)
   Log.info("Started love.load")
 
   args = cli.parse(args)
+  if args.force_color then Log.usecolor = true end
   Kernel = require("engine.kernel").new(args)
   Log.info("CLI args: %s", args)
 
