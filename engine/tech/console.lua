@@ -1,10 +1,20 @@
 local console = {}
 
+local POS_KEY = "(pos)"
+
 console.run = function()
   Stack = {}
   for level = 1, math.huge do
-    if not debug.getinfo(level) then break end
-    local locals = {}
+    local info = debug.getinfo(level)
+    if not info then break end
+    local repr = level..". "..info.short_src..":"..info.currentline
+    if info.name then
+      repr = repr.." in "..info.namewhat.." '"..info.name.."'"
+    end
+    local locals = {
+      [POS_KEY] = repr,
+    }
+    
     for local_i = 1, math.huge do
       local k, v = debug.getlocal(level, local_i)
       if not k then break end
@@ -15,9 +25,17 @@ console.run = function()
 
   while true do
     io.write("lua> ")
-    local f, err = loadstring("return "..io.read())
+    local input = io.read()
+    if input == ":trace" then
+      for i, locals in ipairs(Stack) do
+        print(locals[POS_KEY])
+      end
+      goto continue
+    end
+    
+    local f, err = loadstring("return "..input)
     if err then
-      f, err = loadstring(io.read())
+      f, err = loadstring(input)
       if err then
         print(err)
         goto continue
