@@ -122,7 +122,7 @@ end
 
 local sync_presence = function()
   local presence = ffi.new("struct DiscordRichPresence")
-  presence.state = state.status
+  presence.state = state.state
   presence.details = state.details
   presence.startTimestamp = state.startTimestamp
   presence.button1_label = state.button1_label
@@ -134,7 +134,14 @@ end
 
 --- @param status string?
 discord.set_status = function(status)
-  state.status = status
+  local STATUS_LEN = 127
+  if #status > STATUS_LEN then
+    Error("Discord status should be %s characters max; %q is excessive",
+          STATUS_LEN, status:sub(STATUS_LEN + 1))
+    status = status:sub(1, STATUS_LEN)
+  end
+
+  state.state = status
   sync_presence()
   Log.info("Pushed Discord presence status %q", status)
 end
