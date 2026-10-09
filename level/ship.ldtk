@@ -8487,9 +8487,9 @@
 							"height": 16,
 							"defUid": 87,
 							"px": [672,1184],
-							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "parasites_test", "__tile": null, "defUid": 88, "realEditorValues": [{
+							"fieldInstances": [{ "__identifier": "capture_name", "__type": "String", "__value": "cp6", "__tile": null, "defUid": 88, "realEditorValues": [{
 								"id": "V_String",
-								"params": ["parasites_test"]
+								"params": ["cp6"]
 							}] }],
 							"__worldX": 672,
 							"__worldY": 1184

@@ -81,8 +81,7 @@ end
 init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
-    -- Kernel.gui._mode:submit()
-    -- level.unsafe_move(State.player, State.level.positions.parasites_test)
+    Kernel.gui._mode:submit()
   end)
 end
 
@@ -177,6 +176,23 @@ checkpoints.cp5 = function(this_rails)
   item.give(State.player, items.greatsword())
   -- this_rails.met_son_mary = true
   -- this_rails:set_quest("alcohol", stages.alcohol._0010_search)
+
+  local ch = State.level.entities
+  ch.bridge_megadoor3._locked = false
+  ch.bridge_megadoor3:on_interact(State.player)
+end
+
+checkpoints.cp6 = function(this_rails)
+  skip_intro(this_rails)
+  this_rails:transition_2_warmup()
+  this_rails:transition_3_detective()
+  level.unsafe_move(State.player, State.level.positions.cp6)
+  this_rails:set_quest("warmup", stages.warmup._1000_bird_fed)
+  this_rails:rront_runs_away()
+  State.runner:remove("_304_room_description")
+  State.runner:remove("_322_dwarf_start")
+  State.player.xp = xp.for_level[3]
+  item.give(State.player, items.greatsword())
 
   local ch = State.level.entities
   ch.bridge_megadoor3._locked = false
