@@ -1,6 +1,18 @@
 local console = {}
 
 console.run = function()
+  Stack = {}
+  for level = 1, math.huge do
+    if not debug.getinfo(level) then break end
+    local locals = {}
+    for local_i = 1, math.huge do
+      local k, v = debug.getlocal(level, local_i)
+      if not k then break end
+      locals[k] = v
+    end
+    Stack[level] = locals
+  end
+
   while true do
     io.write("lua> ")
     local f, err = loadstring("return "..io.read())
