@@ -560,6 +560,7 @@ solids.markiss = function()
     level = 1,
     race = races.furry,
     portrait = sprite.image("assets/portraits/markiss.png"),
+    discord_portrait = "markiss",
     inventory = {
       head = items.furry_head(),
     },

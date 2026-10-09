@@ -1,6 +1,10 @@
 local animated = require("engine.tech.animated")
+
+
 --- @class level: level_base
 --- @field water_speed integer
+
+--- @alias discord.large_portrait "dwarf"|"half_elf"|"half_orc"|"son_mary"|"markiss"
 
 --- @type level_definition
 return {

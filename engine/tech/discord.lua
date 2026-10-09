@@ -129,6 +129,9 @@ local sync_presence = function()
   presence.button1_url = state.button1_url
   presence.button2_label = state.button2_label
   presence.button2_url = state.button2_url
+  presence.largeImageKey = state.largeImageKey
+  presence.smallImageKey = state.smallImageKey
+  presence.smallImageText = state.smallImageText
   c_lib.Discord_UpdatePresence(presence)
 end
 
@@ -141,9 +144,18 @@ discord.set_status = function(status)
     status = status:sub(1, STATUS_LEN)
   end
 
+  if state.state == status then return end
   state.state = status
   sync_presence()
   Log.info("Pushed Discord presence status %q", status)
+end
+
+--- @param large_image discord.large_image?
+discord.set_large_image = function(large_image)
+  if state.largeImageKey == large_image then return end
+  state.largeImageKey = large_image
+  sync_presence()
+  Log.info("Pushed Discord presence large image %q", large_image)
 end
 
 -- Calls lua callbacks passed to C code => should not be compiled

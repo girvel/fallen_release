@@ -1,3 +1,4 @@
+local discord = require("engine.tech.discord")
 local xp = require("engine.mech.xp")
 local item = require("engine.tech.item")
 local sprite = require("engine.tech.sprite")
@@ -457,6 +458,7 @@ return {
       end
       State.hostility:set("half_orc", "player", nil)
       ch.engineer_3.portrait = sprite.image("assets/portraits/half_orc.png")
+      discord.set_large_image("half_orc")
 
       api.rotate(ch.engineer_3, State.player)
       api.lock(State.player)
@@ -553,6 +555,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      discord.set_large_image("dwarf")
       State.rails.met_dwarf = true
       ch.engineer_4.interact = nil
       api.rotate(ch.engineer_4, State.player)

@@ -227,6 +227,7 @@ cli.exe = function(args)
   local ignored_paths = {
     "assets/press_kit",
     "assets/sketches",
+    "assets/discord",
     "engine/assets/build",
     "engine/docs",
     "engine/lib/_tests",

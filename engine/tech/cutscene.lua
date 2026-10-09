@@ -1,3 +1,4 @@
+local discord = require("engine.tech.discord")
 local screenplay = require("engine.tech.screenplay")
 local cutscene = {}
 
@@ -70,6 +71,10 @@ local finish = function(scene, key, ch)
       State.level.locked_entities[character] = nil
     end
   end
+  
+  if rawget(ch, "player") and not scene.characters.non_locking then
+    discord.set_large_image(nil)
+  end
 
   if Table.key_of(ch, State.player) then
     State.camera.target_override = nil
@@ -107,10 +112,16 @@ methods.condition = function(self, name, dt)
   end
 
   if ok then
+    local is_player_present = not not rawget(ch, "player")
+      and not self.characters.player.non_locking
+    
     -- done in condition to prevent the next condition possibly triggering
     for capture_name, character in pairs(ch) do
       if not self.characters or not self.characters[capture_name].non_locking then
         State.level.locked_entities[character] = true
+      end
+      if is_player_present and character.discord_portrait then
+        discord.set_large_image(character.discord_portrait)
       end
     end
   end

@@ -40,6 +40,7 @@ do
       name = "Голова в банке",
       sprite = this_sprite,
       portrait = sprite.image("assets/portraits/son_mary.png"),
+      discord_portrait = "son_mary",
     }
     interactive.mix_in(e)
     return e

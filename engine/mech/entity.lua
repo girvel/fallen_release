@@ -7,6 +7,7 @@
 --- @field name string in-game name
 --- @field codename string in-code name
 --- @field portrait sprite.image
+--- @field discord_portrait discord.large_image
 --- @field position vector position in grid cells; can be float if .grid_layer is nil
 --- @field direction vector
 --- @field speed number

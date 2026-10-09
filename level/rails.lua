@@ -82,7 +82,7 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
-    level.unsafe_move(State.player, State.level.positions.parasites_test)
+    -- level.unsafe_move(State.player, State.level.positions.parasites_test)
   end)
 end
 
@@ -301,6 +301,7 @@ methods.start_lunch = function(self)
       local dreamer = solids.dreamer({faction = "canteen_dreamer_flask", race = "half_elf"})
       dreamer.inventory.right_pocket = items.flask()
       dreamer.portrait = sprite.image("assets/portraits/half_elf.png")
+      dreamer.discord_portrait = "half_elf"
       interactive.mix_in(dreamer)
       State:add_at(dreamer, p, "solids")
       ch.canteen_dreamer_flask = dreamer
