@@ -421,6 +421,7 @@ return {
 
       api.order(sp:literal())
 
+      while not State.combat do coroutine.yield() end
       while ch.engineer_3.hp > ch.engineer_3:get_max_hp() / 2 do
         coroutine.yield()
       end
