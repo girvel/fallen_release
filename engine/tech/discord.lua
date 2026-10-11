@@ -2,6 +2,7 @@ local ffi = require("ffi")
 local ffi_fix = require("engine.tech.ffi_fix")
 local discord = {}
 
+-- Custom built discord-rpc library, supports buttons
 local c_lib = ffi_fix.load("discord-rpc")
 ffi.cdef [[
 typedef struct DiscordRichPresence {
