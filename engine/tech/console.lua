@@ -52,10 +52,10 @@ local print_trace = function()
   end
 end
 
---- @param msg string
+--- @param msg string?
 console.run = function(msg)
   Stack = console.capture_stack()
-  print(msg)
+  if msg then print(msg) end
   print_trace()
 
   while true do

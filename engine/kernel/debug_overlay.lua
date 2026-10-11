@@ -12,7 +12,6 @@ local debug_overlay = {}
 --- @field _show_ai boolean
 --- @field _show_scenes boolean
 --- @field _show_rails boolean
---- @field _show_console boolean
 --- @field _show_shadows boolean
 --- @field _show_codename boolean
 local methods = {}
@@ -29,13 +28,12 @@ debug_overlay.new = function(use_debug_setup)
     _show_ai = false,
     _show_scenes = false,
     _show_rails = false,
-    _show_console = false,
     _show_shadows = false,
     _show_codename = false,
   }, mt)
 end
 
-local draw_points, report_fps, report_ai, report_scenes, report_rails, report_console, report_shadows, report_codename
+local draw_points, report_fps, report_ai, report_scenes, report_rails, report_shadows, report_codename
 
 methods.draw = function(self, dt)
   self._show_points = self._show_points ~= ui.keyboard("f1")
@@ -43,7 +41,7 @@ methods.draw = function(self, dt)
   self._show_ai = self._show_ai ~= ui.keyboard("f3")
   self._show_scenes = self._show_scenes ~= ui.keyboard("f4")
   self._show_rails = self._show_rails ~= ui.keyboard("f5")
-  self._show_console = self._show_console ~= ui.keyboard("f6")
+  if ui.keyboard("f6") then console.run() end
   ui.trace_frames = ui.trace_frames ~= ui.keyboard("f7")
   self._show_shadows = self._show_shadows ~= ui.keyboard("f8")
   self._show_codename = self._show_codename ~= ui.keyboard("f9")
@@ -54,7 +52,6 @@ methods.draw = function(self, dt)
     self._show_ai = false
     self._show_scenes = false
     self._show_rails = false
-    self._show_console = false
     ui.trace_frames = false
     self._show_shadows = false
   self._show_codename = false
@@ -65,7 +62,6 @@ methods.draw = function(self, dt)
   if State and self._show_ai then report_ai() end
   if State and self._show_scenes then report_scenes() end
   if State and self._show_rails then report_rails() end
-  if self._show_console then report_console() end
   if self._show_shadows then report_shadows() end
   if self._show_codename then report_codename() end
 end
