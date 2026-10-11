@@ -12,6 +12,13 @@ local starts_with = function(str, prefix)
 end
 
 --- @param str string
+--- @param postfix string
+--- @return boolean
+local ends_with = function(str, postfix)
+  return str:sub(-#postfix, -1) == postfix
+end
+
+--- @param str string
 --- @param pat string
 --- @param plain boolean?
 --- @return string[]
@@ -243,6 +250,7 @@ cli.exe = function(args)
 
   for _, dir in ipairs(dirs) do
     for _, file in ipairs(split(read_run("find %s -type f", dir), "\n")) do
+      if ends_with(file, ".so") or ends_with(file, ".dll") then goto next end
       for _, ignored in ipairs(ignored_paths) do
         if file == ignored or starts_with(file, ignored.."/") then
           goto next
