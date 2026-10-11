@@ -72,8 +72,9 @@ discord.init = function(application_id,
     Error("Expected application_id to be string, got %s", type(application_id))
     return
   end
-  
-  if love.filesystem.getInfo("main.lua", "file") then
+
+  local source_path = love.filesystem.getSource()
+  if not source_path:ends_with(".exe") and not source_path:ends_with(".love") then
     local last_commit do
       local f = assert(io.popen("git log -1 --pretty=%s"))
       last_commit = f:read("*a")
@@ -81,12 +82,14 @@ discord.init = function(application_id,
         last_commit = nil
       end
     end
-    
+
     if last_commit then
       state.details = "Пилит \""..last_commit.."\", что бы это ни было"
     else
       state.details = "Пилит движок"
     end
+  elseif Kernel.config.discord_status then
+    state.details = Kernel.config.discord_status
   else
     state.details = "Гоняет пиратку"
   end
@@ -96,8 +99,8 @@ discord.init = function(application_id,
   state.button2_label = button2_label
   state.button2_url = button2_url
   state.startTimestamp = os.time()
-  
-  local eventHandlers = ffi.new("struct DiscordEventHandlers")
+
+  local eventHandlers = ffi.new("struct DiscordEventHandlers") --[[@as table]]
   eventHandlers.errored = ffi.cast("erroredPtr", function(error_code, message)
     Log.error("Discord RPC error #%s: %s", error_code, ffi.string(message))
   end)
@@ -108,7 +111,7 @@ discord.init = function(application_id,
   eventHandlers.disconnected = ffi.cast("disconnectedPtr", function(error_code, message)
     Log.info("Discord disconnect; #%s, %s", error_code, ffi.string(message))
   end)
-  
+
   c_lib.Discord_Initialize(tostring(application_id), eventHandlers, 1, nil)
   Log.info("Initialized Discord RPC")
 end
@@ -122,7 +125,7 @@ discord.update = function()
 end
 
 local sync_presence = function()
-  local presence = ffi.new("struct DiscordRichPresence")
+  local presence = ffi.new("struct DiscordRichPresence") --[[@as table]]
   presence.state = state.state
   presence.details = state.details
   presence.startTimestamp = state.startTimestamp
@@ -171,11 +174,13 @@ discord.set_large_image = function(large_image)
   Log.info("Pushed Discord presence large image %q", large_image)
 end
 
+--- @param small_image discord.small_image
+--- @param text string
 discord.set_small_image = function(small_image, text)
   if state.smallImageKey == small_image and state.smallImageText == text then
     return
   end
-  
+
   state.smallImageKey = small_image
   state.smallImageText = text
   sync_presence()

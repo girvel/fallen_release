@@ -3,10 +3,14 @@ local dynamic_canvas = require("engine.tech.dynamic_canvas")
 
 local kernel = {}
 
+--- @class kernel.config
+--- @field discord_status string
+
 --- @class kernel middleware between fallen engine and LOVE
 --- @field gui gui
 --- @field overlay debug_overlay
 --- @field args table CLI args
+--- @field config kernel.config|table
 --- @field debug boolean
 --- @field frame_n integer
 --- @field cpu_time number
@@ -26,6 +30,7 @@ kernel.new = function(args)
     gui = require("engine.gui").new(),
     overlay = require("engine.kernel.debug_overlay").new(args.debug and not args.youtube),
     args = args,
+    config = {},
     debug = args.debug,
     frame_n = 0,
     cpu_time = 0,
@@ -34,6 +39,14 @@ kernel.new = function(args)
     _delays = {},
     _is_active = false,
   }
+
+  if love.filesystem.getInfo("config.lua", "file") then
+    result.config = assert(love.filesystem.load("config.lua"))()
+    Log.info("Found kernel config: %s", Inspect(result.config))
+  else
+    Log.info("Found no kernel config")
+  end
+
   result.screenshot = dynamic_canvas.new(result, "screenshot")
   return setmetatable(result, mt)
 end
