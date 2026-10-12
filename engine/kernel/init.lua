@@ -11,6 +11,7 @@ local kernel = {}
 --- @field overlay debug_overlay
 --- @field args table CLI args
 --- @field config kernel.config|table
+--- @field ambient love.Source?
 --- @field debug boolean
 --- @field frame_n integer
 --- @field cpu_time number
@@ -83,6 +84,22 @@ methods.report = function(self)
   Log.info("Play time %s s, average FPS is %.2f", math.floor(love.timer.getTime() - self.start_time), self.frame_n / self.cpu_time)
   Log.info("Saved log to %s/%s", love.filesystem.getRealDirectory(Log.outfile), Log.outfile)
   Log.report()
+end
+
+methods.ambient_start = function(self)
+  if self.ambient then return end
+  self.ambient = love.audio.newSource(
+    "assets/sounds/music/12_can_not_write_this_anymore.mp3", "static"
+  )
+  self.ambient:setVolume(.1)
+  self.ambient:setLooping(true)
+  self.ambient:play()
+end
+
+methods.ambient_stop = function(self)
+  if not self.ambient then return end
+  self.ambient:stop()
+  self.ambient = nil
 end
 
 return kernel

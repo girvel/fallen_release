@@ -120,6 +120,7 @@ methods.start_game = function(self)
   Log.info("Game started")
   self:_set_mode(STATES.game.new())
   discord.set_status("Бродит по коридорам")
+  Kernel:ambient_stop()
 end
 
 --- @alias gui.menu_type "escape_menu"|"journal"|"creator"|"save_menu"|"load_menu"|"appearance_editor"
@@ -180,6 +181,7 @@ methods.player_has_died = function(self)
     State.player:rotate(Vector.left)
     animated.change_pack(State.player, "engine/assets/animations/skeleton")
   end, "player_death")
+  Kernel:ambient_start()
 end
 
 methods.to_start_screen = function(self)

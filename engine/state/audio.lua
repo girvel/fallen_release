@@ -78,6 +78,7 @@ methods._update = function(self, dt)
   end
   self._current_max_volume = self._current.source:getVolume()
   self._current:play()
+  Log.info("Playing %s", self._current._path)
 end
 
 --- @param value any

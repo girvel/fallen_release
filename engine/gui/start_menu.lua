@@ -18,6 +18,7 @@ end
 local display_tcod_error = not tcod.ok
 
 methods.draw_gui = function()
+  Kernel:ambient_start()
   if display_tcod_error then
     display_tcod_error = false
     Kernel.gui:show_warning(

@@ -95,15 +95,19 @@ end
 init_audio = function()
   -- loading audio takes a lot of time
   local sometimes = async.sometimes(1)
-  local playlist = {}
-  table.insert(playlist, sound.new("assets/sounds/music/doom.mp3", .1))
-  sometimes:yield()
-  table.insert(playlist, sound.new("assets/sounds/music/drone_ambience.mp3", .5))
-  sometimes:yield()
-  table.insert(playlist, sound.new("assets/sounds/music/drone_1.mp3", .1))
-  sometimes:yield()
-  table.insert(playlist, sound.new("assets/sounds/music/drone_2.mp3", .1))
-  sometimes:yield()
+  local sources = {
+    {"13_ruins_interior.mp3", .02},
+    {"doom.mp3", .1},
+    {"drone_ambience.mp3", .5},
+    {"drone_1.mp3", .1},
+    {"drone_2.mp3", .1},
+  }
+  local playlist = Table.new(#sources, 0)
+  for _, t in ipairs(sources) do
+    local filename, volume = unpack(t --[=[@as [string, number]]=])
+    table.insert(playlist, sound.new("assets/sounds/music/"..filename, volume))
+    sometimes:yield()
+  end
   State.audio:set_playlist(playlist)
 end
 
