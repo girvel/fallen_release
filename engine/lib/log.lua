@@ -57,7 +57,6 @@ log.format = function(fmt, ...)
   return fmt:format(pretty(...))
 end
 
-local DIMMED = "\27[2m"
 local RESET_SEQ = "\27[0m"
 
 local _log = function(level, trace_shift, message)
@@ -74,14 +73,11 @@ local _log = function(level, trace_shift, message)
   local nameupper = (level --[[@as string]]):upper()
   local frame_number = Kernel and (" %03d"):format(Kernel.frame_n % 1000) or ""
 
-  print(("%s[%-6s%s%s]%s %s%s%s: %s"):format(
+  print(("%s[%-6s%s%s]%s %s"):format(
     log.usecolor and levels[level].color or "",
     nameupper,
     os.date("%H:%M:%S"),
     frame_number,
-    log.usecolor and RESET_SEQ or "",
-    log.usecolor and DIMMED or "",
-    lineinfo,
     log.usecolor and RESET_SEQ or "",
     message
   ))
