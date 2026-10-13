@@ -267,7 +267,7 @@ cli.exe = function(args)
   end
   run("cp main.lua .build/target/")
   run("cp conf_release.lua .build/target/conf.lua")
-  run("cp config.release.lua .build/target/config.lua")
+  run("cp config.ini .build/target/")
 
   -- build .love --
   run("cd .build/target; zip -9 -r%s %s.love ./*", args.verbose and "" or " -q", name)

@@ -74,7 +74,10 @@ discord.init = function(application_id,
   end
 
   local source_path = love.filesystem.getSource()
-  if not source_path:ends_with(".exe") and not source_path:ends_with(".love") then
+  local is_built = source_path:ends_with(".exe") or source_path:ends_with(".love")
+  if is_built then
+    state.details = Kernel.config.discord_status
+  else
     local last_commit do
       local f = assert(io.popen("git log -1 --pretty=%s"))
       last_commit = f:read("*a")
@@ -88,10 +91,6 @@ discord.init = function(application_id,
     else
       state.details = "Пилит движок"
     end
-  elseif Kernel.config.discord_status then
-    state.details = Kernel.config.discord_status
-  else
-    state.details = "Гоняет пиратку"
   end
 
   state.button1_label = button1_label
