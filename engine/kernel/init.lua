@@ -1,4 +1,3 @@
-local config = require("engine.tech.config")
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
 
 
@@ -32,7 +31,7 @@ kernel.new = function(args)
     gui = require("engine.gui").new(),
     overlay = require("engine.kernel.debug_overlay").new(args.debug and not args.youtube),
     args = args,
-    config = config.read(),
+    config = Ini.read("config.ini"),
     debug = args.debug,
     frame_n = 0,
     cpu_time = 0,
@@ -41,6 +40,8 @@ kernel.new = function(args)
     _delays = {},
     _is_active = false,
   }
+  
+  Log.info("Game config: %s", Inspect(result.config))
 
   result.screenshot = dynamic_canvas.new(result, "screenshot")
   return setmetatable(result, mt)

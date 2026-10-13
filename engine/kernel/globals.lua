@@ -28,6 +28,8 @@ Inspect = function(x, opts)
   return require("engine.lib.inspect")(x, opts)
 end
 
+Ini = require("engine.lib.ini")
+
 Iteration = require("engine.lib.iteration")
 
 Json = require("engine.lib.json")
