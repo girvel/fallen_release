@@ -534,7 +534,7 @@ return {
         return false
       end
     
-      return api.distance(State.player, ch.engineer_4) >= 7
+      return api.distance(State.player, ch.engineer_4) >= 6
         and (State.rails.rront_status == "ran_away" or ch.engineer_4.inventory.gloves)
         and api.is_visible(ch.engineer_4)
     end,
