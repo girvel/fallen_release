@@ -403,6 +403,8 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      ch.engineer_3.interact = nil
+    
       local order_1, order_2
       sp:start_single_branch()
         order_1 = sp:literal()
@@ -443,15 +445,19 @@ return {
       local sub = State.hostility:subscribe(function(source, target)
         if source == State.player and target == ch.engineer_3 then
           kept_peace = false
+          State.model.suggestion = nil
         end
       end)
 
+      State.model.suggestion = "[пробел] чтобы закончить ход"
       while State.combat:get_current() == State.player do
         if not State:exists(ch.engineer_3) then
+          State.model.suggestion = nil
           return wait_for_the_kill()
         end
         coroutine.yield()
       end
+      State.model.suggestion = nil
 
       State.hostility:unsubscribe(sub)
 
