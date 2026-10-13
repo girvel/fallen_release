@@ -63,6 +63,11 @@ cli.parse = function(args)
     "Color logs forcefully"
   )
 
+  parser:option(
+    "-D --seed",
+    "Seed in hexadecimal form; between 000000 and FFFFFF"
+  ):args("?")
+
   args[-2] = nil
   args[-1] = nil
 
@@ -92,6 +97,15 @@ cli.parse = function(args)
 
   result.mobdebug = is_mobdebug_attached
   result.checkpoint = result.checkpoint and result.checkpoint[1]
+  
+  if result.seed then
+    local str = result.seed[1]
+    
+    result.seed = tonumber(str, 16)
+    if not result.seed then error("Invalid seed "..str) end
+    if result.seed < 0 then error("Negative seed "..str) end
+    if result.seed > 0xFFFFFF then error("Too large seed "..str) end
+  end
 
   return result
 end

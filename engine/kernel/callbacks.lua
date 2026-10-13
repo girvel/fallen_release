@@ -17,6 +17,15 @@ love.load = function(args)
 
   args = cli.parse(args)
   if args.force_color then Log.usecolor = true end
+  local seed
+  if args.seed then
+    seed = args.seed
+  else
+    seed = os.time() % 0x1000000
+  end
+  math.randomseed(seed)
+  Log.info("Seed %X", seed)
+    
   Kernel = require("engine.kernel").new(args)
   Log.info("CLI args: %s", args)
 

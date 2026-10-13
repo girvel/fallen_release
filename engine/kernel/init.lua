@@ -82,7 +82,7 @@ methods.report = function(self)
 end
 
 methods.ambient_start = function(self)
-  if self.ambient then return end
+  if self.args.disable_ambient or self.ambient then return end
   self.ambient = love.audio.newSource(
     "assets/sounds/music/12_can_not_write_this_anymore.mp3", "static"
   )
@@ -92,7 +92,7 @@ methods.ambient_start = function(self)
 end
 
 methods.ambient_stop = function(self)
-  if not self.ambient then return end
+  if self.args.disable_ambient or not self.ambient then return end
   self.ambient:stop()
   self.ambient = nil
 end
