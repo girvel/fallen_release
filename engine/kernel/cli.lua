@@ -64,8 +64,13 @@ cli.parse = function(args)
   )
 
   parser:option(
-    "-D --seed",
+    "-E --seed",
     "Seed in hexadecimal form; between 000000 and FFFFFF"
+  ):args("?")
+  
+  parser:option(
+    "-D --discord-status",
+    "Custom discord status"
   ):args("?")
 
   args[-2] = nil
@@ -97,6 +102,7 @@ cli.parse = function(args)
 
   result.mobdebug = is_mobdebug_attached
   result.checkpoint = result.checkpoint and result.checkpoint[1]
+  result.discord_status = result.discord_status and result.discord_status[1]
   
   if result.seed then
     local str = result.seed[1]
