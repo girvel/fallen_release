@@ -1,3 +1,4 @@
+local console = require("engine.tech.console")
 local ffi = require("ffi")
 local sprite = require("engine.tech.sprite")
 local ui = require("engine.tech.ui")
@@ -54,7 +55,7 @@ methods.draw = function(self, dt)
     self._show_rails = false
     ui.trace_frames = false
     self._show_shadows = false
-  self._show_codename = false
+    self._show_codename = false
   end
 
   if State and self._show_points then draw_points(self.points) end

@@ -14,7 +14,7 @@ console.capture_stack = function(thread)
       info = debug.getinfo(level)
     end
     if not info then break end
-    
+
     local repr = level..". "..info.short_src..":"..info.currentline
     if info.name then
       repr = repr.." in "..info.namewhat.." '"..info.name.."'"
@@ -22,7 +22,7 @@ console.capture_stack = function(thread)
     local locals = {
       [POS_KEY] = repr,
     }
-    
+
     for local_i = 1, math.huge do
       local k, v
       if thread then
@@ -31,7 +31,7 @@ console.capture_stack = function(thread)
         k, v = debug.getlocal(level, local_i)
       end
       if not k then break end
-      
+
       locals[k] = v
     end
     result[level] = locals
@@ -42,12 +42,14 @@ end
 local print_trace = function()
   if CoStack then
     print("CoStack:")
-    for i, locals in ipairs(CoStack) do
+    print(CoStack[0])
+    for _, locals in ipairs(CoStack) do
       print(locals[POS_KEY])
     end
     print("Stack:")
   end
-  for i, locals in ipairs(Stack) do
+  print(Stack[0])
+  for _, locals in ipairs(Stack) do
     print(locals[POS_KEY])
   end
 end
@@ -61,40 +63,49 @@ console.run = function(msg)
   while true do
     io.write("lua> ")
     local input = io.read()
+    if not input then break end
     local cmd = input:lower()
-    if cmd == ":trace" then
+    if cmd == ":trace" or cmd == ":t" then
       print_trace()
       goto continue
+    elseif cmd == ":continue" or cmd == ":c" then
+      break
     elseif cmd == "help" or cmd == "h" or cmd == ":help" or cmd == ":h" then
-      print("Use :trace to display the trace of the stack")
-      print("Last global contains the value of the last expression")
-      print("Stack global contains a copy of the stack")
-      print("CoStack global contains a copy of the coroutine stack")
       print("Shell accepts lua expressions & statements")
+      print()
+      print("  COMMANDS:")
+      print(":trace    -- display the trace of the stack")
+      print(":continue -- proceed with the execution")
+      print()
+      print("  GLOBALS:")
+      print("Last    -- contains the value of the last expression")
+      print("Stack   -- contains a copy of the stack")
+      print("CoStack -- global contains a copy of the coroutine stack")
       goto continue
     end
-    
+
     local is_expr = true
     local f, err = loadstring("Last = "..input)
-    if err then
+    if not f then
       f, err = loadstring(input)
-      if err then
+      if not f then
         print(err)
         goto continue
       end
       is_expr = false
     end
-    
+
     local ok, result = pcall(f)
     if not ok then
       print(result)
       goto continue
     end
-    
+
     if is_expr then
+      --- @diagnostic disable-next-line:undefined-global
       print(Inspect(Last, {depth = 1, keys_limit = 20}))
     end
-    
+
     ::continue::
   end
 end
