@@ -1128,7 +1128,12 @@ ui.choice = function(options)
 
   local result
   for i, option in ipairs(options) do
-    local w, h = context.frame.w, context.font:getHeight() * LINE_K
+    if context.alignment.y == "center" then
+      option = option .. "  "
+    end
+    
+    local w = context.frame.w
+    local h = ui.predict_text_size("> "..option, w)
     local x, y = align(w, h)
     local button_out = button(x, y, w, h)
 
@@ -1168,10 +1173,6 @@ ui.choice = function(options)
       end
     else
       option = "  " .. option
-    end
-
-    if context.alignment.y == "center" then
-      option = option .. "  "
     end
 
     ui.text(option)
