@@ -61,6 +61,7 @@ shaders.reflective = function(d)
 
     preprocess = function(self, entity)
       local reflection = get_reflected_image_data(entity.position, d)
+      if not reflection then return true end
       if self._prev_reflection == reflection then return end
       self._prev_reflection = reflection
       self.love_shader:send("reflects", reflection ~= nil)

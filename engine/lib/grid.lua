@@ -23,7 +23,7 @@ grid.new = function(size, factory)
   local inner_array = {}
   if factory then
     for i = 1, size[1] * size[2] do
-        inner_array[i] = factory()
+      inner_array[i] = factory()
     end
   end
   return setmetatable({
@@ -83,7 +83,8 @@ end
 --- @param y integer
 --- @return T
 methods.unsafe_get = function(self, x, y)
-  return self._inner_array[self:_get_inner_index(x, y)]
+  return self._inner_array[x + (y - 1) * self.size[1]]
+  -- return self._inner_array[self:_get_inner_index(x, y)]
 end
 
 --- @generic T

@@ -23,15 +23,17 @@ local draw_entity = function(self, entity, dt)
   end
 
   local canvas
-  if entity.shader then
+  local does_entity_use_shaders = entity.shader and not (
+    entity.shader.preprocess and
+    entity.shader:preprocess(entity, dt)
+  )
+
+  if does_entity_use_shaders then
     canvas = love.graphics.getCanvas()
     love.graphics.setShader(entity.shader.love_shader)
     love.graphics.setCanvas(tmp_canvas)
     -- OPT drawing a whole-screen sized canvas may be expensive
     love.graphics.clear()
-    if entity.shader.preprocess then
-      entity.shader:preprocess(entity, dt)
-    end
   end
 
   if State.shader and State.shader.preprocess then
@@ -39,7 +41,7 @@ local draw_entity = function(self, entity, dt)
   end
 
   if this_sprite.type == "image"
-    or (this_sprite.type == "atlas" and (entity.shader or entity.inventory or entity.layer))
+    or (this_sprite.type == "atlas" and (does_entity_use_shaders or entity.inventory or entity.layer))
   then
     tk.draw_entity(entity, x, y, State.camera.scale)
   elseif this_sprite.type == "atlas" then
@@ -61,7 +63,7 @@ local draw_entity = function(self, entity, dt)
     Error("Unknown sprite type %q", this_sprite.type)
   end
 
-  if entity.shader then
+  if does_entity_use_shaders then
     love.graphics.setCanvas(canvas)
     --- @diagnostic disable-next-line
     love.graphics.setShader(State.shader and State.shader.love_shader)
