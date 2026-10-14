@@ -37,7 +37,7 @@ cli.parse = function(args)
 
   parser:option(
     "-c --checkpoint"
-  ):args("?")
+  ):args(1)
 
   parser:flag(
     "-p --profiler",
@@ -57,7 +57,7 @@ cli.parse = function(args)
     "-f --fixed-size",
     "Disable resizing of the window"
   )
-  
+
   parser:flag(
     "-C --force-color",
     "Color logs forcefully"
@@ -66,12 +66,12 @@ cli.parse = function(args)
   parser:option(
     "-E --seed",
     "Seed in hexadecimal form; between 000000 and FFFFFF"
-  ):args("?")
-  
+  ):args(1)
+
   parser:option(
     "-D --discord-status",
     "Custom discord status"
-  ):args("?")
+  ):args(1)
 
   args[-2] = nil
   args[-1] = nil
@@ -103,10 +103,10 @@ cli.parse = function(args)
   result.mobdebug = is_mobdebug_attached
   result.checkpoint = result.checkpoint and result.checkpoint[1]
   result.discord_status = result.discord_status and result.discord_status[1]
-  
+
   if result.seed then
     local str = result.seed[1]
-    
+
     result.seed = tonumber(str, 16)
     if not result.seed then error("Invalid seed "..str) end
     if result.seed < 0 then error("Negative seed "..str) end
