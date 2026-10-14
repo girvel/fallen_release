@@ -25,7 +25,10 @@ love.load = function(args)
   end
   math.randomseed(seed)
   Log.info("Seed %X", seed)
-    
+  if args.profiler and args.profiler.include_initial then
+    Profile.start(args.profiler.grouping)
+  end
+
   Kernel = require("engine.kernel").new(args)
   Log.info("CLI args: %s", args)
 
@@ -75,7 +78,7 @@ love.load = function(args)
     love.window.updateMode(w, h, mode)
     dynamic_canvas.handle_resize(love.graphics.getDimensions())
   end
-  
+
   discord.init("1282966796533501953", "Дискорд игры", "https://discord.gg/9G7VD9bqMy")
   discord.set_status("В главном меню")
 

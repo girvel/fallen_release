@@ -39,10 +39,15 @@ cli.parse = function(args)
     "-c --checkpoint"
   ):args(1)
 
-  parser:flag(
+  parser:option(
     "-p --profiler",
-    "Run the game with profiler"
-  )
+    "Run the game with profiler; value consists of letters:"
+    .."\n  z: group by Zone"
+    .."\n  s: group by vm State"
+    .."\n  l: group by Line"
+    .."\n  i: include the Initial phase -- starting menu & loading"
+    .."\n  m: include the Main phase -- the game itself"
+  ):args(1)
 
   parser:flag(
     "-A --disable-ambient",
@@ -101,16 +106,30 @@ cli.parse = function(args)
   end
 
   result.mobdebug = is_mobdebug_attached
-  result.checkpoint = result.checkpoint and result.checkpoint[1]
-  result.discord_status = result.discord_status and result.discord_status[1]
 
   if result.seed then
-    local str = result.seed[1]
+    --- @diagnostic disable-next-line:param-type-mismatch
+    result.seed = tonumber(result.seed, 16)
+    if not result.seed then error("Invalid seed "..result.seed) end
+    if result.seed < 0 then error("Negative seed "..result.seed) end
+    if result.seed > 0xFFFFFF then error("Too large seed "..result.seed) end
+  end
 
-    result.seed = tonumber(str, 16)
-    if not result.seed then error("Invalid seed "..str) end
-    if result.seed < 0 then error("Negative seed "..str) end
-    if result.seed > 0xFFFFFF then error("Too large seed "..str) end
+  if result.profiler then
+    result.profiler = {
+      grouping = {
+        line = not not result.profiler:match("l"),
+        state = not not result.profiler:match("s"),
+        zone = not not result.profiler:match("z"),
+      },
+      include_initial = not not result.profiler:match("i"),
+      include_main = not not result.profiler:match("m"),
+    }
+
+    assert(
+      result.profiler.include_initial or result.profiler.include_main,
+      "-p / --profiler option should contain at least either 'i' or 'm' (see help)"
+    )
   end
 
   return result

@@ -255,8 +255,15 @@ methods.load_level = function(self, path)
   async.lag_threshold = .1
 
   if Kernel.args.profiler then
-    Profile.start({line = true, state = true, zone = true})
-    async.lag_threshold = math.huge
+    if Kernel.args.profiler.include_main
+      and not Kernel.args.profiler.include_initial
+    then
+      Profile.start(Kernel.args.profiler.grouping)
+    elseif not Kernel.args.profiler.include_main
+      and Kernel.args.profiler.include_initial
+    then
+      Profile.stop()
+    end
   end
 end
 
