@@ -20,7 +20,7 @@ jit_profile.start = function(grouping)
 
   local type = group_by.line and "l" or "f"
   profile.start(type.." i1", function(thread, samples_n, vm_state)
-    local place = profile.dumpstack(thread, "F", 1) or "[C/JIT Code]"
+    local place = profile.dumpstack(thread, group_by.line and "pl" or "F", 1) or "[C/JIT Code]"
     if group_by.state then
       place = place.."/"..vm_state
     end
