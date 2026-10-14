@@ -93,7 +93,7 @@ love.load = function(args)
 end
 
 local handle_event = function(event, a,b,c,d,e,f)
-  if not Kernel._is_active then return end
+  if not Kernel or not Kernel._is_active then return end
 
   if event == "keypressed" then
     local scancode = b
@@ -250,7 +250,7 @@ love.run = function()
 end
 
 love.quit = function()
-  if not Kernel.debug and Kernel.gui:attempt_exit() then return true end
+  if Kernel and not Kernel.debug and Kernel.gui:attempt_exit() then return true end
 
   Log.info("Exited smoothly")
   Kernel:report()
@@ -258,10 +258,10 @@ love.quit = function()
 end
 
 love.errorhandler = function(msg)
-  if Kernel.debug then
+  if Kernel and Kernel.debug then
     Log.fatal(msg)
     Kernel:report()
-    discord.set_status("Расследует краш")
+    pcall(discord.set_status, "Расследует краш")
     console.run(msg)
     return
   end
