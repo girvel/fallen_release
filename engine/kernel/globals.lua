@@ -48,7 +48,7 @@ Name = require("engine.lib.name")
 Polygon = require("engine.lib.polygon")
 Ldump.mark_module("engine.lib.polygon", "const")
 
-Profile = require("engine.lib.profile")
+Profile = require("engine.lib.jit_profile")
 
 Promise = require("engine.lib.promise")
 Ldump.mark_module("engine.lib.promise", "const")
