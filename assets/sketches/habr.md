@@ -17,4 +17,4 @@ There is a position that tools do not make you a better engineer; it's false.
 Низкоэффективные старые редакторы с худшим UXом, меньшим размером экрана и без лсп => короткие уёбищные идентификаторы в стандартной библиотеке Си и в POSIX
 Таким же образом важна скорость печати
 LLM can have the opposite effect of making your brain melt?
-Maybe raysan writing everything in Notepad++ affected the result too
+Maybe raysan writing everything in Notepad++ affected the result too; it's very zen btw, but quite slow

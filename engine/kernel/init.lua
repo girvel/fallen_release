@@ -68,7 +68,7 @@ end
 
 methods.report = function(self)
   if Kernel.args.profiler then
-    Log.info(Profile.report(100))
+    Log.info("Profiler report:\n"..Profile.report(100))
   end
 
   local line_report = Lp.report()

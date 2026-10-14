@@ -255,7 +255,7 @@ methods.load_level = function(self, path)
   async.lag_threshold = .1
 
   if Kernel.args.profiler then
-    Profile.start()
+    Profile.start(true, true, true)
     async.lag_threshold = math.huge
   end
 end

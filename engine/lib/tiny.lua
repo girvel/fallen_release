@@ -1,3 +1,11 @@
+local zone do
+  local ok, result = pcall(require, "jit.zone")
+  if ok then
+    zone = result
+  else
+    zone = function() end
+  end
+end
 
 
 --[[
@@ -765,6 +773,7 @@ function tiny.update(world, filter, ...)
             -- Update Systems that have an update method (most Systems)
             local update = system.update
             if update then
+                zone(system.codename or "<unnamed system>")
                 local interval = system.interval
                 if interval then
                     local bufferedTime = (system.bufferedTime or 0) + ...
@@ -776,6 +785,7 @@ function tiny.update(world, filter, ...)
                 else
                     update(system, ...)
                 end
+                zone()
             end
 
             system.modified = false
