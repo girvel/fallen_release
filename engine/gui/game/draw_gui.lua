@@ -1252,13 +1252,48 @@ draw_popups = function(dt)
   State.model.popups = next_popups
 end
 
-local N = 50
-local mesh = love.graphics.newMesh({
-  {-N, -N, 0, 0, 0, 0, 0, 1},
-  {N, -N, 0, 0, 1, 0, 0, 1},
-  {-N, N, 0, 0, 0, 1, 0, 1},
-  {N, N, 0, 0, 1, 1, 0, 1},
-}, "strip", "static")
+local N = 100
+local mesh do
+  local points = {
+    {0, 0, 1},
+    {1, 0, 1},
+    {0, 1, 1},
+
+    {0, 1, 1},
+    {1, 0, 1},
+    {1, 1, 1},
+
+    {0, 0, 0},
+    {1, 0, 0},
+    {0, 1, 0},
+
+    {0, 1, 0},
+    {1, 0, 0},
+    {1, 1, 0},
+  }
+
+  local vertices = Table.new(#points, 0)
+  for i, point in ipairs(points) do
+    vertices[i] = {
+      N * (point[1] - 0.5),
+      N * (point[2] - 0.5),
+      N * (point[3] - 0.5),
+      0, 0,
+      point[1],
+      point[2],
+      point[3],
+      1
+    }
+  end
+
+  local format = {
+    {"VertexPosition", "float", 3},
+    {"VertexTexCoord", "float", 2},
+    {"VertexColor", "float", 4},
+  }
+
+  mesh = love.graphics.newMesh(format, vertices, "triangles", "static")
+end
 local rotation_x = 0
 local rotation_y = 0
 
@@ -1299,13 +1334,27 @@ draw_test_dice = function()
       cx*sy, -sx,   cx*cy,  0,
       0,      0,    0,      1,
   }
+
   local prev_shader = love.graphics.getShader()
   love.graphics.setShader(shader)
-  shader:send("projection", projection)
-  shader:send("view", view)
-  shader:send("model", model)
+  love.graphics.setDepthMode("less", true)
+
+  local w, h = love.graphics.getDimensions()
+  local color_canvas = love.graphics.newCanvas()
+  local depth_canvas = love.graphics.newCanvas(w, h, {format = "depth16", readable = false})
+  local prev_canvas = love.graphics.getCanvas()
+  love.graphics.setCanvas({color_canvas, depthstencil = depth_canvas})
+
+  shader:send("projection", "row", projection)
+  shader:send("view", "row", view)
+  shader:send("model", "row", model)
+
   love.graphics.draw(mesh)
+  love.graphics.setDepthMode("always", false)
   love.graphics.setShader(prev_shader)
+
+  love.graphics.setCanvas(prev_canvas)
+  love.graphics.draw(color_canvas)
 
   rotation_x = rotation_x + love.timer.getDelta()
 end
