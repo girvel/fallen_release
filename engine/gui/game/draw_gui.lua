@@ -1270,6 +1270,38 @@ local mesh do
     {0, 1, 0},
     {1, 0, 0},
     {1, 1, 0},
+
+    {0, 0, 1},
+    {1, 0, 1},
+    {0, 0, 0},
+
+    {1, 0, 1},
+    {0, 0, 0},
+    {1, 0, 0},
+
+    {0, 1, 1},
+    {1, 1, 1},
+    {0, 1, 0},
+
+    {1, 1, 1},
+    {0, 1, 0},
+    {1, 1, 0},
+
+    {0, 0, 1},
+    {0, 1, 1},
+    {0, 1, 0},
+
+    {0, 0, 1},
+    {0, 1, 0},
+    {0, 0, 0},
+
+    {1, 0, 1},
+    {1, 1, 1},
+    {1, 1, 0},
+
+    {1, 0, 1},
+    {1, 1, 0},
+    {1, 0, 0},
   }
 
   local vertices = Table.new(#points, 0)
@@ -1329,10 +1361,10 @@ draw_test_dice = function()
   local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
   local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
   local model = {
-      cy,     0,    -sy,    0,
-      sx*sy,  cx,   sx*cy,  0,
-      cx*sy, -sx,   cx*cy,  0,
-      0,      0,    0,      1,
+    cy,     0,    -sy,    0,
+    sx*sy,  cx,   sx*cy,  0,
+    cx*sy, -sx,   cx*cy,  0,
+    0,      0,    0,      1,
   }
 
   local prev_shader = love.graphics.getShader()
@@ -1357,6 +1389,7 @@ draw_test_dice = function()
   love.graphics.draw(color_canvas)
 
   rotation_x = rotation_x + love.timer.getDelta()
+  rotation_y = rotation_y + love.timer.getDelta()
 end
 
 Ldump.mark(draw_gui, {}, ...)
