@@ -107,7 +107,7 @@ end
 
 methods.load_save = function(self, save)
   local load_co = coroutine.create(function()
-    State = saves.read("saves/"..save..".ldump.gz")  --[[@as state]]
+    State = saves.read(Kernel.config.version.."/saves/"..save..".ldump.gz")  --[[@as state]]
     State.runner:handle_loading()
     Kernel.gui:start_game()
   end)

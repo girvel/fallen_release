@@ -42,13 +42,13 @@ end
 local print_trace = function()
   if CoStack then
     print("CoStack:")
-    print(CoStack[0])
+    print(CoStack[0][POS_KEY])
     for _, locals in ipairs(CoStack) do
       print(locals[POS_KEY])
     end
     print("Stack:")
   end
-  print(Stack[0])
+  print(Stack[0][POS_KEY])
   for _, locals in ipairs(Stack) do
     print(locals[POS_KEY])
   end

@@ -211,8 +211,9 @@ tk.choose_save = function(show_new_save)
     options = {}
     dates = {}
 
-    for _, name in ipairs(love.filesystem.getDirectoryItems("saves")) do
-      local full_path = "saves/" .. name
+    local dir = Kernel.config.version.."/saves"
+    for _, name in ipairs(love.filesystem.getDirectoryItems(dir)) do
+      local full_path = dir.."/"..name
       if love.filesystem.getInfo(full_path).type ~= "file" or
         not name:ends_with(".ldump.gz")
       then
@@ -252,7 +253,7 @@ tk.choose_save = function(show_new_save)
 
   local i = ui.choice(options)
   if show_new_save and i == 1 then
-    return "save_" .. os.date("%Y-%m-%d_%H-%M-%S")
+    return "save_"..(#options + 1)
   end
   return options[i]
 end

@@ -2,8 +2,6 @@ local saves = {}
 
 local SLASH = love.system.getOS() == "Windows" and "\\" or "/"
 
-love.filesystem.createDirectory("saves")
-
 --- @async
 --- @param target any
 --- @param path string
@@ -14,7 +12,7 @@ saves.write = function(target, path)
   do
     local repr = Ldump(target)
     local compressed = love.data.compress("string", "gzip", repr)
-    love.filesystem.write(path, compressed)
+    assert(love.filesystem.write(path, compressed))
   end
   t = love.timer.getTime() - t
 

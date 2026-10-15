@@ -40,8 +40,9 @@ kernel.new = function(args)
     _delays = {},
     _is_active = false,
   }
-  
+
   Log.info("Game config: %s", Inspect(result.config))
+  love.filesystem.createDirectory(assert(result.config.version).."/saves")
 
   result.screenshot = dynamic_canvas.new(result, "screenshot")
   return setmetatable(result, mt)
@@ -49,7 +50,7 @@ end
 
 --- @param name string
 methods.plan_save = function(self, name)
-  self._save = "saves/" .. name .. ".ldump.gz"
+  self._save = self.config.version.."/saves/"..name..".ldump.gz"
 end
 
 --- @param key love.KeyConstant
