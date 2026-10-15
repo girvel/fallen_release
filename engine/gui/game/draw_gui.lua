@@ -170,7 +170,7 @@ end
 local draw_gui, draw_sidebar, draw_top_bars, draw_action_grid, draw_resources, draw_move_order,
   draw_bag, draw_dialogue, draw_notification, draw_order, draw_suggestion,
   draw_keyboard_action_grid, draw_cancel_action_grid, draw_upcast_action_grid,
-  use_mouse, draw_curtain, draw_popups
+  use_mouse, draw_curtain, draw_popups, draw_test_dice
 
 --- @param self gui_game
 --- @param dt number
@@ -192,6 +192,7 @@ draw_gui = function(self, dt)
   draw_notification()
   draw_order()
   draw_suggestion()
+  draw_test_dice()
 
   if State.model.curtain_draw then
     State.model.curtain_draw()
@@ -1249,6 +1250,64 @@ draw_popups = function(dt)
     end
   end
   State.model.popups = next_popups
+end
+
+local N = 50
+local mesh = love.graphics.newMesh({
+  {-N, -N, 0, 0, 0, 0, 0, 1},
+  {N, -N, 0, 0, 1, 0, 0, 1},
+  {-N, N, 0, 0, 0, 1, 0, 1},
+  {N, N, 0, 0, 1, 1, 0, 1},
+}, "strip", "static")
+local rotation_x = 0
+local rotation_y = 0
+
+local shader = love.graphics.newShader [[
+  uniform mat4 model;
+  uniform mat4 view;
+  uniform mat4 projection;
+
+  vec4 position(mat4 transform_projection, vec4 vertex_position) {
+    return projection * view * model * vertex_position;
+  }
+]]
+
+draw_test_dice = function()
+  local fov = math.rad(60)
+  local aspect = love.graphics.getWidth() / love.graphics.getHeight()
+  local near, far = 1, 1000
+  local f = 1 / math.tan(fov / 2)
+  local projection = {
+    f / aspect, 0, 0, 0,
+    0, f, 0, 0,
+    0, 0, (far + near) / (near - far), (2 * far * near) / (near - far),
+    0, 0, -1, 0,
+  }
+
+  local view = {
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, -400,
+    0, 0, 0, 1,
+  }
+
+  local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
+  local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
+  local model = {
+      cy,     0,    -sy,    0,
+      sx*sy,  cx,   sx*cy,  0,
+      cx*sy, -sx,   cx*cy,  0,
+      0,      0,    0,      1,
+  }
+  local prev_shader = love.graphics.getShader()
+  love.graphics.setShader(shader)
+  shader:send("projection", projection)
+  shader:send("view", view)
+  shader:send("model", model)
+  love.graphics.draw(mesh)
+  love.graphics.setShader(prev_shader)
+
+  rotation_x = rotation_x + love.timer.getDelta()
 end
 
 Ldump.mark(draw_gui, {}, ...)
