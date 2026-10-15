@@ -625,5 +625,9 @@ return {
       api.order(sp:literal())
       State.rails:set_quest("parasites", stages.parasites._0010_go_to_bridge)
     end,
+
+    _on_cancel = function(self, ch, ps)
+      State.rails:set_quest("parasites", stages.parasites._0010_go_to_bridge)
+    end,
   },
 }
