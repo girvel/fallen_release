@@ -87,6 +87,7 @@ love.load = function(args)
 
   if args.playground then
     love.filesystem.load("engine/kernel/playground.lua")()
+    os.exit(0)
   end
 
   Log.info("Finished love.load")
