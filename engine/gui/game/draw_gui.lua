@@ -1,3 +1,5 @@
+local ffi = require("ffi")
+local ffi_fix = require("engine.tech.ffi_fix")
 local action = require("engine.tech.action")
 local level = require("engine.tech.level")
 local sprite = require("engine.tech.sprite")
@@ -192,7 +194,7 @@ draw_gui = function(self, dt)
   draw_notification()
   draw_order()
   draw_suggestion()
-  if Kernel.debug then draw_test_dice() end
+  if Kernel.debug then draw_test_dice(dt) end
 
   if State.model.curtain_draw then
     State.model.curtain_draw()
@@ -1148,12 +1150,12 @@ use_mouse = function(self)
               local ok = not path or api.follow_path(State.player, path, false, 8)
               api.rotate(State.player, position)
               if ok then
-                local action = Fun.iter(potential_attacking_actions)
+                local this_action = Fun.iter(potential_attacking_actions)
                   :filter(function(a) return a:is_available(State.player) end)
                   :nth(1)
 
-                if action then
-                  action:act(State.player)
+                if this_action then
+                  this_action:act(State.player)
                 end
               end
             end, path)
@@ -1396,9 +1398,129 @@ local render_d20 = function(model_matrix, size)
   return color_canvas
 end
 
-draw_test_dice = function()
-  local scale = 4
-  local size = 32
+ffi.cdef [[
+  typedef double dReal;
+  typedef void* dWorldID;
+  typedef void* dSpaceID;
+  typedef void* dBodyID;
+  typedef void* dGeomID;
+  typedef void* dJointGroupID;
+  typedef void* dJointID;
+
+  // Structs required for creating the temporary Contact Joints
+  typedef struct dMass {
+    dReal mass;
+    dReal c[4];
+    dReal I[12];
+  } dMass;
+
+  typedef struct dSurfaceParameters {
+    int mode;
+    dReal mu, mu2, rho, rho2, rhoN;
+    dReal bounce, bounce_vel;
+    dReal soft_erp, soft_cfm;
+    dReal motion1, motion2, motionN;
+    dReal slip1, slip2;
+  } dSurfaceParameters;
+
+  typedef struct dContactGeom {
+    dGeomID g1, g2;
+    int side1, side2;
+    dReal pos[4];
+    dReal normal[4];
+    dReal depth;
+  } dContactGeom;
+
+  typedef struct dContact {
+    dSurfaceParameters surface;
+    dContactGeom geom;
+    dReal fdir1[3];
+  } dContact;
+
+  // Core API
+  void dInitODE();
+  void dCloseODE();
+  dWorldID dWorldCreate();
+  void dWorldDestroy(dWorldID world);
+  void dWorldSetGravity(dWorldID, dReal x, dReal y, dReal z);
+  void dWorldQuickStep(dWorldID, dReal stepsize);
+
+  // Spaces and Geoms (Collision)
+  dSpaceID dHashSpaceCreate(dSpaceID space);
+  void dSpaceDestroy(dSpaceID);
+  dGeomID dCreatePlane(dSpaceID space, dReal a, dReal b, dReal c, dReal d);
+  dGeomID dCreateSphere(dSpaceID space, dReal radius);
+  void dSpaceCollide(dSpaceID space, void *data, void (*callback)(void *data, dGeomID o1, dGeomID o2));
+
+  // Bodies (Physics)
+  dBodyID dBodyCreate(dWorldID);
+  void dGeomSetBody(dGeomID geom, dBodyID body);
+  void dBodySetPosition(dBodyID, dReal x, dReal y, dReal z);
+  const dReal* dBodyGetPosition(dBodyID);
+  
+  // Mass
+  void dMassSetSphereTotal(dMass*, dReal total_mass, dReal radius);
+  void dBodySetMass(dBodyID, const dMass* mass);
+
+  // Joints
+  dJointGroupID dJointGroupCreate(int max_size);
+  void dJointGroupDestroy(dJointGroupID);
+  void dJointGroupEmpty(dJointGroupID);
+  int dCollide(dGeomID o1, dGeomID o2, int flags, dContactGeom *contact, int skip);
+  dJointID dJointCreateContact(dWorldID, dJointGroupID, const dContact*);
+  void dJointAttach(dJointID, dBodyID body1, dBodyID body2);
+  
+  dBodyID dGeomGetBody(dGeomID geom);
+]]
+
+local pixel_scale = 4
+local canvas_size = 32
+local ball_r = canvas_size / 2
+local fall_h = 128
+local ball_r_meters = .5
+
+local physics_to_graphics_scale = ball_r_meters / ball_r
+local fall_h_meters = fall_h * physics_to_graphics_scale
+
+local ode = ffi_fix.load("libode")
+ode.dInitODE()
+local world = ode.dWorldCreate()
+ode.dWorldSetGravity(world, 0, 0, -9.81)
+local space = ode.dHashSpaceCreate(nil)
+local contact_group = ode.dJointGroupCreate(0)
+local floor_geom = ode.dCreatePlane(space, 0, 0, 1, 0)
+
+local ball_body do
+  ball_body = ode.dBodyCreate(world)
+  ode.dBodySetPosition(ball_body, 0, 0, fall_h_meters)
+  local mass = ffi.new("dMass")
+  ode.dMassSetSphereTotal(mass, 1.0, ball_r_meters)
+  ode.dBodySetMass(ball_body, mass)
+  local ball_geom = ode.dCreateSphere(space, ball_r_meters)
+  ode.dGeomSetBody(ball_geom, ball_body)
+end
+
+local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", function(data, a, b)
+  local contacts = ffi.new("dContact[4]")
+  local contacts_n = ode.dCollide(a, b, 4, contacts[0].geom, ffi.sizeof("dContact"))
+
+  for i = 0, contacts_n - 1 do
+    local contact = contacts[i]
+    contact.surface.mode = 4
+    contact.surface.mu = 50
+    contact.surface.bounce = .85
+    contact.surface.bounce_vel = .1
+
+    local joint = ode.dJointCreateContact(world, contact_group, contact)
+    ode.dJointAttach(joint, ode.dGeomGetBody(a), ode.dGeomGetBody(b))
+  end
+end)
+
+draw_test_dice = function(dt)
+  ode.dSpaceCollide(space, nil, collision_callback)
+  ode.dWorldQuickStep(world, dt)
+  ode.dJointGroupEmpty(contact_group)
+  local pos = ode.dBodyGetPosition(ball_body)
 
   local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
   local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
@@ -1409,17 +1531,19 @@ draw_test_dice = function()
     0,      0,    0,      1,
   }
 
-  local die = render_d20(model, size)
-  love.graphics.draw(die, 0, 0, 0, scale)
-  love.graphics.rectangle("line", 0, 0, size*scale, size*scale)
+  local die = render_d20(model, canvas_size)
+  love.graphics.draw(die, 0, fall_h * pixel_scale - pos[2] / physics_to_graphics_scale * pixel_scale - ball_r * pixel_scale, 0, pixel_scale)
+  love.graphics.line(0, fall_h * pixel_scale, 100, fall_h * pixel_scale)
 
   local SPEED = 0.33
   if love.mouse.isDown(1) then
-    rotation_y = rotation_y - love.timer.getDelta() * SPEED * (mx - love.mouse.getX())
-    rotation_x = rotation_x - love.timer.getDelta() * SPEED * (my - love.mouse.getY())
+    rotation_y = rotation_y - dt * SPEED * (mx - love.mouse.getX())
+    rotation_x = rotation_x - dt * SPEED * (my - love.mouse.getY())
   end
   mx, my = love.mouse.getPosition()
 end
+
+jit.off(draw_test_dice)
 
 Ldump.mark(draw_gui, {}, ...)
 return draw_gui
