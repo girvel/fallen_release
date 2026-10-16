@@ -1353,10 +1353,9 @@ local shader = love.graphics.newShader [[
   #endif
 ]]
 
-local DIE_SIZE = 30
-draw_test_dice = function()
-  local w = 5 * DIE_SIZE
-  local h = w
+local render_d20 = function(model_matrix, size)
+  local w = size
+  local h = size
 
   local fov = math.rad(60)
   local aspect = w / h
@@ -1376,15 +1375,6 @@ draw_test_dice = function()
     0, 0, 0, 1,
   }
 
-  local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
-  local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
-  local model = {
-    cy,     0,    -sy,    0,
-    sx*sy,  cx,   sx*cy,  0,
-    cx*sy, -sx,   cx*cy,  0,
-    0,      0,    0,      1,
-  }
-
   local prev_shader = love.graphics.getShader()
   love.graphics.setShader(shader)
   love.graphics.setDepthMode("less", true)
@@ -1396,14 +1386,32 @@ draw_test_dice = function()
 
   shader:send("projection", "row", projection)
   shader:send("view", "row", view)
-  shader:send("model", "row", model)
+  shader:send("model", "row", model_matrix)
 
   love.graphics.draw(mesh)
   love.graphics.setDepthMode("always", false)
   love.graphics.setShader(prev_shader)
 
   love.graphics.setCanvas(prev_canvas)
-  love.graphics.draw(color_canvas, 0, 0, 0, 2)
+  return color_canvas
+end
+
+draw_test_dice = function()
+  local scale = 4
+  local size = 32
+
+  local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
+  local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
+  local model = {
+    cy,     0,    -sy,    0,
+    sx*sy,  cx,   sx*cy,  0,
+    cx*sy, -sx,   cx*cy,  0,
+    0,      0,    0,      1,
+  }
+
+  local die = render_d20(model, size)
+  love.graphics.draw(die, 0, 0, 0, scale)
+  love.graphics.rectangle("line", 0, 0, size*scale, size*scale)
 
   local SPEED = 0.33
   if love.mouse.isDown(1) then
