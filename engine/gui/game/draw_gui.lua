@@ -1457,7 +1457,8 @@ ffi.cdef [[
   void dGeomSetBody(dGeomID geom, dBodyID body);
   void dBodySetPosition(dBodyID, dReal x, dReal y, dReal z);
   void dBodySetLinearVel(dBodyID, dReal x, dReal y, dReal z);
-  const dReal* dBodyGetPosition(dBodyID);
+  const dReal *dBodyGetPosition(dBodyID);
+  const dReal *dBodyGetRotation(dBodyID);
   
   // Mass
   void dMassSetSphereTotal(dMass*, dReal total_mass, dReal radius);
@@ -1523,14 +1524,13 @@ draw_test_dice = function(dt)
   ode.dWorldQuickStep(world, dt)
   ode.dJointGroupEmpty(contact_group)
   local pos = ode.dBodyGetPosition(ball_body)
+  local rot = ode.dBodyGetRotation(ball_body)
 
-  local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
-  local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
   local model = {
-    cy,     0,    -sy,    0,
-    sx*sy,  cx,   sx*cy,  0,
-    cx*sy, -sx,   cx*cy,  0,
-    0,      0,    0,      1,
+    rot[0], rot[1], rot[2], 0,
+    -rot[8], -rot[9], -rot[10], 0,
+    rot[4], rot[5], rot[6], 0,
+    0, 0, 0, 1,
   }
 
   local die = render_d20(model, canvas_size)
