@@ -192,7 +192,7 @@ draw_gui = function(self, dt)
   draw_notification()
   draw_order()
   draw_suggestion()
-  draw_test_dice()
+  if Kernel.debug then draw_test_dice() end
 
   if State.model.curtain_draw then
     State.model.curtain_draw()
@@ -1254,54 +1254,36 @@ end
 
 local N = 100
 local mesh do
-  local points = {
-    {0, 0, 1},
-    {1, 0, 1},
-    {0, 1, 1},
+  -- The Golden Ratio
+  local t = (1.0 + math.sqrt(5.0)) / 2.0
 
-    {0, 1, 1},
-    {1, 0, 1},
-    {1, 1, 1},
+  local d20_vertices = {
+    {-1,  t,  0}, { 1,  t,  0}, {-1, -t,  0}, { 1, -t,  0},
+    { 0, -1,  t}, { 0,  1,  t}, { 0, -1, -t}, { 0,  1, -t},
+    { t,  0, -1}, { t,  0,  1}, {-t,  0, -1}, {-t,  0,  1}
+  }
 
-    {0, 0, 0},
-    {1, 0, 0},
-    {0, 1, 0},
-
-    {0, 1, 0},
-    {1, 0, 0},
-    {1, 1, 0},
-
-    {0, 0, 1},
-    {1, 0, 1},
-    {0, 0, 0},
-
-    {1, 0, 1},
-    {0, 0, 0},
-    {1, 0, 0},
-
-    {0, 1, 1},
-    {1, 1, 1},
-    {0, 1, 0},
-
-    {1, 1, 1},
-    {0, 1, 0},
-    {1, 1, 0},
-
-    {0, 0, 1},
-    {0, 1, 1},
-    {0, 1, 0},
-
-    {0, 0, 1},
-    {0, 1, 0},
-    {0, 0, 0},
-
-    {1, 0, 1},
-    {1, 1, 1},
-    {1, 1, 0},
-
-    {1, 0, 1},
-    {1, 1, 0},
-    {1, 0, 0},
+  local d20_faces = {
+    1, 12, 6,
+    1, 6, 2,
+    1, 2, 8,
+    1, 8, 11,
+    1, 11, 12,
+    2, 6, 10,
+    6, 12, 5,
+    12, 11, 3,
+    11, 8, 7,
+    8, 2, 9,
+    4, 10, 5,
+    4, 5, 3,
+    4, 3, 7,
+    4, 7, 9,
+    4, 9, 10,
+    5, 10, 6,
+    3, 5, 12,
+    7, 3, 11,
+    9, 7, 8,
+    10, 9, 2,
   }
 
   local barycentrics = {
@@ -1310,13 +1292,14 @@ local mesh do
     {0, 0, 1},
   }
 
-  local vertices = Table.new(#points, 0)
-  for i, point in ipairs(points) do
+  local vertices = Table.new(#d20_faces * 3, 0)
+  for i, triangle_index in ipairs(d20_faces) do
     local b = barycentrics[Math.loopmod(i, 3)]
+    local point = d20_vertices[triangle_index]
     vertices[i] = {
-      N * (point[1] - 0.5),
-      N * (point[2] - 0.5),
-      N * (point[3] - 0.5),
+      N * point[1],
+      N * point[2],
+      N * point[3],
       0, 0,
       point[1],
       point[2],
@@ -1335,11 +1318,12 @@ local mesh do
 
   mesh = love.graphics.newMesh(format, vertices, "triangles", "static")
 end
-local rotation_x = math.rad(20)
-local rotation_y = math.rad(60)
+local rotation_x = math.rad(75)
+local rotation_y = math.rad(0)
 local mx, my
 
 local shader = love.graphics.newShader [[
+  #extension GL_OES_standard_derivatives : enable
   uniform mat4 model;
   uniform mat4 view;
   uniform mat4 projection;
@@ -1358,9 +1342,9 @@ local shader = love.graphics.newShader [[
   #ifdef PIXEL
   vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords) {
     vec4 it = Texel(tex, texture_coords) * color;
-    float closest_edge = min(min(v_barycentric.x, v_barycentric.y), v_barycentric.z);
+    vec3 pixel_thickness = fwidth(v_barycentric);
 
-    if (closest_edge < 0.03) {
+    if (any(lessThan(v_barycentric, pixel_thickness / 2))) {
       return vec4(.9, .9, .9, 1);
     } else {
       return vec4(.18, .24, .37, 1);
@@ -1369,9 +1353,13 @@ local shader = love.graphics.newShader [[
   #endif
 ]]
 
+local DIE_SIZE = 30
 draw_test_dice = function()
+  local w = 5 * DIE_SIZE
+  local h = w
+
   local fov = math.rad(60)
-  local aspect = love.graphics.getWidth() / love.graphics.getHeight()
+  local aspect = w / h
   local near, far = 1, 1000
   local f = 1 / math.tan(fov / 2)
   local projection = {
@@ -1401,8 +1389,7 @@ draw_test_dice = function()
   love.graphics.setShader(shader)
   love.graphics.setDepthMode("less", true)
 
-  local w, h = love.graphics.getDimensions()
-  local color_canvas = love.graphics.newCanvas()
+  local color_canvas = love.graphics.newCanvas(w, h)
   local depth_canvas = love.graphics.newCanvas(w, h, {format = "depth16", readable = false})
   local prev_canvas = love.graphics.getCanvas()
   love.graphics.setCanvas({color_canvas, depthstencil = depth_canvas})
@@ -1416,11 +1403,11 @@ draw_test_dice = function()
   love.graphics.setShader(prev_shader)
 
   love.graphics.setCanvas(prev_canvas)
-  love.graphics.draw(color_canvas)
+  love.graphics.draw(color_canvas, 0, 0, 0, 2)
 
   local SPEED = 0.33
   if love.mouse.isDown(1) then
-    rotation_y = rotation_y + love.timer.getDelta() * SPEED * (mx - love.mouse.getX())
+    rotation_y = rotation_y - love.timer.getDelta() * SPEED * (mx - love.mouse.getX())
     rotation_x = rotation_x - love.timer.getDelta() * SPEED * (my - love.mouse.getY())
   end
   mx, my = love.mouse.getPosition()
