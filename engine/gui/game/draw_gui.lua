@@ -1456,6 +1456,7 @@ ffi.cdef [[
   dBodyID dBodyCreate(dWorldID);
   void dGeomSetBody(dGeomID geom, dBodyID body);
   void dBodySetPosition(dBodyID, dReal x, dReal y, dReal z);
+  void dBodySetLinearVel(dBodyID, dReal x, dReal y, dReal z);
   const dReal* dBodyGetPosition(dBodyID);
   
   // Mass
@@ -1493,6 +1494,7 @@ local floor_geom = ode.dCreatePlane(space, 0, 0, 1, 0)
 local ball_body do
   ball_body = ode.dBodyCreate(world)
   ode.dBodySetPosition(ball_body, 0, 0, fall_h_meters)
+  ode.dBodySetLinearVel(ball_body, .5, 0, 0)
   local mass = ffi.new("dMass")
   ode.dMassSetSphereTotal(mass, 1.0, ball_r_meters)
   ode.dBodySetMass(ball_body, mass)
@@ -1532,7 +1534,12 @@ draw_test_dice = function(dt)
   }
 
   local die = render_d20(model, canvas_size)
-  love.graphics.draw(die, 0, fall_h * pixel_scale - pos[2] / physics_to_graphics_scale * pixel_scale - ball_r * pixel_scale, 0, pixel_scale)
+  love.graphics.draw(
+    die,
+    64 + math.floor(pos[0] / physics_to_graphics_scale - ball_r) * pixel_scale,
+    math.floor(fall_h - pos[2] / physics_to_graphics_scale - ball_r) * pixel_scale,
+    0, pixel_scale
+  )
   love.graphics.line(0, fall_h * pixel_scale, 100, fall_h * pixel_scale)
 
   local SPEED = 0.33
