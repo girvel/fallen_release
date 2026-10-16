@@ -1304,8 +1304,15 @@ local mesh do
     {1, 0, 0},
   }
 
+  local barycentrics = {
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
+  }
+
   local vertices = Table.new(#points, 0)
   for i, point in ipairs(points) do
+    local b = barycentrics[Math.loopmod(i, 3)]
     vertices[i] = {
       N * (point[1] - 0.5),
       N * (point[2] - 0.5),
@@ -1314,7 +1321,8 @@ local mesh do
       point[1],
       point[2],
       point[3],
-      1
+      1,
+      unpack(b)
     }
   end
 
@@ -1322,21 +1330,43 @@ local mesh do
     {"VertexPosition", "float", 3},
     {"VertexTexCoord", "float", 2},
     {"VertexColor", "float", 4},
+    {"VertexBarycentric", "float", 3},
   }
 
   mesh = love.graphics.newMesh(format, vertices, "triangles", "static")
 end
-local rotation_x = 0
-local rotation_y = 0
+local rotation_x = math.rad(20)
+local rotation_y = math.rad(60)
+local mx, my
 
 local shader = love.graphics.newShader [[
   uniform mat4 model;
   uniform mat4 view;
   uniform mat4 projection;
 
+  varying vec3 v_barycentric;
+
+  #ifdef VERTEX
+  attribute vec3 VertexBarycentric;
+
   vec4 position(mat4 transform_projection, vec4 vertex_position) {
+    v_barycentric = VertexBarycentric;
     return projection * view * model * vertex_position;
   }
+  #endif
+
+  #ifdef PIXEL
+  vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords) {
+    vec4 it = Texel(tex, texture_coords) * color;
+    float closest_edge = min(min(v_barycentric.x, v_barycentric.y), v_barycentric.z);
+
+    if (closest_edge < 0.03) {
+      return vec4(.9, .9, .9, 1);
+    } else {
+      return vec4(.18, .24, .37, 1);
+    }
+  }
+  #endif
 ]]
 
 draw_test_dice = function()
@@ -1388,8 +1418,12 @@ draw_test_dice = function()
   love.graphics.setCanvas(prev_canvas)
   love.graphics.draw(color_canvas)
 
-  rotation_x = rotation_x + love.timer.getDelta()
-  rotation_y = rotation_y + love.timer.getDelta()
+  local SPEED = 0.33
+  if love.mouse.isDown(1) then
+    rotation_y = rotation_y + love.timer.getDelta() * SPEED * (mx - love.mouse.getX())
+    rotation_x = rotation_x - love.timer.getDelta() * SPEED * (my - love.mouse.getY())
+  end
+  mx, my = love.mouse.getPosition()
 end
 
 Ldump.mark(draw_gui, {}, ...)
