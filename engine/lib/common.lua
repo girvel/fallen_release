@@ -51,4 +51,10 @@ common.posix_path = function(modpath)
   return modpath:gsub("%.", "/")..".lua"
 end
 
+--- @return boolean
+common.is_game_built = function()
+  local source_path = love.filesystem.getSource()
+  return source_path:ends_with(".exe") or source_path:ends_with(".love")
+end
+
 return common

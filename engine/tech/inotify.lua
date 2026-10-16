@@ -34,8 +34,13 @@ get_subdirectories_recursively = function(base, result)
 end
 
 local is_available do
-  local info = love.filesystem.getInfo(love.filesystem.getSource())
-  is_available = love.system.getOS() == "Linux" and info and info.type == "directory"
+  is_available = love.system.getOS() == "Linux" and not Common.is_game_built()
+
+  if is_available then
+    Log.info("inotify enabled")
+  else
+    Log.info("inotify not enabled")
+  end
 end
 
 local inotify_fd, fd_to_dir, buffer

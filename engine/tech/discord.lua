@@ -76,9 +76,7 @@ discord.init = function(application_id,
   if Kernel.args.discord_status then
     state.details = Kernel.args.discord_status
   else
-    local source_path = love.filesystem.getSource()
-    local is_built = source_path:ends_with(".exe") or source_path:ends_with(".love")
-    if is_built then
+    if Common.is_game_built() then
       state.details = Kernel.config.discord_status
     else
       local last_commit do
