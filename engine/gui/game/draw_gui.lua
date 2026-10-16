@@ -1255,7 +1255,7 @@ draw_popups = function(dt)
 end
 
 local N = 100
-local mesh, ode_vertices, ode_indices do
+local mesh, ode_vertices, ode_indices, vertices_n, faces_n do
   -- The Golden Ratio
   local t = (1.0 + math.sqrt(5.0)) / 2.0
 
@@ -1271,6 +1271,9 @@ local mesh, ode_vertices, ode_indices do
     {4, 10, 5}, {4, 5, 3}, {4, 3, 7}, {4, 7, 9}, {4, 9, 10},
     {5, 10, 6}, {3, 5, 12}, {7, 3, 11}, {9, 7, 8}, {10, 9, 2},
   }
+
+  vertices_n = #d20_vertices
+  faces_n = #d20_faces
 
   local barycentrics = {
     {1, 0, 0},
@@ -1306,8 +1309,28 @@ local mesh, ode_vertices, ode_indices do
 
   mesh = love.graphics.newMesh(format, vertices, "triangles", "static")
 
-  ode_vertices = ffi.new("double[?]", #d20_vertices * 3)
+  local k = .5 / math.sqrt(1 + t * t)
+  ode_vertices = ffi.new("float[?]", #d20_vertices * 4)
+  for i, vertex in ipairs(d20_vertices) do
+    ode_vertices[(i - 1) * 4] = vertex[1] * k
+    ode_vertices[(i - 1) * 4 + 1] = vertex[2] * k
+    ode_vertices[(i - 1) * 4 + 2] = vertex[3] * k
+    ode_vertices[(i - 1) * 4 + 3] = 0
+  end
+
+  ode_indices = ffi.new("int[?]", #d20_faces * 3)
+  for i, face in ipairs(d20_faces) do
+    ode_indices[(i - 1) * 3] = face[1] - 1
+    ode_indices[(i - 1) * 3 + 1] = face[2] - 1
+    ode_indices[(i - 1) * 3 + 2] = face[3] - 1
+  end
 end
+
+PLEASE_REMEMBER = {
+  ode_vertices,
+  ode_indices,
+}
+
 local rotation_x = math.rad(75)
 local rotation_y = math.rad(0)
 local mx, my
@@ -1387,13 +1410,14 @@ local render_d20 = function(model_matrix, size)
 end
 
 ffi.cdef [[
-  typedef double dReal;
+  typedef float dReal;
   typedef void* dWorldID;
   typedef void* dSpaceID;
   typedef void* dBodyID;
   typedef void* dGeomID;
   typedef void* dJointGroupID;
   typedef void* dJointID;
+  typedef void* dTriMeshDataID;
 
   // Structs required for creating the temporary Contact Joints
   typedef struct dMass {
@@ -1432,6 +1456,7 @@ ffi.cdef [[
   void dWorldDestroy(dWorldID world);
   void dWorldSetGravity(dWorldID, dReal x, dReal y, dReal z);
   void dWorldQuickStep(dWorldID, dReal stepsize);
+  void dWorldStep(dWorldID world, dReal stepsize);
 
   // Spaces and Geoms (Collision)
   dSpaceID dHashSpaceCreate(dSpaceID space);
@@ -1461,15 +1486,23 @@ ffi.cdef [[
   void dJointAttach(dJointID, dBodyID body1, dBodyID body2);
   
   dBodyID dGeomGetBody(dGeomID geom);
+  dTriMeshDataID dGeomTriMeshDataCreate();
+  void dGeomTriMeshDataBuildSingle(dTriMeshDataID g, 
+                                   const void* Vertices, int VertexStride, int VertexCount, 
+                                   const void* Indices, int IndexCount, int TriStride);
+  dGeomID dCreateTriMesh(dSpaceID space, dTriMeshDataID Data,
+                         void* Callback, void* ArrayCallback, void* RayCallback);
+  void dGeomTriMeshDataPreprocess(dTriMeshDataID g);
+  int dGeomTriMeshGetTriangleCount(dGeomID);
 ]]
 
 local pixel_scale = 4
 local canvas_size = 32
-local ball_r = canvas_size / 2
+local die_r = canvas_size / 2
 local fall_h = 128
-local ball_r_meters = .5
+local die_r_meters = .5
 
-local physics_to_graphics_scale = ball_r_meters / ball_r
+local physics_to_graphics_scale = die_r_meters / die_r
 local fall_h_meters = fall_h * physics_to_graphics_scale
 
 local ode = ffi_fix.load("libode")
@@ -1480,16 +1513,23 @@ local space = ode.dHashSpaceCreate(nil)
 local contact_group = ode.dJointGroupCreate(0)
 local floor_geom = ode.dCreatePlane(space, 0, 0, 1, 0)
 
-local ball_body do
-  ball_body = ode.dBodyCreate(world)
-  ode.dBodySetPosition(ball_body, 0, 0, fall_h_meters)
-  ode.dBodySetLinearVel(ball_body, .5, 0, 0)
+local die_body
+  die_body = ode.dBodyCreate(world)
+  ode.dBodySetPosition(die_body, 0, 0, fall_h_meters)
+  ode.dBodySetLinearVel(die_body, 3, 0, 0)
   local mass = ffi.new("dMass")
-  ode.dMassSetSphereTotal(mass, 1.0, ball_r_meters)
-  ode.dBodySetMass(ball_body, mass)
-  local ball_geom = ode.dCreateSphere(space, ball_r_meters)
-  ode.dGeomSetBody(ball_geom, ball_body)
-end
+  ode.dMassSetSphereTotal(mass, 1.0, die_r_meters)
+  ode.dBodySetMass(die_body, mass)
+  local tri_data = ode.dGeomTriMeshDataCreate()
+  ode.dGeomTriMeshDataBuildSingle(
+    tri_data, ode_vertices, 4 * ffi.sizeof("float"), vertices_n,
+    ode_indices, faces_n * 3, 3 * ffi.sizeof("int")
+  )
+  ode.dGeomTriMeshDataPreprocess(tri_data)
+  local die_geom = ode.dCreateTriMesh(space, tri_data, nil, nil, nil)
+  Log.tracel(ode.dGeomTriMeshGetTriangleCount(die_geom))
+  Log.tracel(ode_vertices[0], ode_vertices[1], ode_vertices[2])
+  ode.dGeomSetBody(die_geom, die_body)
 
 local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", function(data, a, b)
   local contacts = ffi.new("dContact[4]")
@@ -1499,7 +1539,7 @@ local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", functi
     local contact = contacts[i]
     contact.surface.mode = 4
     contact.surface.mu = 50
-    contact.surface.bounce = .85
+    contact.surface.bounce = .4
     contact.surface.bounce_vel = .1
 
     local joint = ode.dJointCreateContact(world, contact_group, contact)
@@ -1509,10 +1549,10 @@ end)
 
 draw_test_dice = function(dt)
   ode.dSpaceCollide(space, nil, collision_callback)
-  ode.dWorldQuickStep(world, dt)
+  ode.dWorldStep(world, dt)
   ode.dJointGroupEmpty(contact_group)
-  local pos = ode.dBodyGetPosition(ball_body)
-  local rot = ode.dBodyGetRotation(ball_body)
+  local pos = ode.dBodyGetPosition(die_body)
+  local rot = ode.dBodyGetRotation(die_body)
 
   local model = {
     rot[0], rot[1], rot[2], 0,
@@ -1524,8 +1564,8 @@ draw_test_dice = function(dt)
   local die = render_d20(model, canvas_size)
   love.graphics.draw(
     die,
-    64 + math.floor(pos[0] / physics_to_graphics_scale - ball_r) * pixel_scale,
-    math.floor(fall_h - pos[2] / physics_to_graphics_scale - ball_r) * pixel_scale,
+    64 + math.floor(pos[0] / physics_to_graphics_scale - die_r) * pixel_scale,
+    math.floor(fall_h - pos[2] / physics_to_graphics_scale - die_r) * pixel_scale,
     0, pixel_scale
   )
   love.graphics.line(0, fall_h * pixel_scale, 100, fall_h * pixel_scale)
