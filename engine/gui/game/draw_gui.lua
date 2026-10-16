@@ -1255,7 +1255,7 @@ draw_popups = function(dt)
 end
 
 local N = 100
-local mesh do
+local mesh, ode_vertices, ode_indices do
   -- The Golden Ratio
   local t = (1.0 + math.sqrt(5.0)) / 2.0
 
@@ -1266,26 +1266,10 @@ local mesh do
   }
 
   local d20_faces = {
-    1, 12, 6,
-    1, 6, 2,
-    1, 2, 8,
-    1, 8, 11,
-    1, 11, 12,
-    2, 6, 10,
-    6, 12, 5,
-    12, 11, 3,
-    11, 8, 7,
-    8, 2, 9,
-    4, 10, 5,
-    4, 5, 3,
-    4, 3, 7,
-    4, 7, 9,
-    4, 9, 10,
-    5, 10, 6,
-    3, 5, 12,
-    7, 3, 11,
-    9, 7, 8,
-    10, 9, 2,
+    {1, 12, 6}, {1, 6, 2}, {1, 2, 8}, {1, 8, 11}, {1, 11, 12},
+    {2, 6, 10}, {6, 12, 5}, {12, 11, 3}, {11, 8, 7}, {8, 2, 9},
+    {4, 10, 5}, {4, 5, 3}, {4, 3, 7}, {4, 7, 9}, {4, 9, 10},
+    {5, 10, 6}, {3, 5, 12}, {7, 3, 11}, {9, 7, 8}, {10, 9, 2},
   }
 
   local barycentrics = {
@@ -1295,20 +1279,22 @@ local mesh do
   }
 
   local vertices = Table.new(#d20_faces * 3, 0)
-  for i, triangle_index in ipairs(d20_faces) do
-    local b = barycentrics[Math.loopmod(i, 3)]
-    local point = d20_vertices[triangle_index]
-    vertices[i] = {
-      N * point[1],
-      N * point[2],
-      N * point[3],
-      0, 0,
-      point[1],
-      point[2],
-      point[3],
-      1,
-      unpack(b)
-    }
+  for _, face in ipairs(d20_faces) do
+    for i, triangle_index in ipairs(face) do
+      local b = barycentrics[i]
+      local point = d20_vertices[triangle_index]
+      table.insert(vertices, {
+        N * point[1],
+        N * point[2],
+        N * point[3],
+        0, 0,
+        point[1],
+        point[2],
+        point[3],
+        1,
+        unpack(b)
+      })
+    end
   end
 
   local format = {
@@ -1319,6 +1305,8 @@ local mesh do
   }
 
   mesh = love.graphics.newMesh(format, vertices, "triangles", "static")
+
+  ode_vertices = ffi.new("double[?]", #d20_vertices * 3)
 end
 local rotation_x = math.rad(75)
 local rotation_y = math.rad(0)
