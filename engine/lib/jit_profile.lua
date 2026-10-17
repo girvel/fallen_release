@@ -1,4 +1,3 @@
-local zone = require("jit.zone")
 local profile = require("jit.profile")
 local jit_profile = {}
 
@@ -25,7 +24,7 @@ jit_profile.start = function(grouping)
       place = place.."/"..vm_state
     end
     if group_by.zone then
-      place = place.."/"..(zone:get() or "-")
+      place = place.."/"..(Common.jit_zone:get() or "-")
     end
     samples[place] = (samples[place] or 0) + samples_n
     total_samples = total_samples + samples_n

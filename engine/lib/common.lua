@@ -57,4 +57,18 @@ common.is_game_built = function()
   return source_path:ends_with(".exe") or source_path:ends_with(".love")
 end
 
+do
+  local ok
+  ok, result = pcall(require, "jit.zone")
+  if ok then
+    common.jit_zone = result
+  else
+    common.jit_zone = setmetatable({
+      get = function() end,
+    }, {
+      __call = function() end,
+    })
+  end
+end
+
 return common
