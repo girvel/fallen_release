@@ -426,6 +426,19 @@ vector_methods.swizzle = function(self, pattern)
   return vector.own(result)
 end
 
+--- @param a vector
+--- @param b vector
+--- @return vector
+vector_methods.cross = function(a, b)
+  assert(#a == 3)
+  assert(#b == 3)
+  return vector.new(
+    a[2] * b[3] - a[3] * b[2],
+    a[3] * b[1] - a[1] * b[3],
+    a[1] * b[2] - a[2] * b[1]
+  )
+end
+
 vector.mt.__index = function(self, key)
   if type(key) == "number" then
     return rawget(self, key)

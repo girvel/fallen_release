@@ -1255,73 +1255,69 @@ draw_popups = function(dt)
 end
 
 local N = 100
-local mesh, ode_vertices, ode_indices, vertices_n, faces_n do
-  -- Golden ratio
-  local t = (1 + math.sqrt(5)) / 2
+local t = (1 + math.sqrt(5)) / 2  -- Golden ratio
 
-  local d20_vertices = {
-    {-1,  t,  0},
-    {1,  t,  0},
-    {-1, -t,  0},
-    {1, -t,  0},
-    {0, -1,  t},
-    {0,  1,  t},
-    {0, -1, -t},
-    {0,  1, -t},
-    {t,  0, -1},
-    {t,  0,  1},
-    {-t,  0, -1},
-    {-t,  0,  1}
-  }
+local d20_vertices = {
+  {-1,  t,  0},
+  {1,  t,  0},
+  {-1, -t,  0},
+  {1, -t,  0},
+  {0, -1,  t},
+  {0,  1,  t},
+  {0, -1, -t},
+  {0,  1, -t},
+  {t,  0, -1},
+  {t,  0,  1},
+  {-t,  0, -1},
+  {-t,  0,  1}
+}
 
-  local d20_texture_vertices = {
-    {46, 83},
-    {55, 68},
-    {100, 83},
-    {82, 53},
-    {91, 68},
-    {100, 53},
-    {82, 83},
-    {64, 83},
-    {73, 68},
-    {64, 53},
-    {73, 98},
-    {118, 83},
+local d20_texture_vertices = {
+  {46, 83},
+  {55, 68},
+  {100, 83},
+  {82, 53},
+  {91, 68},
+  {100, 53},
+  {82, 83},
+  {64, 83},
+  {73, 68},
+  {64, 53},
+  {73, 98},
+  {118, 83},
 
-    {109, 68},
-    {37, 68},
-    {127, 68},
-    {28, 83},
-    {55, 98},
-    {91, 98},
-  }
+  {109, 68},
+  {37, 68},
+  {127, 68},
+  {28, 83},
+  {55, 98},
+  {91, 98},
+}
 
-  local d20_faces = {
-    {12, 11, 3, 3, 18, 7},  -- 1
-    {2, 6, 10, 5, 6, 13},  -- 2
-    {11, 8, 7, 8, 11, 7},  -- 3
-    {4, 10, 5, 5, 9, 4}, -- 4
-    {6, 12, 5, 12, 13, 15},  -- 5
-    {4, 7, 9, 5, 7, 9},  -- 6
-    {1, 11, 12, 17, 1, 8},  -- 7
-    {8, 2, 9},  -- 8
-    {4, 3, 7, 5, 3, 7},  -- 9
-    {1, 2, 8, 2, 8, 1},  -- 10
-    {4, 5, 3, 3, 5, 13},  -- 11
-    {1, 6, 2, 1, 14, 2},  -- 12
-    {3, 5, 12, 3, 13, 12},  -- 13
-    {4, 9, 10, 9, 10, 4},  -- 14
-    {1, 12, 6, 1, 16, 14},  -- 15
-    {9, 7, 8, 8, 9, 7},  -- 16
-    {1, 8, 11, 17, 8, 11},  -- 17
-    {5, 10, 6, 5, 4, 6},  -- 18
-    {7, 3, 11, 7, 18, 11},  -- 19
-    {10, 9, 2},  -- 20
-  }
+local d20_faces = {
+  {12, 11, 3, 3, 18, 7},
+  {2, 6, 10, 5, 6, 13},
+  {11, 8, 7, 8, 11, 7},
+  {4, 10, 5, 5, 9, 4},
+  {6, 12, 5, 12, 13, 15},
+  {4, 7, 9, 5, 7, 9},
+  {1, 11, 12, 17, 1, 8},
+  {8, 2, 9},
+  {4, 3, 7, 5, 3, 7},
+  {1, 2, 8, 2, 8, 1},
+  {4, 5, 3, 3, 5, 13},
+  {1, 6, 2, 1, 14, 2},
+  {3, 5, 12, 3, 13, 12},
+  {4, 9, 10, 9, 10, 4},
+  {1, 12, 6, 1, 16, 14},
+  {9, 7, 8, 8, 9, 7},
+  {1, 8, 11, 17, 8, 11},
+  {5, 10, 6, 5, 4, 6},
+  {7, 3, 11, 7, 18, 11},
+  {10, 9, 2},
+}
 
-  vertices_n = #d20_vertices
-  faces_n = #d20_faces
-
+local mesh, ode_vertices, ode_indices do
   local barycentrics = {
     {1, 0, 0},
     {0, 1, 0},
@@ -1353,7 +1349,7 @@ local mesh, ode_vertices, ode_indices, vertices_n, faces_n do
   local format = {
     {"VertexPosition", "float", 3},
     {"VertexTexCoord", "float", 2},
-    {"VertexColor", "float", 4},
+    {"VertexColor", "float", 4},  -- NEXT remove
     {"VertexBarycentric", "float", 3},
   }
 
@@ -1523,6 +1519,8 @@ ffi.cdef [[
   void dBodySetLinearVel(dBodyID, dReal x, dReal y, dReal z);
   const dReal *dBodyGetPosition(dBodyID);
   const dReal *dBodyGetRotation(dBodyID);
+  const dReal *dBodyGetLinearVel(dBodyID);
+  const dReal *dBodyGetAngularVel(dBodyID);
   
   // Mass
   void dMassSetSphereTotal(dMass*, dReal total_mass, dReal radius);
@@ -1573,8 +1571,8 @@ local die_body
   ode.dBodySetMass(die_body, mass)
   local tri_data = ode.dGeomTriMeshDataCreate()
   ode.dGeomTriMeshDataBuildSingle(
-    tri_data, ode_vertices, 4 * ffi.sizeof("float"), vertices_n,
-    ode_indices, faces_n * 3, 3 * ffi.sizeof("int")
+    tri_data, ode_vertices, 4 * ffi.sizeof("float"), #d20_vertices,
+    ode_indices, #d20_faces * 3, 3 * ffi.sizeof("int")
   )
   ode.dGeomTriMeshDataPreprocess(tri_data)
   local die_geom = ode.dCreateTriMesh(space, tri_data, nil, nil, nil)
@@ -1598,37 +1596,72 @@ local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", functi
   end
 end)
 
+local stopped = false
+
 draw_test_dice = function(dt)
-  -- ode.dSpaceCollide(space, nil, collision_callback)
-  -- ode.dWorldStep(world, dt)
-  -- ode.dJointGroupEmpty(contact_group)
-  -- local pos = ode.dBodyGetPosition(die_body)
-  -- local rot = ode.dBodyGetRotation(die_body)
+  ode.dSpaceCollide(space, nil, collision_callback)
+  ode.dWorldStep(world, dt)
+  ode.dJointGroupEmpty(contact_group)
+  local pos = ode.dBodyGetPosition(die_body)
+  local rot = ode.dBodyGetRotation(die_body)
 
-  -- local model = {
-  --   rot[0], rot[1], rot[2], 0,
-  --   -rot[8], -rot[9], -rot[10], 0,
-  --   rot[4], rot[5], rot[6], 0,
-  --   0, 0, 0, 1,
-  -- }
+  if not stopped then
+    local linear_v = ode.dBodyGetLinearVel(die_body)
+    local angular_v = ode.dBodyGetAngularVel(die_body)
+    stopped = (
+      math.abs(linear_v[0]) + math.abs(linear_v[1]) + math.abs(linear_v[2]) < .001
+      and math.abs(angular_v[0]) + math.abs(angular_v[1]) + math.abs(angular_v[2]) < .001
+    )
 
-  local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
-  local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
+    if stopped then
+      local key_min = math.huge
+      local face_i = 10
+      for i, face in ipairs(d20_faces) do
+        local a = V(unpack(d20_vertices[face[1]]))
+        local b = V(unpack(d20_vertices[face[2]]))
+        local c = V(unpack(d20_vertices[face[3]]))
+
+        local ab = b - a
+        local ac = c - a
+
+        local n = ab:cross(ac)
+
+        -- Rotation matrix =
+        -- [ rot[0]  rot[1]  rot[2]  ]
+        -- [ rot[4]  rot[5]  rot[6]  ]
+        -- [ rot[8]  rot[9]  rot[10] ]
+
+        local nx = rot[0] * n.x + rot[1] * n.y + rot[2] * n.z
+        local ny = rot[4] * n.x + rot[5] * n.y + rot[6] * n.z
+        local nz = rot[8] * n.x + rot[9] * n.y + rot[10] * n.z
+
+        if nz > 0 then
+          local key = math.abs(nx) + math.abs(ny)
+          if key < key_min then
+            key_min = key
+            face_i = i
+          end
+        end
+      end
+
+      Log.tracel(face_i)
+    end
+  end
+
   local model = {
-    cy,     0,    -sy,    0,
-    sx*sy,  cx,   sx*cy,  0,
-    cx*sy, -sx,   cx*cy,  0,
-    0,      0,    0,      1,
+    rot[0], rot[1], rot[2], 0,
+    rot[4], rot[5], rot[6], 0,
+    rot[8], rot[9], rot[10], 0,
+    0, 0, 0, 1,
   }
-  local pos = {[0] = 0, 0, 0}
+
   local die = render_d20(model, canvas_size)
   love.graphics.draw(
     die,
     64 + math.floor(pos[0] / physics_to_graphics_scale - die_r) * pixel_scale,
-    math.floor(fall_h - pos[2] / physics_to_graphics_scale - die_r) * pixel_scale,
+    0,
     0, pixel_scale
   )
-  love.graphics.line(0, fall_h * pixel_scale, 100, fall_h * pixel_scale)
 
   local SPEED = 0.33
   if love.mouse.isDown(1) then
