@@ -1256,20 +1256,67 @@ end
 
 local N = 100
 local mesh, ode_vertices, ode_indices, vertices_n, faces_n do
-  -- The Golden Ratio
-  local t = (1.0 + math.sqrt(5.0)) / 2.0
+  -- Golden ratio
+  local t = (1 + math.sqrt(5)) / 2
 
   local d20_vertices = {
-    {-1,  t,  0}, { 1,  t,  0}, {-1, -t,  0}, { 1, -t,  0},
-    { 0, -1,  t}, { 0,  1,  t}, { 0, -1, -t}, { 0,  1, -t},
-    { t,  0, -1}, { t,  0,  1}, {-t,  0, -1}, {-t,  0,  1}
+    {-1,  t,  0},
+    {1,  t,  0},
+    {-1, -t,  0},
+    {1, -t,  0},
+    {0, -1,  t},
+    {0,  1,  t},
+    {0, -1, -t},
+    {0,  1, -t},
+    {t,  0, -1},
+    {t,  0,  1},
+    {-t,  0, -1},
+    {-t,  0,  1}
+  }
+
+  local d20_texture_vertices = {
+    {46, 83},
+    {55, 68},
+    {100, 83},
+    {82, 53},
+    {91, 68},
+    {100, 53},
+    {82, 83},
+    {64, 83},
+    {73, 68},
+    {64, 53},
+    {73, 98},
+    {118, 83},
+
+    {109, 68},
+    {37, 68},
+    {127, 68},
+    {28, 83},
+    {55, 98},
+    {91, 98},
   }
 
   local d20_faces = {
-    {1, 12, 6}, {1, 6, 2}, {1, 2, 8}, {1, 8, 11}, {1, 11, 12},
-    {2, 6, 10}, {6, 12, 5}, {12, 11, 3}, {11, 8, 7}, {8, 2, 9},
-    {4, 10, 5}, {4, 5, 3}, {4, 3, 7}, {4, 7, 9}, {4, 9, 10},
-    {5, 10, 6}, {3, 5, 12}, {7, 3, 11}, {9, 7, 8}, {10, 9, 2},
+    {12, 11, 3, 3, 18, 7},  -- 1
+    {2, 6, 10, 5, 6, 13},  -- 2
+    {11, 8, 7, 8, 11, 7},  -- 3
+    {4, 10, 5, 5, 9, 4}, -- 4
+    {6, 12, 5, 12, 13, 15},  -- 5
+    {4, 7, 9, 5, 7, 9},  -- 6
+    {1, 11, 12, 17, 1, 8},  -- 7
+    {8, 2, 9},  -- 8
+    {4, 3, 7, 5, 3, 7},  -- 9
+    {1, 2, 8, 2, 8, 1},  -- 10
+    {4, 5, 3, 3, 5, 13},  -- 11
+    {1, 6, 2, 1, 14, 2},  -- 12
+    {3, 5, 12, 3, 13, 12},  -- 13
+    {4, 9, 10, 9, 10, 4},  -- 14
+    {1, 12, 6, 1, 16, 14},  -- 15
+    {9, 7, 8, 8, 9, 7},  -- 16
+    {1, 8, 11, 17, 8, 11},  -- 17
+    {5, 10, 6, 5, 4, 6},  -- 18
+    {7, 3, 11, 7, 18, 11},  -- 19
+    {10, 9, 2},  -- 20
   }
 
   vertices_n = #d20_vertices
@@ -1281,20 +1328,23 @@ local mesh, ode_vertices, ode_indices, vertices_n, faces_n do
     {0, 0, 1},
   }
 
+  local texture = love.graphics.newImage("engine/assets/textures/d20.png")
+  local tw, th = texture:getDimensions()
+
   local vertices = Table.new(#d20_faces * 3, 0)
   for _, face in ipairs(d20_faces) do
-    for i, triangle_index in ipairs(face) do
+    for i = 1, 3 do
+      local triangle_index = face[i]
       local b = barycentrics[i]
-      local point = d20_vertices[triangle_index]
+      local vertex = d20_vertices[triangle_index]
+      local texture_vertex = d20_texture_vertices[face[i + 3] or triangle_index]
       table.insert(vertices, {
-        N * point[1],
-        N * point[2],
-        N * point[3],
-        0, 0,
-        point[1],
-        point[2],
-        point[3],
-        1,
+        N * vertex[1],
+        N * vertex[2],
+        N * vertex[3],
+        (texture_vertex[1] - .5) / tw,
+        (texture_vertex[2] - .5) / th,
+        1, 1, 1, 1,
         unpack(b)
       })
     end
@@ -1308,6 +1358,7 @@ local mesh, ode_vertices, ode_indices, vertices_n, faces_n do
   }
 
   mesh = love.graphics.newMesh(format, vertices, "triangles", "static")
+  mesh:setTexture(texture)
 
   local k = .5 / math.sqrt(1 + t * t)
   ode_vertices = ffi.new("float[?]", #d20_vertices * 4)
@@ -1360,7 +1411,7 @@ local shader = love.graphics.newShader [[
     if (any(lessThan(v_barycentric, pixel_thickness / 2))) {
       return vec4(.9, .9, .9, 1);
     } else {
-      return vec4(.18, .24, .37, 1);
+      return it;
     }
   }
   #endif
@@ -1496,8 +1547,8 @@ ffi.cdef [[
   int dGeomTriMeshGetTriangleCount(dGeomID);
 ]]
 
-local pixel_scale = 4
-local canvas_size = 32
+local pixel_scale = 1
+local canvas_size = 4 * 32
 local die_r = canvas_size / 2
 local fall_h = 128
 local die_r_meters = .5
@@ -1548,19 +1599,28 @@ local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", functi
 end)
 
 draw_test_dice = function(dt)
-  ode.dSpaceCollide(space, nil, collision_callback)
-  ode.dWorldStep(world, dt)
-  ode.dJointGroupEmpty(contact_group)
-  local pos = ode.dBodyGetPosition(die_body)
-  local rot = ode.dBodyGetRotation(die_body)
+  -- ode.dSpaceCollide(space, nil, collision_callback)
+  -- ode.dWorldStep(world, dt)
+  -- ode.dJointGroupEmpty(contact_group)
+  -- local pos = ode.dBodyGetPosition(die_body)
+  -- local rot = ode.dBodyGetRotation(die_body)
 
+  -- local model = {
+  --   rot[0], rot[1], rot[2], 0,
+  --   -rot[8], -rot[9], -rot[10], 0,
+  --   rot[4], rot[5], rot[6], 0,
+  --   0, 0, 0, 1,
+  -- }
+
+  local cx, sx = math.cos(rotation_x), math.sin(rotation_x)
+  local cy, sy = math.cos(rotation_y), math.sin(rotation_y)
   local model = {
-    rot[0], rot[1], rot[2], 0,
-    -rot[8], -rot[9], -rot[10], 0,
-    rot[4], rot[5], rot[6], 0,
-    0, 0, 0, 1,
+    cy,     0,    -sy,    0,
+    sx*sy,  cx,   sx*cy,  0,
+    cx*sy, -sx,   cx*cy,  0,
+    0,      0,    0,      1,
   }
-
+  local pos = {[0] = 0, 0, 0}
   local die = render_d20(model, canvas_size)
   love.graphics.draw(
     die,

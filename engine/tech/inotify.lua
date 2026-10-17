@@ -34,7 +34,9 @@ get_subdirectories_recursively = function(base, result)
 end
 
 local is_available do
-  is_available = love.system.getOS() == "Linux" and not Common.is_game_built()
+  is_available = love.system.getOS() == "Linux"
+    and not Common.is_game_built()
+    and os.getenv("NO_HOTRELOAD") ~= "1"
 
   if is_available then
     Log.info("inotify enabled")
