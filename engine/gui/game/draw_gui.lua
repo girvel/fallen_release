@@ -1545,7 +1545,6 @@ ffi.cdef [[
   int dGeomTriMeshGetTriangleCount(dGeomID);
 ]]
 
-local pixel_scale = 1
 local canvas_size = 4 * 32
 local die_r = canvas_size / 2
 local fall_h = 128
@@ -1560,12 +1559,19 @@ local world = ode.dWorldCreate()
 ode.dWorldSetGravity(world, 0, 0, -9.81)
 local space = ode.dHashSpaceCreate(nil)
 local contact_group = ode.dJointGroupCreate(0)
-local floor_geom = ode.dCreatePlane(space, 0, 0, 1, 0)
+ode.dCreatePlane(space, 0, 0, 1, 0)
+
+local w, h = 1125, 1378
+ode.dCreatePlane(space, 1, 0, 0, 0)
+ode.dCreatePlane(space, -1, 0, 0, -w * physics_to_graphics_scale)
+ode.dCreatePlane(space, 0, 1, 0, 0)
+ode.dCreatePlane(space, 0, -1, 0, -h * physics_to_graphics_scale)
 
 local die_body
   die_body = ode.dBodyCreate(world)
-  ode.dBodySetPosition(die_body, 0, 0, fall_h_meters)
-  ode.dBodySetLinearVel(die_body, 3, 0, 0)
+  ode.dBodySetPosition(die_body, 1, 1, fall_h_meters)
+  local v = Vector.one:rotate(math.random() * 2 * math.pi):mul_mut(50)
+  ode.dBodySetLinearVel(die_body, v.x, v.y, 0)
   local mass = ffi.new("dMass")
   ode.dMassSetSphereTotal(mass, 1.0, die_r_meters)
   ode.dBodySetMass(die_body, mass)
@@ -1576,8 +1582,6 @@ local die_body
   )
   ode.dGeomTriMeshDataPreprocess(tri_data)
   local die_geom = ode.dCreateTriMesh(space, tri_data, nil, nil, nil)
-  Log.tracel(ode.dGeomTriMeshGetTriangleCount(die_geom))
-  Log.tracel(ode_vertices[0], ode_vertices[1], ode_vertices[2])
   ode.dGeomSetBody(die_geom, die_body)
 
 local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", function(data, a, b)
@@ -1658,9 +1662,8 @@ draw_test_dice = function(dt)
   local die = render_d20(model, canvas_size)
   love.graphics.draw(
     die,
-    64 + math.floor(pos[0] / physics_to_graphics_scale - die_r) * pixel_scale,
-    0,
-    0, pixel_scale
+    math.floor(pos[0] / physics_to_graphics_scale - die_r),
+    math.floor(pos[1] / physics_to_graphics_scale - die_r)
   )
 
   local SPEED = 0.33

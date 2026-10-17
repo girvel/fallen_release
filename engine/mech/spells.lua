@@ -231,7 +231,7 @@ spells.spray_of_cards = action.leveled_spell(2, function(mod, cast_level)
       local dc = entity:get_spell_dc(mod)
 
       local d = params.direction
-      local dr = d:rotate()
+      local dr = d:rotate2()
       local damages = {}
       for _, delta in ipairs {
         d, 2 * d, dr + d, -dr + d,

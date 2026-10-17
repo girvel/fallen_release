@@ -356,9 +356,15 @@ vector_methods.normalized_mut = function(self)
   return self
 end
 
+vector_methods.rotate = function(self, angle_rad)
+  local sin = math.sin(angle_rad)
+  local cos = math.cos(angle_rad)
+  return V(self[1] * cos - self[2] * sin, self[1] * sin + self[2] * cos)
+end
+
 --- Rotate vector 90 degrees counterclockwise
 --- @return vector
-vector_methods.rotate_mut = function(self)
+vector_methods.rotate2_mut = function(self)
   assert(#self == 2)
   local t = self[1]
   self[1] = -self[2]
@@ -368,8 +374,8 @@ end
 
 --- Copy & rotate vector 90 degrees counterclockwise
 --- @return vector
-vector_methods.rotate = function(self)
-  return self:copy():rotate_mut()
+vector_methods.rotate2 = function(self)
+  return self:copy():rotate2_mut()
 end
 
 --- @param v vector

@@ -190,7 +190,6 @@ methods.observe = function(self, entity, dt)
         and api.distance(entity, e) <= self.targeting.support_range
         and (entity.blind_sight_flag or self._vision_map:is_visible_unsafe(unpack(e.position)))
       then
-        Log.tracel(self.targeting)
         Log.debug(
           "%s sees the %s in combat and wants to help them",
           Name.code(entity), Name.code(e)
