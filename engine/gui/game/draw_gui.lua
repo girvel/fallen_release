@@ -1254,7 +1254,8 @@ draw_popups = function(dt)
   State.model.popups = next_popups
 end
 
-local N = 100
+local N = 1.9
+local FOV = 1
 local t = (1 + math.sqrt(5)) / 2  -- Golden ratio
 
 local d20_vertices = {
@@ -1417,9 +1418,9 @@ local render_d20 = function(model_matrix, size)
   local w = size
   local h = size
 
-  local fov = math.rad(60)
+  local fov = math.rad(FOV)
   local aspect = w / h
-  local near, far = 1, 1000
+  local near, far = 1, 10000
   local f = 1 / math.tan(fov / 2)
   local projection = {
     f / aspect, 0, 0, 0,
