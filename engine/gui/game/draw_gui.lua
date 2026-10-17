@@ -1567,22 +1567,37 @@ ode.dCreatePlane(space, -1, 0, 0, -w * physics_to_graphics_scale)
 ode.dCreatePlane(space, 0, 1, 0, 0)
 ode.dCreatePlane(space, 0, -1, 0, -h * physics_to_graphics_scale)
 
-local die_body
-  die_body = ode.dBodyCreate(world)
-  ode.dBodySetPosition(die_body, 1, 1, fall_h_meters)
-  local v = Vector.one:rotate(math.random() * 2 * math.pi):mul_mut(50)
-  ode.dBodySetLinearVel(die_body, v.x, v.y, 0)
-  local mass = ffi.new("dMass")
-  ode.dMassSetSphereTotal(mass, 1.0, die_r_meters)
-  ode.dBodySetMass(die_body, mass)
-  local tri_data = ode.dGeomTriMeshDataCreate()
-  ode.dGeomTriMeshDataBuildSingle(
-    tri_data, ode_vertices, 4 * ffi.sizeof("float"), #d20_vertices,
-    ode_indices, #d20_faces * 3, 3 * ffi.sizeof("int")
-  )
-  ode.dGeomTriMeshDataPreprocess(tri_data)
-  local die_geom = ode.dCreateTriMesh(space, tri_data, nil, nil, nil)
-  ode.dGeomSetBody(die_geom, die_body)
+local die_body = ode.dBodyCreate(world)
+ode.dBodySetPosition(die_body, 1, 1, fall_h_meters)
+local v = Vector.one:rotate(math.random() * 2 * math.pi):mul_mut(50)
+ode.dBodySetLinearVel(die_body, v.x, v.y, 0)
+local mass = ffi.new("dMass")
+ode.dMassSetSphereTotal(mass, 1.0, die_r_meters)
+ode.dBodySetMass(die_body, mass)
+local tri_data = ode.dGeomTriMeshDataCreate()
+ode.dGeomTriMeshDataBuildSingle(
+  tri_data, ode_vertices, 4 * ffi.sizeof("float"), #d20_vertices,
+  ode_indices, #d20_faces * 3, 3 * ffi.sizeof("int")
+)
+ode.dGeomTriMeshDataPreprocess(tri_data)
+local die_geom = ode.dCreateTriMesh(space, tri_data, nil, nil, nil)
+ode.dGeomSetBody(die_geom, die_body)
+
+local second_die_body = ode.dBodyCreate(world)
+ode.dBodySetPosition(second_die_body, 2, 2, fall_h_meters)
+v = Vector.one:rotate(math.random() * 2 * math.pi):mul_mut(50)
+ode.dBodySetLinearVel(second_die_body, v.x, v.y, 0)
+mass = ffi.new("dMass")
+ode.dMassSetSphereTotal(mass, 1.0, die_r_meters)
+ode.dBodySetMass(second_die_body, mass)
+tri_data = ode.dGeomTriMeshDataCreate()
+ode.dGeomTriMeshDataBuildSingle(
+  tri_data, ode_vertices, 4 * ffi.sizeof("float"), #d20_vertices,
+  ode_indices, #d20_faces * 3, 3 * ffi.sizeof("int")
+)
+ode.dGeomTriMeshDataPreprocess(tri_data)
+die_geom = ode.dCreateTriMesh(space, tri_data, nil, nil, nil)
+ode.dGeomSetBody(die_geom, second_die_body)
 
 local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", function(data, a, b)
   local contacts = ffi.new("dContact[4]")
@@ -1651,6 +1666,23 @@ draw_test_dice = function(dt)
       Log.tracel(face_i)
     end
   end
+
+  local model = {
+    rot[0], rot[1], rot[2], 0,
+    rot[4], rot[5], rot[6], 0,
+    rot[8], rot[9], rot[10], 0,
+    0, 0, 0, 1,
+  }
+
+  local die = render_d20(model, canvas_size)
+  love.graphics.draw(
+    die,
+    math.floor(pos[0] / physics_to_graphics_scale - die_r),
+    math.floor(pos[1] / physics_to_graphics_scale - die_r)
+  )
+
+  local pos = ode.dBodyGetPosition(second_die_body)
+  local rot = ode.dBodyGetRotation(second_die_body)
 
   local model = {
     rot[0], rot[1], rot[2], 0,
