@@ -328,15 +328,15 @@ local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", functi
 end)
 
 --- @async
---- @param this_roll d
+--- @param this_roll d.roll
 --- @return integer
 rolling.make = function(this_roll)
   do
     assert(#this_roll.dice == 1)
+    assert(#this_roll.reroll == 0)
     local die = this_roll.dice[1]
     assert(die.sides_n == 20)
-    assert(die.advantage == "none")
-    assert(#die.reroll == 0)
+    assert(die.advantage == 0)
   end
 
   local die = add_d20()
@@ -441,7 +441,11 @@ rolling.make = function(this_roll)
     end
   end
 
-  return face_i + this_roll.bonus
+  local result = face_i
+  for _, bonus in ipairs(this_roll.bonuses) do
+    result = result + bonus.value
+  end
+  return result
 end
 
 jit.off(rolling.make)

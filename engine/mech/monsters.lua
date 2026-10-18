@@ -62,7 +62,7 @@ monsters.bat = function()
     max_hp = 1,
     faction = "monsters",
     inventory = {
-      hand = item.natural_weapon(D.new({}, 3)),
+      hand = item.natural_weapon(D.new():add_bonus(3, "")),
     },
     on_death = humanoid.add_blood_mark,
     no_sound_flag = true,

@@ -127,8 +127,8 @@ end
 
 --- @param source entity attacking entity
 --- @param target entity attacked entity
---- @param attack_roll d
---- @param damage_roll d
+--- @param attack_roll d.roll
+--- @param damage_roll d.roll
 --- @return boolean did_hit
 --- @return boolean is_critical
 --- @return integer damage
@@ -146,7 +146,7 @@ health.attack_precog = function(source, target, attack_roll, damage_roll)
     is_critical = target:modify("incoming_is_critical", is_critical, source)
   end
   if is_critical then
-    damage_roll = damage_roll + D.new(damage_roll.dice, 0)
+    damage_roll = damage_roll + D.new(unpack(damage_roll.dice))
   end
 
   Log.info("%s / %s | %s attacks %s", attack, ac, source, target)

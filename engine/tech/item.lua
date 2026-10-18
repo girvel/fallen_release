@@ -19,7 +19,7 @@ item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "bod
 
 --- @alias item item_strict|table
 --- @class item_strict: entity_strict
---- @field damage_roll? d present only in weapons
+--- @field damage_roll? d.roll present only in weapons
 --- @field bonus? integer bonus damage
 --- @field tags item.tags
 --- @field slot item_slot
@@ -71,7 +71,7 @@ item.mix_min = function(entity, slot)
   entity.slot = entity.slot or slot
 end
 
---- @param damage_roll d
+--- @param damage_roll d.roll
 --- @param bonus integer?
 --- @return item
 item.natural_weapon = function(damage_roll, bonus)

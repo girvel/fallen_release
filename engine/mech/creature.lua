@@ -220,7 +220,7 @@ end
 
 --- @param self entity
 --- @param ability ability|skill
---- @return d
+--- @return d.roll
 creature.methods.get_roll = function(self, ability)
   return D(20) + self:get_modifier(ability)
 end
@@ -305,7 +305,7 @@ end
 
 --- @param self entity
 --- @param slot string
---- @return d
+--- @return d.roll
 creature.methods.get_attack_roll = function(self, slot)
   local weapon = self.inventory[slot]
   local roll = D(20)
@@ -321,11 +321,12 @@ end
 
 --- @param self entity
 --- @param slot string
---- @return d
+--- @return d.roll
 creature.methods.get_damage_roll = function(self, slot)
   local weapon = self.inventory[slot]
   if not weapon then
-    return D.new({}, self:get_modifier("str") + 1)
+    return D.new()
+      :add_bonus(self:get_modifier("str") + 1, "Сила")
   end
 
   local roll
