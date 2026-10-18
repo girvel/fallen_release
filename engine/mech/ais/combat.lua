@@ -46,27 +46,39 @@ methods.init = function(self, entity)
     if target == entity then
       self.source_of_last_attack = attacker.position
     end
+
     local hostility_to_attacker = State.hostility:get(entity, attacker)
     if hostility_to_attacker == "ally"
       or State.hostility:get(entity, target) ~= "ally"
       or not ai.sees(entity, self.targeting.support_range, self._vision_map, attacker.position)
     then return end
 
-    if not State:in_combat(entity) then
-      Log.debug(
-        "%s sees its ally %s being attacked by %s and joins combat",
-        Name.code(entity), Name.code(target), Name.code(attacker)
-      )
-      State:add(animated.fx("engine/assets/animations/aggression", entity.position))
-      State:start_combat({entity, attacker})
+    if hostility_to_attacker ~= "enemy" then
+      if target == entity then
+        Log.debug(
+          "%s is attacked by %s and becomes its enemy",
+          Name.code(entity), Name.code(attacker)
+        )
+      else
+        Log.debug(
+          "%s sees its ally %s being attacked by %s and becomes its enemy",
+          Name.code(entity), Name.code(target), Name.code(attacker)
+        )
+      end
+      State.hostility:set(entity.faction, attacker.faction, "enemy")
     end
 
-    if hostility_to_attacker ~= "enemy" then
-      Log.debug(
-        "%s sees its ally %s being attacked by %s and becomes its enemy",
-        Name.code(entity), Name.code(target), Name.code(attacker)
-      )
-      State.hostility:set(entity.faction, attacker.faction, "enemy")
+    if not State:in_combat(entity) then
+      if target == entity then
+        Log.debug("%s is attacked by %s and joins combat", Name.code(entity), Name.code(attacker))
+      else
+        Log.debug(
+          "%s sees its ally %s being attacked by %s and joins combat",
+          Name.code(entity), Name.code(target), Name.code(attacker)
+        )
+      end
+      State:add(animated.fx("engine/assets/animations/aggression", entity.position))
+      State:start_combat({entity, attacker})
     end
   end)
 
