@@ -222,7 +222,7 @@ end
 --- @param ability ability|skill
 --- @return d
 creature.methods.get_roll = function(self, ability)
-  return D(20) + self:get_modifier(ability) + xp.get_proficiency_bonus(self.level or 1)
+  return D(20) + self:get_modifier(ability)
 end
 
 local SUCCESS = sound.multiple("engine/assets/sounds/check_succeeded")
@@ -233,7 +233,7 @@ local FAILURE = sound.multiple("engine/assets/sounds/check_failed")
 --- @param dc integer difficulty class
 --- @return boolean
 creature.methods.ability_check_precog = function(self, to_check, dc)
-  local result = (D(20) + self:get_modifier(to_check)):roll()
+  local result = self:get_roll(to_check):roll()
   local success = result >= dc
   Log.debug(
     "%s %s %s / %s | Ability check for %s",

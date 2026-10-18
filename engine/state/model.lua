@@ -31,6 +31,7 @@ local model = {}
 --- @field is_deaf boolean
 --- @field journal_new fun(): table
 --- @field has_new_task boolean
+--- @field roll_co? thread
 local methods = {}
 model.mt = {__index = methods}
 

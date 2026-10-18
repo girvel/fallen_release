@@ -1656,8 +1656,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
-      local check = State.player:ability_check("history", 12)
-      if check then xp.reward(State.player, xp.check) end
+      local check = api.ability_check("history", 12)
       sp:start_single_branch(check and 1 or 2)
         api.popup(sp:literal(), ps.captain_deck_message)
       sp:finish_single_branch()

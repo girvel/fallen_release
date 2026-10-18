@@ -1,3 +1,4 @@
+local rolling = require("engine.tech.rolling")
 local console = require("engine.tech.console")
 local inotify = require("engine.tech.inotify")
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
@@ -81,6 +82,8 @@ love.load = function(args)
 
   discord.init("1282966796533501953", "Дискорд игры", "https://discord.gg/9G7VD9bqMy")
   discord.set_status("В главном меню")
+
+  rolling.init()
 
   -- state = "Работает над 'Discord Rich Presence POC', что бы это ни было",
   -- details = "Пишет коды для игры",

@@ -1,3 +1,4 @@
+local rolling = require("engine.tech.rolling")
 local xp = require("engine.mech.xp")
 local tk = require("engine.gui.tk")
 local translation = require("engine.tech.translation")
@@ -676,6 +677,26 @@ end
 api.unlock = function(entity)
   assert(State.level.locked_entities[entity])
   State.level.locked_entities[entity] = nil
+end
+
+--- @param to_check ability|skill
+--- @param dc integer difficulty class
+--- @return boolean
+api.ability_check = function(to_check, dc)
+  local roll = State.player:get_roll(to_check)
+  while State.model.roll_co do coroutine.yield() end
+
+  local value
+  State.model.roll_co = coroutine.create(function()
+    value = rolling.make(roll)
+  end)
+
+  while value == nil do coroutine.yield() end
+  local result = value >= dc
+  if result then xp.reward(State.player, xp.check) end
+  Log.debug("%s %s/%s (%s) | Ability check",
+            to_check:utf_upper(), value, dc, result and "+" or "-")
+  return result
 end
 
 Ldump.mark(api, {}, ...)
