@@ -1,3 +1,4 @@
+local async = require("engine.tech.async")
 local ffi_fix = require("engine.tech.ffi_fix")
 local ffi = require("ffi")
 local rolling = {}
@@ -119,14 +120,20 @@ rolling.init = function()
     uniform mat4 model;
     uniform mat4 view;
     uniform mat4 projection;
+    uniform float highlighted_face;
+    uniform float highlighted_t;
+    uniform float highlighted_duration;
 
     varying vec3 v_barycentric;
+    varying float v_is_highlighted;
 
     #ifdef VERTEX
     attribute vec3 VertexBarycentric;
+    attribute float FaceI;
 
     vec4 position(mat4 transform_projection, vec4 vertex_position) {
       v_barycentric = VertexBarycentric;
+      v_is_highlighted = FaceI == highlighted_face ? 1. : 0.;
       return projection * view * model * vertex_position;
     }
     #endif
@@ -135,12 +142,17 @@ rolling.init = function()
     vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords) {
       vec4 it = Texel(tex, texture_coords) * color;
       vec3 pixel_thickness = fwidth(v_barycentric);
+      const vec4 number_color = vec4(.93, .93, .93, 1);
 
-      if (any(lessThan(v_barycentric, pixel_thickness / 2))) {
-        return vec4(.9, .9, .9, 1);
-      } else {
-        return it;
+      if (any(lessThan(v_barycentric, pixel_thickness / 2))) return vec4(.9, .9, .9, 1);
+      if (abs(v_is_highlighted - 1.) <= 0.45) {
+        vec3 v = distance(number_color, it) <= .01 ? vec3(.97, .90, .70) : it.rgb;
+        const vec3 luminance_factor = vec3(0.2126, 0.7152, 0.0722);
+        vec3 grayscale = vec3(dot(v, luminance_factor));
+        float k = 1 + .5 * highlighted_t / highlighted_duration;
+        return vec4(mix(grayscale, v, k), 1);
       }
+      return it;
     }
     #endif
   ]]
@@ -168,25 +180,26 @@ rolling.init = function()
 
   shader:send("projection", "row", projection)
   shader:send("view", "row", view)
+  shader:send("highlighted_face", 0)
 end
 
-local t = (1 + math.sqrt(5)) / 2  -- Golden ratio
+local f = (1 + math.sqrt(5)) / 2  -- Golden ratio
 local d20 = {
   texture = love.graphics.newImage("engine/assets/textures/d20.png"),
 
   vertices = {
-    {-1,  t,  0},
-    {1,  t,  0},
-    {-1, -t,  0},
-    {1, -t,  0},
-    {0, -1,  t},
-    {0,  1,  t},
-    {0, -1, -t},
-    {0,  1, -t},
-    {t,  0, -1},
-    {t,  0,  1},
-    {-t,  0, -1},
-    {-t,  0,  1}
+    {-1,  f,  0},
+    {1,  f,  0},
+    {-1, -f,  0},
+    {1, -f,  0},
+    {0, -1,  f},
+    {0,  1,  f},
+    {0, -1, -f},
+    {0,  1, -f},
+    {f,  0, -1},
+    {f,  0,  1},
+    {-f,  0, -1},
+    {-f,  0,  1}
   },
 
   texture_vertices = {
@@ -235,7 +248,7 @@ local d20 = {
   },
 }
 
-local k = .5 / math.sqrt(1 + t * t)
+local k = .5 / math.sqrt(1 + f * f)
 d20.ode_vertices = ffi.new("float[?]", #d20.vertices * 4)
 for i, vertex in ipairs(d20.vertices) do
   d20.ode_vertices[(i - 1) * 4] = vertex[1] * k
@@ -261,7 +274,7 @@ do
   local tw, th = d20.texture:getDimensions()
 
   d20.mesh_vertices = Table.new(#d20.faces * 3, 0)
-  for _, face in ipairs(d20.faces) do
+  for face_i, face in ipairs(d20.faces) do
     for i = 1, 3 do
       local triangle_index = face[i]
       local b = barycentrics[i]
@@ -273,7 +286,8 @@ do
         N * vertex[3],
         (texture_vertex[1] - .5) / tw,
         (texture_vertex[2] - .5) / th,
-        unpack(b)
+        b[1], b[2], b[3],
+        face_i, 0, 0, 0,
       })
     end
   end
@@ -283,12 +297,13 @@ local default_mesh_format = {
   {"VertexPosition", "float", 3},
   {"VertexTexCoord", "float", 2},
   {"VertexBarycentric", "float", 3},
+  {"FaceI", "float", 1},
 }
 
 local add_d20 = function()
   local mesh = love.graphics.newMesh(default_mesh_format, d20.mesh_vertices, "triangles", "static")
   mesh:setTexture(d20.texture)
-  
+
   local body = ode.dBodyCreate(world)
   ode.dBodySetPosition(body, 1, 1, fall_h_meters)
   local v = Vector.one:rotate(math.random() * 2 * math.pi):mul_mut(50)
@@ -327,6 +342,36 @@ local collision_callback = ffi.cast("void (*)(void *, dGeomID, dGeomID)", functi
   end
 end)
 
+local update_physics = function(die, dt)
+  ode.dSpaceCollide(space, nil, collision_callback)
+  ode.dWorldStep(world, dt)
+  ode.dJointGroupEmpty(contact_group)
+  return ode.dBodyGetPosition(die.body), ode.dBodyGetRotation(die.body)
+end
+
+local update_graphics = function(pos, model, canvas_pair, mesh)
+  local prev_shader = love.graphics.getShader()
+  love.graphics.setShader(shader)
+  love.graphics.setDepthMode("less", true)
+  shader:send("model", "row", model)
+
+  local prev_canvas = love.graphics.getCanvas()
+  love.graphics.setCanvas(canvas_pair)
+  love.graphics.clear()
+
+  love.graphics.draw(mesh)
+
+  love.graphics.setDepthMode("always", false)
+  love.graphics.setShader(prev_shader)
+  love.graphics.setCanvas(prev_canvas)
+
+  love.graphics.draw(
+    canvas_pair[1],
+    math.floor(pos[0] / physics_to_graphics_scale - die_r),
+    math.floor(pos[1] / physics_to_graphics_scale - die_r)
+  )
+end
+
 --- @async
 --- @param this_roll d.roll
 --- @return integer
@@ -358,16 +403,12 @@ rolling.make = function(this_roll)
                                                {format = "depth16", readable = false})
   local canvas_pair = {die_canvas, depthstencil = depth_canvas}
 
-  local rot
+  local pos, rot
 
   while true do
     local dt = coroutine.yield()
 
-    ode.dSpaceCollide(space, nil, collision_callback)
-    ode.dWorldStep(world, dt)
-    ode.dJointGroupEmpty(contact_group)
-    local pos = ode.dBodyGetPosition(die.body)
-    rot = ode.dBodyGetRotation(die.body)
+    pos, rot = update_physics(die, dt)
 
     model[1] = rot[0]
     model[2] = rot[1]
@@ -381,26 +422,7 @@ rolling.make = function(this_roll)
     model[10] = rot[9]
     model[11] = rot[10]
 
-    local prev_shader = love.graphics.getShader()
-    love.graphics.setShader(shader)
-    love.graphics.setDepthMode("less", true)
-    shader:send("model", "row", model)
-
-    local prev_canvas = love.graphics.getCanvas()
-    love.graphics.setCanvas(canvas_pair)
-    love.graphics.clear()
-
-    love.graphics.draw(die.mesh)
-
-    love.graphics.setDepthMode("always", false)
-    love.graphics.setShader(prev_shader)
-    love.graphics.setCanvas(prev_canvas)
-
-    love.graphics.draw(
-      die_canvas,
-      math.floor(pos[0] / physics_to_graphics_scale - die_r),
-      math.floor(pos[1] / physics_to_graphics_scale - die_r)
-    )
+    update_graphics(pos, model, canvas_pair, die.mesh)
 
     local linear_v = ode.dBodyGetLinearVel(die.body)
     local angular_v = ode.dBodyGetAngularVel(die.body)
@@ -439,6 +461,18 @@ rolling.make = function(this_roll)
         face_i = i
       end
     end
+  end
+
+  local duration = 3.
+  shader:send("highlighted_face", face_i)
+  shader:send("highlighted_duration", duration)
+  local t = love.timer.getTime()
+  while true do
+    local dt = love.timer.getTime() - t
+    if dt >= duration then break end
+    shader:send("highlighted_t", dt)
+    update_graphics(pos, model, canvas_pair, die.mesh)
+    coroutine.yield()
   end
 
   local result = face_i
