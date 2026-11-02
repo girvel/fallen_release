@@ -62,6 +62,7 @@ action.base = {
 --- @field codename? string
 --- @field name? string
 --- @field upcast_from? action
+--- @field futile_upcast_flag? boolean
 --- @field cost? table<string, number>
 --- @field parameters? action_params_def
 --- @field get_hint? fun(self: action, entity: entity): string

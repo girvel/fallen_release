@@ -144,6 +144,8 @@ spells.hex = action.leveled_spell(1, function(mod, cast_level)
       bonus_actions = 1,
     },
 
+    futile_upcast_flag = true,
+
     parameters = {
       entity_targets = {
         filter = action.filters.visible_enemy(40),

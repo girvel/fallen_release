@@ -34,10 +34,13 @@ local dialogue_x, dialogue_y, dialogue_w, dialogue_h
 -- [SECTION] Helper functions
 ----------------------------------------------------------------------------------------------------
 
-local action_button = function(displayed_action, hotkey, this_upcasting_group)
+--- @param displayed_action action
+--- @param hotkey love.KeyConstant
+--- @param upcasting_group? action[]
+local action_button = function(displayed_action, hotkey, upcasting_group)
   local player = State.player
-  if this_upcasting_group and not displayed_action:is_available(player) then
-    for _, this_action in ipairs(this_upcasting_group) do
+  if upcasting_group and not displayed_action:is_available(player) then
+    for _, this_action in ipairs(upcasting_group) do
       if this_action:is_available(player) then
         displayed_action = this_action
         break
@@ -54,10 +57,10 @@ local action_button = function(displayed_action, hotkey, this_upcasting_group)
   end
   local button = ui.key_button(image, hotkey, not is_available)
   if button.is_clicked then
-    if this_upcasting_group then
+    if upcasting_group and not displayed_action.futile_upcast_flag then
       input_state = {
         mode = "upcast",
-        group = this_upcasting_group,
+        group = upcasting_group,
       }
     elseif displayed_action.parameters == nil or Table.count(displayed_action.parameters) == 0 then
       player.ai:plan_action(displayed_action)
@@ -172,8 +175,6 @@ local draw_gui, draw_sidebar, draw_top_bars, draw_action_grid, draw_resources, d
   draw_bag, draw_dialogue, draw_notification, draw_order, draw_suggestion,
   draw_keyboard_action_grid, draw_cancel_action_grid, draw_upcast_action_grid,
   use_mouse, draw_curtain, draw_popups
-
-local roll_co
 
 --- @param self gui_game
 --- @param dt number
@@ -328,7 +329,12 @@ draw_action_grid = function(self)
 end
 
 draw_keyboard_action_grid = function(self)
-  local additional_actions, upcasts do
+  --- @type action[]
+  local additional_actions
+  --- @type table<action, action[]>
+  local upcasts
+
+  do
     local source = State.player:modify("additional_actions", {}) --[=[@as action[]]=]
     additional_actions = {}
     upcasts = {}

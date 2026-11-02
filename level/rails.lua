@@ -1,3 +1,5 @@
+local spells = require("engine.mech.spells")
+local class = require("engine.mech.class")
 local on_solids = require("level.palette.on_solids")
 local interactive = require("engine.tech.interactive")
 local async = require("engine.tech.async")
@@ -82,6 +84,10 @@ init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
     Kernel.gui._mode:submit()
+    State.player.resources.spell_slots_1 = 3
+    State.player.resources.spell_slots_2 = 3
+    State.player.resources.spell_slots_3 = 3
+    table.insert(State.player.perks, class.spell(spells.hex, "cha"))
   end)
 end
 
