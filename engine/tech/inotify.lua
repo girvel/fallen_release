@@ -160,12 +160,17 @@ inotify.update = function()
   if modules_changed then
     for prev_mod, params in pairs(module_map) do
       if changed_files[Common.posix_path(params.modpath)] then
-        Log.info("Reloaded %s", params.modpath)
         package.loaded[params.modpath] = nil
-        local mod = require(params.modpath)
-        module_map[mod] = params
-        params.container[params.key] = mod
-        Ldump.serializer.handlers[mod] = Ldump.serializer.handlers[prev_mod]
+        local ok, res = pcall(require, params.modpath)
+        if ok then
+          Log.info("Reloaded %s", params.modpath)
+          module_map[res] = params
+          params.container[params.key] = res
+          Ldump.serializer.handlers[res] = Ldump.serializer.handlers[prev_mod]
+        else
+          Log.error("Error reloading %s: %s", params.modpath, res)
+          package.loaded[params.modpath] = prev_mod
+        end
       end
     end
   end
