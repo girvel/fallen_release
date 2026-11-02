@@ -114,7 +114,6 @@ rolling.init = function()
   contact_group = ode.dJointGroupCreate(0)
   ode.dCreatePlane(space, 0, 0, 1, 0)
 
-  -- NEXT shader to a separate file?
   shader = love.graphics.newShader [[
     #extension GL_OES_standard_derivatives : enable
     uniform mat4 model;
