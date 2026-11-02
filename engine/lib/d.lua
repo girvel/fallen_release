@@ -254,6 +254,9 @@ methods.roll = function(self)
       repr = repr.." + "
     end
     repr = repr..math.abs(v)
+    if die.advantage ~= 0 then
+      repr = repr..(die.advantage > 0 and ADVANTAGE_CHAR or DISADVANTAGE_CHAR)
+    end
     if rerolled then
       repr = repr.."🗘"
     end
@@ -307,7 +310,7 @@ methods.shift_advantage = function(self, value)
   local found = false
   for _, die in ipairs(self.dice) do
     if die.sides_n == 20 then
-      assert(not found, "Can not set advantage for a roll with multiple D20")
+      assert(not found, "Setting advantage for a roll with multiple D20")
       found = true
       die.advantage = die.advantage + value
     end
