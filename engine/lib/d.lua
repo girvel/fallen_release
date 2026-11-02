@@ -128,6 +128,13 @@ methods.add_die = function(self, sides_n, comment)
   return self
 end
 
+local copy_bonus = function(bonus)
+  return {
+    value = bonus.value,
+    comment = bonus.comment,
+  }
+end
+
 --- @param self d.roll
 --- @deprecated
 d.mt.__add = function(self, other)
@@ -136,7 +143,19 @@ d.mt.__add = function(self, other)
   end
 
   if type(other) == "table" then
-    return self:copy():add_die(other)
+    local copy = self:copy()
+    local other_mt = getmetatable(other)
+    if other_mt == d.mt then  --- @cast other d.roll
+      for _, die in ipairs(other.dice) do
+        table.insert(copy.dice, die:copy())
+      end
+      for _, bonus in ipairs(other.bonuses) do
+        table.insert(copy.bonuses, copy_bonus(bonus))
+      end
+      return copy
+    else
+      assert(false)
+    end
   end
 
   error("Trying to add "..type(other).." to a dice roll")
@@ -175,17 +194,12 @@ d.mt.__mul = function(self, other)
 
   for _, bonus in ipairs(self.bonuses) do
     for _ = 1, other do
-      table.insert(result.bonuses, {
-        value = bonus.value,
-        comment = bonus.comment,
-      })
+      table.insert(result.bonuses, copy_bonus(bonus))
     end
   end
 
   return self
 end
-
--- NEXT #self.reroll > 0 and ("🗘(%s)"):format(table.concat(self.reroll, ",")) or ""
 
 --- @param self d.roll
 d.mt.__tostring = function(self)
