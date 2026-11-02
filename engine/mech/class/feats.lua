@@ -10,7 +10,7 @@ feats.savage_attacker = {
 
   modify_damage_roll = function(self, entity, roll, slot)
     if entity.inventory[slot] then
-      return roll:set("advantage")
+      return roll:shift_advantage(1)
     end
     return roll
   end,

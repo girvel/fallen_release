@@ -12,11 +12,11 @@ conditions.blinded = function()
     codename = "blinded",
 
     modify_attack_roll = function(self, entity, roll, slot)
-      return roll:set("disadvantage")
+      return roll:shift_advantage(-1)
     end,
 
     modify_incoming_attack_roll = function(self, entity, roll, source)
-      return roll:set("advantage")
+      return roll:shift_advantage(1)
     end,
   }
 end
@@ -56,7 +56,7 @@ conditions.paralyzed = function(life_time, mod, dc)
     end,
 
     modify_incoming_attack_roll = function(self, entity, roll)
-      return roll:set("advantage")
+      return roll:shift_advantage(1)
     end,
 
     modify_incoming_is_critical = function(self, entity, value, source)

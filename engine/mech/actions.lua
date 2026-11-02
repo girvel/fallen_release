@@ -387,7 +387,7 @@ actions.bow_attack = {
       if d:abs2() == 1
         and entity:modify("ranged_disadvantage", true, target)
       then
-        attack_roll = attack_roll:set("disadvantage")
+        attack_roll:shift_advantage(-1)
       end
       local did_hit, is_crit, damage = health.attack_precog(entity, target, attack_roll, damage_roll)
 

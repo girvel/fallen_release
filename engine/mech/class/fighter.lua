@@ -112,7 +112,7 @@ fighter.fighting_spirit = Table.extend({
       life_time = 6,
 
       modify_attack_roll = function(self_, entity_, roll, slot)
-        return roll:set("advantage")
+        return roll:shift_advantage(1)
       end,
     })
     health.set_hp(entity, entity.hp + 5)

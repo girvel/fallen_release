@@ -50,7 +50,7 @@ spells.eldritch_blast = action.plain {
       if api.distance(entity, target) == 1
         and entity:modify("ranged_disadvantage", true, target)
       then
-        attack_roll = attack_roll:set("disadvantage")
+        attack_roll = attack_roll:shift_advantage(-1)
       end
       local damage_roll = entity:modify("eldritch_blast_damage", D(10))
       table.insert(precogs, {
