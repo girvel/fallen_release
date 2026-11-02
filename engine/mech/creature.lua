@@ -323,20 +323,28 @@ end
 --- @param slot string
 --- @return d.roll
 creature.methods.get_damage_roll = function(self, slot)
-  local weapon = self.inventory[slot]
+  local weapon = self.inventory[slot]  --[[@as item]]
   if not weapon then
     return D.new()
       :add_bonus(self:get_modifier("str") + 1, "Сила")
   end
 
-  local roll
+  local roll = weapon.damage_roll:copy()
   if weapon.tags.versatile and not self.inventory.offhand then
-    roll = D(weapon.damage_roll.dice[1].sides_n + 2)
-  else
-    roll = weapon.damage_roll
+    assert(#roll.dice == 1)
+    roll.dice[1].sides_n = roll.dice[1].sides_n + 2
   end
 
-  roll = roll + (weapon.bonus or 0)
+  if weapon.bonus and weapon.bonus > 0 then
+    local COMMENTS = {
+      "магическое оружие",
+      "редкое оружие",
+      "легендарное оружие",
+    }
+
+    local comment = COMMENTS[weapon.bonus] or COMMENTS[3]
+    roll:add_bonus(weapon.bonus, comment)
+  end
 
   if slot == "hand" or weapon.tags.ranged then
     roll = roll + self:get_combat_modifier(weapon)

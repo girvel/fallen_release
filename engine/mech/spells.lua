@@ -128,7 +128,7 @@ local hexed = function(spell_source)
     life_time = 3600,
     modify_incoming_attack_damage_roll = function(self, entity, damage_roll, source)
       if source == spell_source then
-        return damage_roll + D(6)
+        return damage_roll:add_die(6, "сглаз")
       end
       return damage_roll
     end
@@ -138,7 +138,7 @@ end
 spells.hex = action.leveled_spell(1, function(mod, cast_level)
   --- @type spell_prototype
   return {
-    _name = "Сглаз",
+    _name = "сглаз",
     _codename = "hex",
     _cost = {
       bonus_actions = 1,
@@ -176,7 +176,7 @@ local _enemy_filter_20 = action.filters.visible_enemy(20)
 spells.hold_person = action.leveled_spell(2, function(mod, cast_level)
   --- @type spell_prototype
   return {
-    _name = "Удержание личности",
+    _name = "удержание личности",
     _codename = "hold_person",
     _cost = {actions = 1},
 
@@ -271,7 +271,7 @@ spells.animate_dead = action.leveled_spell(3, function(mod, cast_level)
   --- @type spell_prototype
   return {
     _codename = "animate_dead",
-    _name = "Поднятие мертвеца",
+    _name = "поднятие мертвеца",
     _cost = {
       actions = 1,
     },

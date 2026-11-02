@@ -16,6 +16,7 @@ item.DROPPING_SLOTS = {"hand", "offhand", "gloves", "right_pocket", "head", "bod
 --- @field ranged boolean?
 --- @field heavy boolean?
 --- @field armor boolean?
+--- @field versatile boolean?
 
 --- @alias item item_strict|table
 --- @class item_strict: entity_strict
