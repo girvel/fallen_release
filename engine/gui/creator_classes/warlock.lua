@@ -18,8 +18,16 @@ end
 warlock.draw_pane = function(creator, dt, data)
   if data.class_level == 1 then
     creator:start_ability(gui_elements.eldritch_blast)
-      ui.text("Заклинание: Мистический взрыв")
+      ui.text("Заговор: Мистический взрыв")
     creator:finish_ability("Дистанционная атака, 1d10 урона")
+
+    creator:start_ability(gui_elements.unknown)
+      ui.text("Ячейки колдовства: 1")
+    creator:finish_ability("1 заклинание за бой")
+
+    creator:start_ability(gui_elements.hex_1)
+      ui.text("Заклинание: Сглаз")
+    creator:finish_ability("+1d6 урона по проклятому противнику")
 
     creator:start_ability(gui_elements.dark_ones_blessing)
       ui.text("Способность: Благословение Тёмного")
