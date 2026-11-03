@@ -83,11 +83,7 @@ end
 init_debug = function()
   State.runner:run_task(function()
     Kernel.gui:open_menu("creator")
-    Kernel.gui._mode:submit()
-    State.player.resources.spell_slots_1 = 3
-    State.player.resources.spell_slots_2 = 3
-    State.player.resources.spell_slots_3 = 3
-    table.insert(State.player.perks, class.spell(spells.hex, "cha"))
+    -- Kernel.gui._mode:submit()
   end)
 end
 

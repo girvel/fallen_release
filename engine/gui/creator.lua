@@ -1,3 +1,4 @@
+local inotify = require("engine.tech.inotify")
 local discord = require("engine.tech.discord")
 local gui_elements = require("engine.gui.gui_elements")
 local warlock = require("engine.mech.class.warlock")
@@ -94,7 +95,12 @@ local CLASSES_LEN = Fun.iter(CLASSES)
   :map(function(cl) return cl.name:utf_len() end)
   :max()
 
-local CREATOR_CLASSES = Table.require_folder("engine.gui.creator_classes")
+local CREATOR_CLASSES do
+  local l = {}
+  l.warlock = inotify.require("engine.gui.creator_classes.warlock", l, "warlock")
+  l.fighter = inotify.require("engine.gui.creator_classes.fighter", l, "fighter")
+  CREATOR_CLASSES = l
+end
 
 local draw_base_pane, draw_pane, reassign_model
 
