@@ -21,9 +21,9 @@ warlock.draw_pane = function(creator, dt, data)
       ui.text("Заговор: Мистический взрыв")
     creator:finish_ability("Дистанционная атака, 1d10 урона")
 
-    creator:start_ability(gui_elements.unknown)
-      ui.text("Ячейки колдовства: 1")
-    creator:finish_ability("1 заклинание за бой")
+    creator:start_ability(gui_elements.warlock_slots_1x1)
+      ui.text("Ячейки колдовства: 1x1")
+    creator:finish_ability("1 заклинание уровня 1 за бой")
 
     creator:start_ability(gui_elements.hex_1)
       ui.text("Заклинание: Сглаз")
@@ -40,6 +40,22 @@ warlock.draw_pane = function(creator, dt, data)
     creator:start_ability(gui_elements.eldritch_blast_perk)
       ui.text("Способность: Отталкивающий взрыв")
     creator:finish_ability("Мистический Взрыв толкает противников назад")
+
+    creator:start_ability(gui_elements.warlock_slots_2x1)
+      ui.text("Ячейки колдовства: 2x1")
+    creator:finish_ability("2 заклинания уровня 1 за бой")
+  elseif data.class_level == 3 then
+    creator:start_ability(gui_elements.warlock_slots_2x2)
+      ui.text("Ячейки колдовства: 2x2")
+    creator:finish_ability("2 заклинания уровня 2 за бой")
+
+    creator:start_ability(gui_elements.hold_person_2)
+      ui.text("Заклинание: Удержание личности")
+    creator:finish_ability("Попытаться парализовать противника")
+  elseif data.class_level == 4 then
+    creator:start_ability(gui_elements.spray_of_cards_2)
+      ui.text("Заклинание: Веер карт")
+    creator:finish_ability("2d10 урона по конусу + ослепление")
   end
 end
 
@@ -54,6 +70,10 @@ warlock.submit = function(creator, datas, perks)
     elseif data.class_level == 2 then
       table.insert(perks, warlock_class.agonizing_blast)
       table.insert(perks, warlock_class.repelling_blast)
+    elseif data.class_level == 3 then
+      table.insert(perks, class.spell(spells.hold_person, "cha"))
+    elseif data.class_level == 4 then
+      table.insert(perks, class.spell(spells.spray_of_cards, "cha"))
     end
   end
   local class_level = #datas
