@@ -102,6 +102,9 @@ methods._update = function(self, dt)
   end
 
   do
+    local prev_start = self.vision_start
+    local prev_end = self.vision_end
+
     local total_scale = self.scale * sprite.cell_size
     self.vision_start = (self.offset / total_scale):map(math.ceil):sub_mut(Vector.one)
     self.vision_end = V(love.graphics.getWidth() - self.sidebar_w, love.graphics.getHeight())
@@ -113,6 +116,10 @@ methods._update = function(self, dt)
       Math.median, Vector.one, self.vision_start, State.level.grid_size
     )
     self.vision_end = Vector.use(Math.median, Vector.one, self.vision_end, State.level.grid_size)
+
+    if self.vision_start ~= prev_start or self.vision_end ~= prev_end then
+      State.shadow:partial_rebuild()
+    end
   end
 end
 

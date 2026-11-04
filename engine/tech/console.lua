@@ -56,6 +56,7 @@ end
 
 --- @param msg string?
 console.run = function(msg)
+  love.window.minimize()
   Stack = console.capture_stack()
   if msg then print(msg) end
   print_trace()
