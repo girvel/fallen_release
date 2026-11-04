@@ -115,7 +115,10 @@ rolling.init = function()
   ode.dCreatePlane(space, 0, 0, 1, 0)
 
   shader = love.graphics.newShader [[
-    #extension GL_OES_standard_derivatives : enable
+    #if defined(GL_ES) && __VERSION__ < 300
+      #extension GL_OES_standard_derivatives : enable
+    #endif
+
     uniform mat4 model;
     uniform mat4 view;
     uniform mat4 projection;
