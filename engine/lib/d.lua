@@ -198,7 +198,7 @@ d.mt.__mul = function(self, other)
     end
   end
 
-  return self
+  return result
 end
 
 --- @param self d.roll
@@ -260,9 +260,11 @@ methods.roll = function(self)
     if rerolled then
       repr = repr.."🗘"
     end
+    repr = repr.." (".."d"..die.sides_n
     if die.comment then
-      repr = repr.." ("..die.comment..")"
+      repr = repr..", "..die.comment
     end
+    repr = repr..")"
   end
 
   for i, bonus in ipairs(self.bonuses) do
