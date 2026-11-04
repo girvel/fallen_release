@@ -21,7 +21,7 @@ warlock.draw_pane = function(creator, dt, data)
       ui.text("Заговор: Мистический взрыв")
     creator:finish_ability("Дистанционная атака, 1d10 урона")
 
-    creator:start_ability(gui_elements.warlock_slots_1x1)
+    creator:start_ability(gui_elements.warlock_slots_1)
       ui.text("Ячейки колдовства: 1x1")
     creator:finish_ability("1 заклинание уровня 1 за бой")
 
@@ -41,11 +41,11 @@ warlock.draw_pane = function(creator, dt, data)
       ui.text("Способность: Отталкивающий взрыв")
     creator:finish_ability("Мистический Взрыв толкает противников назад")
 
-    creator:start_ability(gui_elements.warlock_slots_2x1)
+    creator:start_ability(gui_elements.warlock_slots_2)
       ui.text("Ячейки колдовства: 2x1")
     creator:finish_ability("2 заклинания уровня 1 за бой")
   elseif data.class_level == 3 then
-    creator:start_ability(gui_elements.warlock_slots_2x2)
+    creator:start_ability(gui_elements.warlock_slots_2)
       ui.text("Ячейки колдовства: 2x2")
     creator:finish_ability("2 заклинания уровня 2 за бой")
 
