@@ -7,7 +7,96 @@ local shadow = {}
 local LIGHT_INTENSITY_STEP = .1
 
 --- @param data state.shadow.data
-local rerender = function(data)
+--- @param x1 integer
+--- @param y1 integer
+--- @param x2 integer
+--- @param y2 integer
+local rerender = function(data, x1, y1, x2, y2)
+  local pixels = ffi.cast("Color*", data.image_data:getFFIPointer())
+  local map = State.player.ai._vision_map
+  local w = State.grids.solids.size.x
+  for x = x1, x2 do
+    for y = y1, y2 do
+      if not map:is_visible_unsafe(x, y) then
+        pixels[y * w + x].a = 0
+        goto continue
+      end
+
+      local shadow_value = data.static:unsafe_get(x, y)
+      local light_value = data.dynamic:unsafe_get(x, y)
+      local total_value = Math.clamp(0, 1, shadow_value - light_value)
+
+      pixels[y * w + x].a = math.ceil(total_value * 255)
+
+      ::continue::
+    end
+  end
+end
+
+local shadow_sprite = {
+  type = "rendered",
+  anchor = "world",
+}
+
+--- @param entity state.shadow
+--- @param dt number
+shadow_sprite.render = function(self, entity, dt)
+  return love.graphics.newImage(entity._data.image_data), sprite.cell_size
+end
+
+--- @alias state.shadow state.shadow_strict|table
+--- @class state.shadow_strict: entity_strict
+--- @field _data state.shadow.data
+local methods = {}
+shadow.mt = {__index = methods}
+
+--- @class state.shadow.data
+--- @field image_data love.ImageData
+--- @field static grid<number>
+--- @field dynamic grid<number>
+
+--- @param base_grid grid<number>
+--- @return state.shadow
+shadow.new = function(base_grid)
+  return setmetatable({
+    codename = "shadow",
+    sprite = shadow_sprite,
+    render_size = math.huge,
+    layer = "shadows",
+    position = Vector.zero,
+    _data = {
+      image_data = love.image.newImageData(unpack(base_grid.size)),
+      static = base_grid,
+      dynamic = Grid.new(base_grid.size, function() return 0 end),
+    },
+  }, shadow.mt)
+end
+
+--- @param entity entity
+--- @param value number
+methods.change_light_intensity = function(self, entity, value)
+  if not entity.grid_layer then return end
+
+  local prev_value = entity.light_intensity or 0
+  local range = math.ceil(math.max(prev_value, value) / LIGHT_INTENSITY_STEP)
+  local delta = value - prev_value
+  local dynamic = self._data.dynamic
+
+  for x, y, v, r in dynamic:rhombus(entity.position, range) do
+    dynamic:unsafe_set(x, y, v + delta)
+  end
+
+  rerender(
+    self._data,
+    entity.position.x - range,
+    entity.position.y - range,
+    entity.position.x + range,
+    entity.position.y + range
+  )
+end
+
+methods.partial_rebuild = function(self)
+  local data = self._data
   local grid_size = State.grids.solids.size
   local start = Vector.use(
     Math.median, Vector.one, grid_size,
@@ -39,11 +128,10 @@ local rerender = function(data)
         local light_value_int = math.ceil(light_value / LIGHT_INTENSITY_STEP)
         local pos = V(x, y)
         map:refresh_fov(pos, light_value_int)
-        for x1, y1, _, r in State.grids.solids:rhombus(pos, light_value_int) do
+        for x1, y1, v, r in data.dynamic:rhombus(pos, light_value_int) do
           if map:is_visible_unsafe(x1, y1) then
-            local value = data.dynamic:unsafe_get(x1, y1)
-              + (light_value_int - r) * LIGHT_INTENSITY_STEP
-            data.dynamic:unsafe_set(x1, y1, value)
+            local new_value = v + (light_value_int - r) * LIGHT_INTENSITY_STEP
+            data.dynamic:unsafe_set(x1, y1, new_value)
           end
         end
         map:free()
@@ -51,63 +139,7 @@ local rerender = function(data)
     end
   end
 
-  local pixels = ffi.cast("Color*", data.image_data:getFFIPointer())
-
-  local map = State.player.ai._vision_map
-  for x = start.x, finish.x do
-    for y = start.y, finish.y do
-      if not map:is_visible_unsafe(x, y) then
-        pixels[y * grid_size.x + x].a = 0
-        goto continue
-      end
-
-      local shadow_value = data.static:unsafe_get(x, y)
-      local light_value = data.dynamic:unsafe_get(x, y)
-      local total_value = Math.clamp(0, 1, shadow_value - light_value)
-
-      pixels[y * grid_size.x + x].a = math.ceil(total_value * 255)
-
-      ::continue::
-    end
-  end
-end
-
-local shadow_sprite = {
-  type = "rendered",
-  anchor = "world",
-}
-
---- @param entity state.shadow
---- @param dt number
-shadow_sprite.render = function(self, entity, dt)
-  rerender(entity._data)
-  return love.graphics.newImage(entity._data.image_data), sprite.cell_size
-end
-
---- @alias state.shadow state.shadow_strict|table
---- @class state.shadow_strict: entity_strict
---- @field _data state.shadow.data
-
---- @class state.shadow.data
---- @field image_data love.ImageData
---- @field static grid<number>
---- @field dynamic grid<number>
-
---- @param base_grid grid<number>
---- @return state.shadow
-shadow.new = function(base_grid)
-  return {
-    codename = "shadow",
-    sprite = shadow_sprite,
-    render_size = math.huge,
-    layer = "shadows",
-    position = Vector.zero,
-    _data = {
-      image_data = love.image.newImageData(unpack(base_grid.size)),
-      static = base_grid,
-      dynamic = Grid.new(base_grid.size, function() return 0 end),
-    },
-  }
+  rerender(data, start.x, start.y, finish.x, finish.y)
 end
 
 Ldump.mark(shadow, {},...)

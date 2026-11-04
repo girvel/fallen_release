@@ -235,7 +235,7 @@ map_methods.find_path = function(self, origin, destination)
     local xp = ffi.new("int[1]")
     local yp = ffi.new("int[1]")
     tcod._c.TCOD_path_get(raw_path, i, xp, yp)
-    table.insert(result, V(xp[0], yp[0]) + Vector.one)
+    table.insert(result, V(xp[0] + 1, yp[0] + 1))
   end
   tcod._c.TCOD_path_delete(raw_path)
 

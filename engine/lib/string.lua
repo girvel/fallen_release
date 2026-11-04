@@ -44,18 +44,24 @@ string.utf_lower = function(str)
   return str
 end
 
+local utf_upper_cache = setmetatable({}, {__mode = "k"})
+
 --- Put all UTF-8 characters of `str` into uppercase
 --- @param str string
 --- @return string
 string.utf_upper = function(str)
-  str = str:upper()
-  for i = 1, string.utf_len(ru_lower) do
-    str = str:gsub(
+  local cache_hit = utf_upper_cache[str]
+  if cache_hit then return cache_hit end
+
+  local result = str:upper()
+  for i = 1, string.utf_len(ru_lower) do  -- OPT highly inefficient
+    result = result:gsub(
       string.utf_sub(ru_lower, i, i),
       string.utf_sub(ru_upper, i, i)
     )
   end
-  return str
+  utf_upper_cache[str] = result
+  return result
 end
 
 --- @param str string

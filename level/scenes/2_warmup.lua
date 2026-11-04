@@ -1078,14 +1078,20 @@ return {
               duration = 0
               t = duration
               while t > 0 do
-                ch.mirage_block.light_intensity = math.floor(10 * (1 - t / duration)) / 10
+                State.shadow:change_light_intensity(
+                  ch.mirage_block,
+                  math.floor(10 * (1 - t / duration)) / 10
+                )
                 t = t - coroutine.yield()
               end
 
               duration = 1
               t = duration
               while t > 0 do
-                ch.mirage_block.light_intensity = .5 * math.floor(10 * t / duration) / 10
+                State.shadow:change_light_intensity(
+                  ch.mirage_block,
+                  .5 * math.floor(10 * t / duration) / 10
+                )
                 t = t - coroutine.yield()
               end
             end)
