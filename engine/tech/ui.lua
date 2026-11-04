@@ -684,9 +684,9 @@ ui.text = function(text, ...)
 
   local wrapped = wrap(text, context.font, context.cursor_x - context.frame.x, context.frame.w)
 
+  local h = font:getHeight()
   for i, line in ipairs(wrapped) do
     local w = font:getWidth(line)
-    local h = font:getHeight()
     local x, y = align(w, h)
 
     love.graphics.print(line, x, y)
