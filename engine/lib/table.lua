@@ -358,7 +358,26 @@ _table.keys = function(t) -- map
   return result
 end
 
-_table.clear = require("table.clear")
-_table.new = require("table.new")
+do
+  local ok, res = pcall(require, "table.clear")
+  if ok then
+    _table.clear = res
+  else
+    _table.clear = function(t)
+      for k in pairs(t) do
+        t[k] = nil
+      end
+    end
+  end
+end
+
+do
+  local ok, res = pcall(require, "table.new")
+  if ok then
+    _table.new = res
+  else
+    _table.new = function() return {} end
+  end
+end
 
 return _table
