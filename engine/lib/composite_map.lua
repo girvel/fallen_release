@@ -53,12 +53,6 @@ methods.get = function(self, head, ...)
 end
 
 local iter
-
---- NOTICE returned keys should not be mutated
-methods.iter = function(self)
-  return coroutine.wrap(function() iter(self, {}) end)
-end
-
 iter = function(self, base)
   if self._value then
     coroutine.yield(base, self._value)
@@ -67,6 +61,45 @@ iter = function(self, base)
     table.insert(base, k)
     iter(v, base)
     table.remove(base)
+  end
+end
+
+--- NOTICE returned keys should not be mutated
+methods.iter = function(self)
+  return coroutine.wrap(function() iter(self, {}) end)
+end
+
+local is_callable
+is_callable = function(f)
+  local tf = type(f)
+  if tf == "function" then return true end
+  if tf == "table" then
+    local mt = getmetatable(f)
+    return type(mt) == "table" and is_callable(mt.__call)
+  end
+  return false
+end
+
+composite_map.memoize = function(f, cache)
+  local map = composite_map.new()
+  if cache then
+    map._items = cache
+  end
+
+  if not is_callable(f) then
+    error(string.format(
+      "Only functions and callable tables are memoizable. Received %s (a %s)",
+      tostring(f), type(f)
+    ))
+  end
+
+  return function(...)
+    local results = map:get(...)
+    if not results then
+      results = {f(...)}
+      map:set(results, ...)
+    end
+    return unpack(results)
   end
 end
 

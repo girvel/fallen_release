@@ -11,6 +11,7 @@ Argparse = require("engine.lib.argparse")
 Common = require("engine.lib.common")
 
 CompositeMap = require("engine.lib.composite_map")
+Memoize = CompositeMap.memoize
 Ldump.mark_module("engine.lib.composite_map", "const")
 
 D = require("engine.lib.d")
@@ -39,7 +40,8 @@ Lp.time_function = love.timer.getTime
 
 Math = require("engine.lib.math")
 
-Memoize = require("engine.lib.memoize")
+-- NEXT remove dependency
+--Memoize = require("engine.lib.memoize")
 
 Moonspeak = require("engine.lib.moonspeak")
 
