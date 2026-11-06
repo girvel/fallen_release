@@ -40,9 +40,6 @@ Lp.time_function = love.timer.getTime
 
 Math = require("engine.lib.math")
 
--- NEXT remove dependency
---Memoize = require("engine.lib.memoize")
-
 Moonspeak = require("engine.lib.moonspeak")
 
 Name = require("engine.lib.name")

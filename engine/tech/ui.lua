@@ -1307,10 +1307,10 @@ ui.handle_update = function(dt)
 end
 
 ui.reset_caches = function()
-  get_batch_cache.children = nil
-  get_font_cache.children = nil
-  get_atlas_cache.children = nil
-  get_atlas_image_cache.children = nil
+  Table.clear(get_batch_cache)
+  Table.clear(get_font_cache)
+  Table.clear(get_atlas_cache)
+  Table.clear(get_atlas_image_cache)
 end
 
 ----------------------------------------------------------------------------------------------------

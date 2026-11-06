@@ -1,6 +1,12 @@
 local ffi = require("ffi")
 local inotify = {}
 
+-- NEXT redo:
+-- - rename to hot_reload
+-- - use hot_reload.require for functions only
+-- - introduce hot_reload.mark for modules
+-- - use .mark for gui_elements, removing the need for gui_elements.assign
+
 local get_subdirectories_recursively
 
 --- @param base string
@@ -151,7 +157,7 @@ inotify.update = function()
     local ui = require("engine.tech.ui")
 
     --- @diagnostic disable-next-line:undefined-field
-    Table.clear(love.graphics.newImageCache.children)
+    Table.clear(love.graphics.newImageCache)
     ui.reset_caches()
     gui_elements.assign()
     Log.info("Reloaded images")
