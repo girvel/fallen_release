@@ -62,12 +62,9 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local smooth_camera_offset
+local prev_player_position
 
 methods._update = function(self, dt)
-  if State:exists(State.player) then
-    State.player.ai._vision_map:refresh_fov(State.player.position, State.player.fov_r)
-  end
-
   if self.is_following then
     local prev_offset = self.offset
 
@@ -102,9 +99,6 @@ methods._update = function(self, dt)
   end
 
   do
-    local prev_start = self.vision_start
-    local prev_end = self.vision_end
-
     local total_scale = self.scale * sprite.cell_size
     self.vision_start = (self.offset / total_scale):map(math.ceil):sub_mut(Vector.one)
     self.vision_end = V(love.graphics.getWidth() - self.sidebar_w, love.graphics.getHeight())
@@ -116,10 +110,15 @@ methods._update = function(self, dt)
       Math.median, Vector.one, self.vision_start, State.level.grid_size
     )
     self.vision_end = Vector.use(Math.median, Vector.one, self.vision_end, State.level.grid_size)
+  end
 
-    if self.vision_start ~= prev_start or self.vision_end ~= prev_end then
+  if State:exists(State.player) then
+    State.player.ai._vision_map:refresh_fov(State.player.position, State.player.fov_r)
+
+    if State.player.position ~= prev_player_position then
       State.shadow:partial_rebuild()
     end
+    prev_player_position = State.player.position
   end
 end
 

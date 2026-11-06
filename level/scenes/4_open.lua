@@ -1278,7 +1278,7 @@ return {
               if p then
                 local e = ch[id]
                 old_positions[e] = e.position
-                level.slow_move(e, p)
+                level.unsafe_move(e, p)
               end
             end
             on_solids.fs.lie(ch.dorm_halfling, ps.dorm_bed, "lower")
@@ -1293,10 +1293,10 @@ return {
 
             api.curtain(.5, Vector.black):wait()
             for e, p in pairs(old_positions) do
-              level.slow_move(e, p)
+              level.unsafe_move(e, p)
             end
             item.drop(ch.dorm_halfling, "inside")
-            level.slow_move(ch.razor, ps.razor_drop)
+            level.unsafe_move(ch.razor, ps.razor_drop)
             api.curtain(.5, Vector.transparent):wait()
 
             sp:lines()

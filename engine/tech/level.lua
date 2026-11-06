@@ -63,7 +63,7 @@ end
 --- @param position vector
 --- @return boolean
 level.unsafe_move = function(entity, position)
-  assert(entity.position, "Can not move an entity without the current position")
+  assert(entity.position, "Can not move entity without a current position")
   if entity.position == position then return false end
 
   local grid = State.grids[entity.grid_layer]
