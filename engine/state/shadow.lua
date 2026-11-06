@@ -75,7 +75,6 @@ end
 --- @param entity entity
 --- @param value number
 methods.change_light_intensity = function(self, entity, value)
-  -- NEXT consider FOV
   if not entity.grid_layer or entity.light_intensity == value then return end
 
   local prev_value = entity.light_intensity or 0
@@ -84,11 +83,18 @@ methods.change_light_intensity = function(self, entity, value)
 
   entity.light_intensity = value
 
+  -- OPT instead of creating maps, keep a weak hashtable with maps for each entity,
+  --   verify range & position before using
+  local map = tcod.map(State.grids.solids)
+  map:refresh_fov(entity.position, range)
   for x, y, v, r in dynamic:rhombus(entity.position, range) do
-    local prev_light = math.max(0, prev_value - r * LIGHT_INTENSITY_STEP)
-    local light = math.max(0, value - r * LIGHT_INTENSITY_STEP)
-    dynamic:unsafe_set(x, y, v + (light - prev_light))
+    if map:is_visible_unsafe(x, y) then
+      local prev_light = math.max(0, prev_value - r * LIGHT_INTENSITY_STEP)
+      local light = math.max(0, value - r * LIGHT_INTENSITY_STEP)
+      dynamic:unsafe_set(x, y, v + (light - prev_light))
+    end
   end
+  map:free()
 
   rerender(
     self._data,

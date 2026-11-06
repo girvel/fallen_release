@@ -1,12 +1,6 @@
 local ffi = require("ffi")
 local inotify = {}
 
--- NEXT redo:
--- - rename to hot_reload
--- - use hot_reload.require for functions only
--- - introduce hot_reload.mark for modules
--- - use .mark for gui_elements, removing the need for gui_elements.assign
-
 local get_subdirectories_recursively
 
 --- @param base string
