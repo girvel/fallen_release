@@ -45,7 +45,7 @@ shadow_sprite.render = function(self, entity, dt)
 end
 
 --- @alias state.shadow state.shadow_strict|table
---- @class state.shadow_strict: entity_strict
+--- @class state.shadow_strict: entity_raw_strict
 --- @field _data state.shadow.data
 local methods = {}
 shadow.mt = {__index = methods}

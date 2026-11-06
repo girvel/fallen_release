@@ -1,9 +1,11 @@
 --- @meta
 
---- @alias entity entity_strict|table
-
 --- Any in-game entity except items. All fields and methods are optional.
---- @class entity_strict: _creature_methods, _animated_methods, _interactive_methods
+--- @alias entity entity_strict|table
+--- @class entity_strict: entity_raw_strict, _creature_methods, _animated_methods, _interactive_methods
+
+--- @alias entity_raw entity_raw_strict|table
+--- @class entity_raw_strict
 --- @field name string in-game name
 --- @field codename string in-code name
 --- @field portrait sprite.image
