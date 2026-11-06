@@ -75,15 +75,19 @@ end
 --- @param entity entity
 --- @param value number
 methods.change_light_intensity = function(self, entity, value)
-  if not entity.grid_layer then return end
+  -- NEXT consider FOV
+  if not entity.grid_layer or entity.light_intensity == value then return end
 
   local prev_value = entity.light_intensity or 0
   local range = math.ceil(math.max(prev_value, value) / LIGHT_INTENSITY_STEP)
-  local delta = value - prev_value
   local dynamic = self._data.dynamic
 
+  entity.light_intensity = value
+
   for x, y, v, r in dynamic:rhombus(entity.position, range) do
-    dynamic:unsafe_set(x, y, v + delta)
+    local prev_light = math.max(0, prev_value - r * LIGHT_INTENSITY_STEP)
+    local light = math.max(0, value - r * LIGHT_INTENSITY_STEP)
+    dynamic:unsafe_set(x, y, v + (light - prev_light))
   end
 
   rerender(
