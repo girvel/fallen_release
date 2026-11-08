@@ -15,6 +15,7 @@ local rerender = function(data, x1, y1, x2, y2)
   local pixels = ffi.cast("Color*", data.image_data:getFFIPointer())
   local map = State.player.ai._vision_map
   local w = State.grids.solids.size.x
+  map:refresh_fov(State.player.position, State.player.fov_r)
   for x = x1, x2 do
     for y = y1, y2 do
       if not map:is_visible_unsafe(x, y) then
@@ -106,6 +107,7 @@ methods.change_light_intensity = function(self, entity, value)
 end
 
 methods.partial_rebuild = function(self)
+  Log.trace("partial rebuild")
   local data = self._data
   local grid_size = State.grids.solids.size
   local start = Vector.use(

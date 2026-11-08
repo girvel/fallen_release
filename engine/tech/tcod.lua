@@ -57,9 +57,12 @@ tcod.ok = not not tcod._c
 -- [SECTION] Observer
 ----------------------------------------------------------------------------------------------------
 
+--- @alias tcod.sub fun(x: integer, y: integer, did_transparency_change: boolean, did_walkability_change: boolean)
+
 --- @class tcod.observer
 --- @field _maps table<tcod.map, true>
 --- @field _grid grid<any>
+--- @field _subs table<tcod.sub, true>
 
 tcod.observer_mt = {}
 
@@ -70,14 +73,30 @@ end
 
 --- @param self tcod.observer
 tcod.observer_mt.__newindex = function(self, index, value)
+  local prev_value = self._grid[index]
+
+  local prev_is_transparent = not prev_value or not not prev_value.transparent_flag
+  local is_transparent = not value or not not value.transparent_flag
+  local prev_is_walkable = not prev_value
+  local is_walkable = not value
+
   self._grid[index] = value
+
+  local did_transparency_change = prev_is_transparent ~= is_transparent
+  local did_walkability_change = prev_is_walkable ~= is_walkable
+  if not did_transparency_change and not did_walkability_change then return end
+
   local x, y = unpack(index)
 
   for map in pairs(self._maps) do
     tcod._c.TCOD_map_set_properties(
       map._map, x - 1, y - 1,
-      not value or not not value.transparent_flag, not value
+      is_transparent, is_walkable
     )
+  end
+
+  for sub in pairs(self._subs) do
+    sub(x, y, did_transparency_change, did_walkability_change)
   end
 end
 
@@ -90,6 +109,7 @@ tcod.observer = function(grid)
   local result = setmetatable({
     _maps = setmetatable({}, {__mode = "k"}),
     _grid = grid,
+    _subs = {},
   }, tcod.observer_mt)
 
   tcod.update_transparency(result)
@@ -104,6 +124,15 @@ tcod.update_transparency = function(grid)
   for map in pairs(grid._maps) do
     map:update_transparency()
   end
+end
+
+--- @param grid grid<any>
+--- @param f tcod.sub
+tcod.observer_sub = function(grid, f)
+  --- @diagnostic disable-next-line
+  --- @cast grid tcod.observer
+
+  grid._subs[f] = true
 end
 
 ----------------------------------------------------------------------------------------------------

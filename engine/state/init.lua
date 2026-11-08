@@ -198,6 +198,7 @@ methods.load_level = function(self, path)
   self.grids = Fun.iter(level.grid_layers)
     :map(function(layer) return layer, Grid.new(self.level.grid_size) end)
     :tomap()
+
   self.grids.solids = tcod.observer(self.grids.solids)
   self._travel_map = tcod.map(self.grids.solids)
 
@@ -250,6 +251,14 @@ methods.load_level = function(self, path)
   local end_t = love.timer.getTime()
   Log.info("%.2f s | Initialized rails", end_t - add_t)
   Log.info("%.2f s | (Total) Loaded the level", end_t - start_t)
+
+  tcod.observer_sub(self.grids.solids, function(x, y, did_transparency_change)
+    if not did_transparency_change then return end
+    local vision_map = self.player.ai._vision_map
+    if vision_map and vision_map:is_visible_unsafe(x, y) then
+      self.shadow:partial_rebuild()
+    end
+  end)
 
   self.is_loaded = true
   async.lag_threshold = .1
