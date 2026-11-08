@@ -13,6 +13,7 @@ local camera = {}
 --- @field offset vector (internally set) offset in pixels relative to the grid start
 --- @field vision_start vector (internally set) the grid coordinate of the first cell visible in top left corner, clamped to grid size
 --- @field vision_end vector (internally set) the grid coordinate of the last cell visible in bottom right corner, clamped to grid size
+--- @field vision_size vector (internally set) the size of the visible area in cells
 --- @field sidebar_w integer sidebar width in screen pixels
 --- @field scale integer current scaling coefficient
 --- @field base_scale integer starting scaling coefficient
@@ -26,6 +27,7 @@ camera.new = function()
     offset = Vector.zero,
     vision_start = Vector.zero,
     vision_end = Vector.zero,
+    vision_size = Vector.zero,
     sidebar_w = 0,
     base_scale = Kernel.args.youtube and 8 or 4,
   }
@@ -100,11 +102,11 @@ methods._update = function(self, dt)
 
   do
     local total_scale = self.scale * sprite.cell_size
-    self.vision_start = (self.offset / total_scale):map(math.ceil):sub_mut(Vector.one)
-    self.vision_end = V(love.graphics.getWidth() - self.sidebar_w, love.graphics.getHeight())
+    self.vision_size = V(love.graphics.getWidth() - self.sidebar_w, love.graphics.getHeight())
       :div_mut(total_scale)
       :map_mut(math.ceil)
-      :add_mut(self.vision_start)
+    self.vision_start = (self.offset / total_scale):map(math.ceil):sub_mut(Vector.one)
+    self.vision_end = self.vision_size + self.vision_start
 
     self.vision_start = Vector.use(
       Math.median, Vector.one, self.vision_start, State.level.grid_size

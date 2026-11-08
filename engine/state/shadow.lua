@@ -27,7 +27,7 @@ local rerender = function(data, x1, y1, x2, y2)
       local light_value = data.dynamic:unsafe_get(x, y)
       local total_value = Math.clamp(0, 1, shadow_value - light_value)
 
-      pixels[y * w + x].a = math.ceil(total_value * 255)
+      pixels[(y - 1) * w + (x - 1)].a = math.ceil(total_value * 255)
 
       ::continue::
     end
@@ -64,7 +64,7 @@ shadow.new = function(base_grid)
     sprite = shadow_sprite,
     render_size = math.huge,
     layer = "shadows",
-    position = Vector.zero,
+    position = Vector.one,
     _data = {
       image_data = love.image.newImageData(unpack(base_grid.size)),
       static = base_grid,
@@ -97,36 +97,41 @@ methods.change_light_intensity = function(self, entity, value)
   end
   map:free()
 
+  local grid_w, grid_h = unpack(State.level.grid_size)
   rerender(
     self._data,
-    entity.position.x - range,
-    entity.position.y - range,
-    entity.position.x + range,
-    entity.position.y + range
+    Math.median(1, grid_w, entity.position.x - range),
+    Math.median(1, grid_h, entity.position.y - range),
+    Math.median(1, grid_w, entity.position.x + range),
+    Math.median(1, grid_h, entity.position.y + range)
   )
 end
 
 methods.partial_rebuild = function(self)
-  Log.trace("partial rebuild")
   local data = self._data
-  local grid_size = State.grids.solids.size
-  local start = Vector.use(
-    Math.median, Vector.one, grid_size,
-    State.camera.vision_start - Vector.one * math.ceil(1 / LIGHT_INTENSITY_STEP)
-  )
-  local finish = Vector.use(
-    Math.median, Vector.one, grid_size,
-    State.camera.vision_end + Vector.one * math.ceil(1 / LIGHT_INTENSITY_STEP)
-  )
 
-  for x = start.x, finish.x do
-    for y = start.y, finish.y do
+  local grid_w, grid_h = unpack(State.grids.solids.size)
+  local screen_half_w, screen_half_h do
+    local x, y = unpack(State.camera.vision_size)
+    screen_half_w = math.ceil(x/2)
+    screen_half_h = math.ceil(y/2)
+  end
+  local px, py = unpack(State.player.position)
+  local padding = math.ceil(1 / LIGHT_INTENSITY_STEP)
+
+  local start_x = Math.median(1, grid_w, px - screen_half_w - padding)
+  local start_y = Math.median(1, grid_h, py - screen_half_h - padding)
+  local finish_x = Math.median(1, grid_w, px + screen_half_w + padding)
+  local finish_y = Math.median(1, grid_h, py + screen_half_h + padding)
+
+  for x = start_x, finish_x do
+    for y = start_y, finish_y do
       data.dynamic:unsafe_set(x, y, 0)
     end
   end
 
-  for x = start.x, finish.x do
-    for y = start.y, finish.y do
+  for x = start_x, finish_x do
+    for y = start_y, finish_y do
       local light_value = 0
       for _, layer_name in ipairs(level.grid_layers) do
         local e = State.grids[layer_name]:unsafe_get(x, y)
@@ -151,7 +156,7 @@ methods.partial_rebuild = function(self)
     end
   end
 
-  rerender(data, start.x, start.y, finish.x, finish.y)
+  rerender(data, start_x, start_y, finish_x, finish_y)
 end
 
 Ldump.mark(shadow, {},...)
