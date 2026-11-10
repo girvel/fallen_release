@@ -128,7 +128,7 @@ local hexed = function(spell_source)
     life_time = 3600,
     modify_incoming_attack_damage_roll = function(self, entity, damage_roll, source)
       if source == spell_source then
-        return damage_roll:add_die(6, "сглаз")
+        return damage_roll:add_die(1, 6, "сглаз")
       end
       return damage_roll
     end

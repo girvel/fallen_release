@@ -137,27 +137,31 @@ health.attack_precog = function(source, target, attack_roll, damage_roll)
     attack_roll = target:modify("incoming_attack_roll", attack_roll, source)
   end
 
-  local attack = attack_roll:roll()
-  local is_nat_20 = attack == attack_roll:max()
-  local is_nat_1 = attack == attack_roll:min()
+  local attack, crit_status = attack_roll:roll()
   local ac = target.get_armor and target:get_armor() or target.armor or 0
-  local is_critical = is_nat_20 and attack >= ac
+  local is_critical = crit_status == "nat_20" and attack >= ac
   if target.modify then
     is_critical = target:modify("incoming_is_critical", is_critical, source)
   end
   if is_critical then
-    damage_roll = damage_roll + D.new(unpack(damage_roll.dice))
+    local prev = damage_roll
+    damage_roll = damage_roll:copy()
+    for _, part in ipairs(prev.parts) do
+      if part.sides_n ~= 1 then
+        table.insert(damage_roll.parts, Table.shallow_copy(part))
+      end
+    end
   end
 
   Log.info("%s / %s | %s attacks %s", attack, ac, source, target)
 
   -- nat 1 is still critical if the target is, say, paralyzed
   if not is_critical then
-    if is_nat_1 then
+    if crit_status == "nat_1" then
       return false, true, 0
     end
 
-    if attack < ac and not is_nat_20 then
+    if attack < ac and crit_status ~= "nat_20" then
       return false, false, 0
     end
   end

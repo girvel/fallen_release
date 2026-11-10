@@ -326,13 +326,18 @@ creature.methods.get_damage_roll = function(self, slot)
   local weapon = self.inventory[slot]  --[[@as item]]
   if not weapon then
     return D.new()
-      :add_bonus(self:get_modifier("str") + 1, "Сила")
+      :add_bonus(1)
+      :add_bonus(self:get_modifier("str"), "Сила")
   end
 
   local roll = weapon.damage_roll:copy()
   if weapon.tags.versatile and not self.inventory.offhand then
-    assert(#roll.dice == 1)
-    roll.dice[1].sides_n = roll.dice[1].sides_n + 2
+    for _, part in ipairs(roll.parts) do
+      if part.sides_n ~= 1 then
+        part.sides_n = part.sides_n + 2
+        break
+      end
+    end
   end
 
   if weapon.bonus and weapon.bonus > 0 then

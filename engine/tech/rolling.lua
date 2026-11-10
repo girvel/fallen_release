@@ -379,11 +379,11 @@ end
 --- @return integer
 rolling.make = function(this_roll)
   do
-    assert(#this_roll.dice == 1)
-    assert(#this_roll.reroll == 0)
-    local die = this_roll.dice[1]
-    assert(die.sides_n == 20)
-    assert(die.advantage == 0)
+    -- assert(#this_roll.parts == 1)
+    -- assert(#this_roll.reroll == 0)
+    -- local die = this_roll.dice[1]
+    -- assert(die.sides_n == 20)
+    -- assert(die.advantage == 0)
   end
 
   local die = add_d20()
@@ -478,8 +478,10 @@ rolling.make = function(this_roll)
   end
 
   local result = face_i
-  for _, bonus in ipairs(this_roll.bonuses) do
-    result = result + bonus.value
+  for _, dice in ipairs(this_roll.parts) do
+    if dice.sides_n == 1 then
+      result = result + dice.dice_n
+    end
   end
   return result
 end
