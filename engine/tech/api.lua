@@ -529,20 +529,6 @@ api.notification = function(text)
   end
 end
 
---- @param kind "new_task"|"task_completed"
-api.journal_update = function(kind)
-  local text
-  if kind == "new_task" then
-    text = "Новая задача"
-  elseif kind == "task_completed" then
-    text = "Задача выполнена"
-  else
-    Error("Unknown journal update %s", kind)
-  end
-  api.notification(text)
-  State.quests.has_new_content = true
-end
-
 --- @param duration number time to full saturation in seconds
 --- @param color vector
 --- @return promise, scene

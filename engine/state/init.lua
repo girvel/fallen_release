@@ -14,7 +14,6 @@ local state = {}
 --- @field runner state_runner
 --- @field camera state_camera
 --- @field combat state_combat?
---- @field quests state_quests
 --- @field hostility state_hostility
 --- @field audio state_audio
 --- @field period state_period
@@ -44,7 +43,6 @@ state.new = function(systems)
 
     runner = require("engine.state.runner").new(),
     camera = require("engine.state.camera").new(),
-    quests = require("engine.state.quests").new(),
     hostility = require("engine.state.hostility").new(),
     audio = require("engine.state.audio").new(),
     period = require("engine.state.period").new(),
