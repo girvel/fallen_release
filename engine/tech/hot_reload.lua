@@ -1,5 +1,5 @@
 local ffi = require("ffi")
-local hot_reload = {}
+local hot_reload = {is_reloading = false}
 
 local get_subdirectories_recursively
 
@@ -108,8 +108,11 @@ end
 --- @type table<table, {container: table, key: string, modpath: string}>
 local contained = setmetatable({}, {__mode = "k"})
 
---- @type table<table, string>
-local marked = setmetatable({}, {__mode = "k"})
+--- @type table<string, table>
+local marked = setmetatable({}, {__mode = "v"})
+
+--- @type table<string, table>
+local marked_as_containing_assets = setmetatable({}, {__mode = "v"})
 
 --- @param modpath string
 --- @param base table
@@ -135,7 +138,15 @@ end
 --- @param value table
 --- @param modpath string
 hot_reload.mark = function(value, modpath)
-  marked[value] = modpath
+  if hot_reload.is_reloading then return end
+  marked[modpath] = value
+end
+
+--- @param value table
+--- @param modpath string
+hot_reload.mark_as_containing_assets = function(value, modpath)
+  if hot_reload.is_reloading then return end
+  marked_as_containing_assets[modpath] = value
 end
 
 hot_reload.update = function()
@@ -154,17 +165,33 @@ hot_reload.update = function()
   end
 
   if images_changed then
-    local gui_elements = require("engine.gui.gui_elements")
     local ui = require("engine.tech.ui")
+    hot_reload.is_reloading = true
 
     --- @diagnostic disable-next-line:undefined-field
     Table.clear(love.graphics.newImageCache)
     ui.reset_caches()
-    gui_elements.assign()
     Log.info("Reloaded images")
+    for modpath, prev_mod in pairs(marked_as_containing_assets) do
+      package.loaded[modpath] = nil
+      local ok, res = pcall(require, modpath)
+      if ok then
+        Log.info("Reloaded %s", modpath)
+        Table.clear(prev_mod)
+        for k, v in pairs(res) do
+          prev_mod[k] = v
+        end
+      else
+        Log.error("Error reloading %s: %s", modpath, res)
+      end
+      package.loaded[modpath] = prev_mod
+    end
+    hot_reload.is_reloading = false
   end
 
   if modules_changed then
+    hot_reload.is_reloading = true
+
     for prev_mod, params in pairs(contained) do
       if changed_files[Common.posix_path(params.modpath)] then
         package.loaded[params.modpath] = nil
@@ -181,20 +208,24 @@ hot_reload.update = function()
       end
     end
 
-    for prev_mod, modpath in pairs(marked) do
-      package.loaded[modpath] = nil
-      local ok, res = pcall(require, modpath)
-      if ok then
-        Log.info("Reloaded %s", modpath)
-        Table.clear(prev_mod)
-        for k, v in pairs(res) do
-          prev_mod[k] = v
+    for modpath, prev_mod in pairs(marked) do
+      if changed_files[Common.posix_path(modpath)] then
+        package.loaded[modpath] = nil
+        local ok, res = pcall(require, modpath)
+        if ok then
+          Log.info("Reloaded %s", modpath)
+          Table.clear(prev_mod)
+          for k, v in pairs(res) do
+            prev_mod[k] = v
+          end
+        else
+          Log.error("Error reloading %s: %s", modpath, res)
         end
-      else
-        Log.error("Error reloading %s: %s", modpath, res)
+        package.loaded[modpath] = prev_mod
       end
-      package.loaded[modpath] = prev_mod
     end
+
+    hot_reload.is_reloading = false
   end
 end
 
