@@ -81,7 +81,7 @@ is_callable = function(f)
 end
 
 composite_map.memoize = function(f, cache)
-  local map = composite_map.new()
+  local map = composite_map.new("weak")
   if cache then
     map._items = cache
   end

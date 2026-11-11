@@ -1,4 +1,4 @@
-local inotify = require("engine.tech.inotify")
+local hot_reload = require("engine.tech.hot_reload")
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
 
 
@@ -12,11 +12,11 @@ local game = {}
 --- @field _bg_offset number
 local methods = {}
 
-methods.draw_entity = inotify.require("engine.gui.game.draw_entity", methods)
-methods.draw_gui = inotify.require("engine.gui.game.draw_gui", methods)
-methods.draw_grid = inotify.require("engine.gui.game.draw_grid", methods)
-methods.preprocess = inotify.require("engine.gui.game.preprocess", methods)
-methods.postprocess = inotify.require("engine.gui.game.postprocess", methods)
+methods.draw_entity = hot_reload.require("engine.gui.game.draw_entity", methods)
+methods.draw_gui = hot_reload.require("engine.gui.game.draw_gui", methods)
+methods.draw_grid = hot_reload.require("engine.gui.game.draw_grid", methods)
+methods.preprocess = hot_reload.require("engine.gui.game.preprocess", methods)
+methods.postprocess = hot_reload.require("engine.gui.game.postprocess", methods)
 
 game.mt = {__index = methods}
 

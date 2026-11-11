@@ -1,6 +1,6 @@
 local rolling = require("engine.tech.rolling")
 local console = require("engine.tech.console")
-local inotify = require("engine.tech.inotify")
+local hot_reload = require("engine.tech.hot_reload")
 local dynamic_canvas = require("engine.tech.dynamic_canvas")
 local colors = require("engine.tech.colors")
 local ui = require("engine.tech.ui")
@@ -198,7 +198,7 @@ love.run = function()
       dynamic_canvas.handle_resize(unpack(size))
     end
 
-    if Kernel.debug then inotify.update() end
+    if Kernel.debug then hot_reload.update() end
 
     love.event.pump()
     for name, a,b,c,d,e,f in love.event.poll() do

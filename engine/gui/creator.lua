@@ -1,4 +1,4 @@
-local inotify = require("engine.tech.inotify")
+local hot_reload = require("engine.tech.hot_reload")
 local discord = require("engine.tech.discord")
 local gui_elements = require("engine.gui.gui_elements")
 local warlock = require("engine.mech.class.warlock")
@@ -97,8 +97,8 @@ local CLASSES_LEN = Fun.iter(CLASSES)
 
 local CREATOR_CLASSES do
   local l = {}
-  l.warlock = inotify.require("engine.gui.creator_classes.warlock", l, "warlock")
-  l.fighter = inotify.require("engine.gui.creator_classes.fighter", l, "fighter")
+  l.warlock = hot_reload.require("engine.gui.creator_classes.warlock", l, "warlock")
+  l.fighter = hot_reload.require("engine.gui.creator_classes.fighter", l, "fighter")
   CREATOR_CLASSES = l
 end
 

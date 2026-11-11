@@ -1,5 +1,5 @@
 local ffi = require("ffi")
-local inotify = {}
+local hot_reload = {}
 
 local get_subdirectories_recursively
 
@@ -39,9 +39,9 @@ local is_available do
     and os.getenv("NO_HOTRELOAD") ~= "1"
 
   if is_available then
-    Log.info("inotify enabled")
+    Log.info("Hot reloading enabled")
   else
-    Log.info("inotify not enabled")
+    Log.info("Hot reloading unavailable")
   end
 end
 
@@ -87,7 +87,7 @@ end
 
 --- @return string[]
 --- @nodiscard
-inotify.get_changed_files = function()
+hot_reload.get_changed_files = function()
   if not inotify_fd then init() end
 
   local result = {}
@@ -112,10 +112,7 @@ local module_map = setmetatable({}, {__mode = "k"})
 --- @param base table
 --- @param key any
 --- @return any
-inotify.require = function(modpath, base, key)
-  -- TODO do inotify.require(modpath) that would replace the keys? would not work w/ functions
-  --   though
-
+hot_reload.require = function(modpath, base, key)
   local result = require(modpath)
   if not is_available then return result end
 
@@ -126,18 +123,18 @@ inotify.require = function(modpath, base, key)
     modpath = modpath,
   }
   Ldump.serializer.handlers[result] = function()
-    return inotify.require(modpath, base, key)
+    return hot_reload.require(modpath, base, key)
   end
   return result
 end
 
-inotify.update = function()
+hot_reload.update = function()
   if not is_available then return end
 
   local changed_files = {}
   local modules_changed = false
   local images_changed = false
-  for _, file in ipairs(inotify.get_changed_files()) do
+  for _, file in ipairs(hot_reload.get_changed_files()) do
     if file:ends_with(".lua") then
       modules_changed = true
       changed_files[file] = true
@@ -176,5 +173,5 @@ inotify.update = function()
   end
 end
 
-Ldump.mark(inotify, {}, ...)
-return inotify
+Ldump.mark(hot_reload, {}, ...)
+return hot_reload
