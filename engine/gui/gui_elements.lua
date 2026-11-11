@@ -8,7 +8,7 @@ local nth = function(index)
   return love.graphics.newImageRaw(sprite.utility.select(icon_atlas, index))
 end
 
-local icons = {
+local gui_elements = {
   skip_turn = nth(1),
   dash = nth(2),
   interact = nth(3),
@@ -98,6 +98,6 @@ local icons = {
   sidebar_block_bg = "engine/assets/gui/sidebar_block_bg.png",
 }
 
-hot_reload.mark_as_containing_assets(icons, ...)
-Ldump.mark(icons, {}, ...)
-return icons
+hot_reload.mark_as_containing_assets(gui_elements, ...)
+Ldump.mark(gui_elements, {}, ...)
+return gui_elements
