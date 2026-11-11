@@ -32,6 +32,8 @@ local rerender = function(data, x1, y1, x2, y2)
       ::continue::
     end
   end
+
+  data.image:replacePixels(data.image_data)
 end
 
 local shadow_sprite = {
@@ -42,7 +44,7 @@ local shadow_sprite = {
 --- @param entity state.shadow
 --- @param dt number
 shadow_sprite.render = function(self, entity, dt)
-  return love.graphics.newImage(entity._data.image_data), sprite.cell_size
+  return entity._data.image, sprite.cell_size
 end
 
 --- @alias state.shadow state.shadow_strict|table
@@ -53,12 +55,14 @@ shadow.mt = {__index = methods}
 
 --- @class state.shadow.data
 --- @field image_data love.ImageData
+--- @field image love.Image
 --- @field static grid<number>
 --- @field dynamic grid<number>
 
 --- @param base_grid grid<number>
 --- @return state.shadow
 shadow.new = function(base_grid)
+  local image_data = love.image.newImageData(unpack(base_grid.size))
   return setmetatable({
     codename = "shadow",
     sprite = shadow_sprite,
@@ -66,7 +70,8 @@ shadow.new = function(base_grid)
     layer = "shadows",
     position = Vector.one,
     _data = {
-      image_data = love.image.newImageData(unpack(base_grid.size)),
+      image_data = image_data,
+      image = love.graphics.newImage(image_data),
       static = base_grid,
       dynamic = Grid.new(base_grid.size, function() return 0 end),
     },

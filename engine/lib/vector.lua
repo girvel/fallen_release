@@ -22,7 +22,7 @@ vector.mt = {}
 --- @param ... number
 --- @return vector
 vector.new = function(...)
-  return vector.own({...})
+  return setmetatable({...}, vector.mt)
 end
 
 --- @param t number[]

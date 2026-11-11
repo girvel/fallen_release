@@ -15,6 +15,13 @@ end
 --- @param ... number
 --- @return number
 mathx.median = function(...)
+  if select("#", ...) == 3 then
+    local a = select(1, ...)
+    local b = select(2, ...)
+    local c = select(3, ...)
+    return math.max(math.min(a, b), math.min(math.max(a, b), c))
+  end
+
   local t = {...}
   table.sort(t)
   return t[math.ceil(#t / 2)]
