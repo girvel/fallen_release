@@ -1,3 +1,4 @@
+local hot_reload = require("engine.tech.hot_reload")
 local health = require("engine.mech.health")
 local action = require("engine.tech.action")
 local sound  = require("engine.tech.sound")
@@ -143,13 +144,13 @@ fighter.fighting_styles.defence = {
   modify_armor = function(self, entity, value)
     local body = entity.inventory.body
     if body and body.tags.armor then return value + 1 end
-    
+
     local head = entity.inventory.head
     if head and head.tags.armor then return value + 1 end
-    
+
     local gloves = entity.inventory.gloves
     if gloves and gloves.tags.armor then return value + 1 end
-    
+
     return value
   end,
 }
@@ -199,5 +200,6 @@ fighter.fighting_styles.great_weapon_master = {
   end,
 }
 
+hot_reload.mark(fighter, ...)
 Ldump.mark(fighter, "const", ...)
 return fighter

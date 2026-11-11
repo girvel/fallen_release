@@ -1,3 +1,4 @@
+local hot_reload = require("engine.tech.hot_reload")
 local spells = require("engine.mech.spells")
 local class = require("engine.mech.class")
 local ui = require("engine.tech.ui")
@@ -9,7 +10,7 @@ local warlock = {}
 
 --- @param data creator_pane
 warlock.init_data = function(data)
-  
+
 end
 
 --- @param creator gui_creator
@@ -81,5 +82,6 @@ warlock.submit = function(creator, datas, perks)
   table.insert(perks, warlock_class.dark_ones_blessing(class_level))
 end
 
+hot_reload.mark(warlock, ...)
 Ldump.mark(warlock, {}, ...)
 return warlock

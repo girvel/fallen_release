@@ -106,7 +106,10 @@ hot_reload.get_changed_files = function()
 end
 
 --- @type table<table, {container: table, key: string, modpath: string}>
-local module_map = setmetatable({}, {__mode = "k"})
+local contained = setmetatable({}, {__mode = "k"})
+
+--- @type table<table, string>
+local marked = setmetatable({}, {__mode = "k"})
 
 --- @param modpath string
 --- @param base table
@@ -117,7 +120,7 @@ hot_reload.require = function(modpath, base, key)
   if not is_available then return result end
 
   key = key or assert(modpath:match("%.?([^%.]+)$"))
-  module_map[result] = {
+  contained[result] = {
     container = base,
     key = key,
     modpath = modpath,
@@ -126,6 +129,12 @@ hot_reload.require = function(modpath, base, key)
     return hot_reload.require(modpath, base, key)
   end
   return result
+end
+
+--- @param value table
+--- @param modpath string
+hot_reload.mark = function(value, modpath)
+  marked[value] = modpath
 end
 
 hot_reload.update = function()
@@ -155,13 +164,13 @@ hot_reload.update = function()
   end
 
   if modules_changed then
-    for prev_mod, params in pairs(module_map) do
+    for prev_mod, params in pairs(contained) do
       if changed_files[Common.posix_path(params.modpath)] then
         package.loaded[params.modpath] = nil
         local ok, res = pcall(require, params.modpath)
         if ok then
           Log.info("Reloaded %s", params.modpath)
-          module_map[res] = params
+          contained[res] = params
           params.container[params.key] = res
           Ldump.serializer.handlers[res] = Ldump.serializer.handlers[prev_mod]
         else
@@ -170,8 +179,28 @@ hot_reload.update = function()
         end
       end
     end
+
+    for prev_mod, modpath in pairs(marked) do
+      package.loaded[modpath] = nil
+      local ok, res = pcall(require, modpath)
+      if ok then
+        Log.info("Reloaded %s", modpath)
+        Table.clear(prev_mod)
+        for k, v in pairs(res) do
+          prev_mod[k] = v
+        end
+      else
+        Log.error("Error reloading %s: %s", modpath, res)
+      end
+      package.loaded[modpath] = prev_mod
+    end
   end
 end
 
-Ldump.mark(hot_reload, {}, ...)
+Ldump.mark(hot_reload, {
+  update = {
+    marked = {},
+    contained = {},
+  },
+}, ...)
 return hot_reload

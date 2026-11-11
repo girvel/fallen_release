@@ -95,12 +95,7 @@ local CLASSES_LEN = Fun.iter(CLASSES)
   :map(function(cl) return cl.name:utf_len() end)
   :max()
 
-local CREATOR_CLASSES do
-  local l = {}
-  l.warlock = hot_reload.require("engine.gui.creator_classes.warlock", l, "warlock")
-  l.fighter = hot_reload.require("engine.gui.creator_classes.fighter", l, "fighter")
-  CREATOR_CLASSES = l
-end
+local CREATOR_CLASSES = Table.require_folder("engine.gui.creator_classes")
 
 local draw_base_pane, draw_pane, reassign_model
 
