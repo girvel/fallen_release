@@ -117,6 +117,7 @@ local marked = setmetatable({}, {__mode = "k"})
 --- @return any
 hot_reload.require = function(modpath, base, key)
   local result = require(modpath)
+  assert(type(result) == "function", "hot_reload.require is indended for functions only")
   if not is_available then return result end
 
   key = key or assert(modpath:match("%.?([^%.]+)$"))
