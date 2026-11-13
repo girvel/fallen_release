@@ -120,9 +120,9 @@ if os_name == "Linux" then
   end
 elseif os_name == "Windows" then
   local dir_handle, event_handle, buffer, buffer_size, overlapped
-  
+
   local CP_UTF8 = 65001
-  
+
   local to_utf16 = function(str)
     local wlen = ffi.C.MultiByteToWideChar(CP_UTF8, 0, str, #str, nil, 0)
     if wlen == 0 then return nil end
@@ -131,7 +131,7 @@ elseif os_name == "Windows" then
     buf[wlen] = 0
     return buf
   end
-  
+
   local from_utf16 = function(wptr, byte_len)
     local wchar_count = math.floor(byte_len / 2)
     if wchar_count == 0 then return "" end
@@ -141,11 +141,11 @@ elseif os_name == "Windows" then
     ffi.C.WideCharToMultiByte(CP_UTF8, 0, wptr, wchar_count, buf, len, nil, nil)
     return ffi.string(buf, len)
   end
-  
+
   local FILE_NOTIFY_CHANGE_FILE_NAME = 0x01
   local FILE_NOTIFY_CHANGE_SIZE = 0x08
   local FILE_NOTIFY_CHANGE_LAST_WRITE = 0x10
-  
+
   local request = function()
     ffi.C.ResetEvent(event_handle)
     local ok = ffi.C.ReadDirectoryChangesW(
@@ -161,12 +161,12 @@ elseif os_name == "Windows" then
       overlapped,
       nil
     )
-    
+
     if ok == 0 then
       error("ReadDirectoryChangesW error: "..tostring(ffi.C.GetLastError()))
     end
   end
-  
+
   init = function()
     is_initialized = true
     ffi.cdef [[
@@ -262,12 +262,12 @@ elseif os_name == "Windows" then
         BOOL* lpUsedDefaultChar
       );
     ]]
-    
+
     local wpath = to_utf16(".")
     if not wpath then
       error("Converting path to utf16 failed")
     end
-    
+
     local FILE_LIST_DIRECTORY = 0x1
     local FILE_SHARE_READ = 0x1
     local FILE_SHARE_WRITE = 0x2
@@ -275,7 +275,7 @@ elseif os_name == "Windows" then
     local FILE_FLAG_BACKUP_SEMANTICS = 0x02000000
     local FILE_FLAG_OVERLAPPED = 0x40000000
     local OPEN_EXISTING = 3
-    
+
     dir_handle = ffi.C.CreateFileW(
       wpath,
       FILE_LIST_DIRECTORY,
@@ -285,27 +285,27 @@ elseif os_name == "Windows" then
       bit.bor(FILE_FLAG_BACKUP_SEMANTICS, FILE_FLAG_OVERLAPPED),
       nil
     )
-    
+
     local INVALID_HANDLE_VALUE = ffi.cast("HANDLE", -1)
-    
+
     if dir_handle == INVALID_HANDLE_VALUE then
       error("CreateFileW failed with error: "..tostring(ffi.C.GetLastError()))
     end
-    
+
     event_handle = ffi.C.CreateEventW(nil, 1, 0, nil)
     if event_handle == nil then
       ffi.C.CloseHandle(dir_handle)
       error("CreateEventW failed with error: "..tostring(ffi.C.GetLastError()))
     end
-  
+
     buffer_size = 65536  -- 64 KB
     buffer = ffi.new("DWORD[?]", buffer_size / 4)
-    overlapped = ffi.new("OVERLAPPED")
+    overlapped = ffi.new("OVERLAPPED")  --[[@as table]]
     overlapped.hEvent = event_handle
-    
+
     request()
   end
-  
+
   --- @return string[]
   --- @nodiscard
   hot_reload.get_changed_files = function()
@@ -317,7 +317,7 @@ elseif os_name == "Windows" then
     if wait_status ~= WAIT_OBJECT_0 then
       return result
     end
-    
+
     local bytes_returned = ffi.new("DWORD[1]")
     local ok = ffi.C.GetOverlappedResult(dir_handle, overlapped, bytes_returned, 0)
     if ok == 0 then
@@ -326,18 +326,18 @@ elseif os_name == "Windows" then
       Log.error("GetOverlappedResult error: %s", err)
       return result
     end
-    
+
     local bytes = bytes_returned[0]
     if bytes == 0 then
       Log.error("Internal windows buffer overflow")
       request()
       return result
     end
-    
+
     local base_ptr = ffi.cast("uint8_t*", buffer)
     local offset = 0
     while true do
-      local info = ffi.cast("FILE_NOTIFY_INFORMATION*", base_ptr + offset)
+      local info = ffi.cast("FILE_NOTIFY_INFORMATION*", base_ptr + offset)  --[[@as table]]
       local name = from_utf16(info.FileName, info.FileNameLength)
         :gsub("\\", "/")
       if not Table.contains(result, name) then
