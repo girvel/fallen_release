@@ -80,11 +80,12 @@ is_callable = function(f)
   return false
 end
 
+--- @generic T
+--- @param f T
+--- @param cache? composite_map
+--- @return T
 composite_map.memoize = function(f, cache)
-  local map = composite_map.new("weak")
-  if cache then
-    map._items = cache
-  end
+  local map = cache or composite_map.new("weak")
 
   if not is_callable(f) then
     error(string.format(

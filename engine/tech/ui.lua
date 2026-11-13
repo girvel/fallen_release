@@ -147,7 +147,8 @@ local align = function(w, h)
   return x, y
 end
 
-local get_font_cache = {}
+local get_font_cache = CompositeMap.new("weak")
+local get_batch_cache = CompositeMap.new("weak")
 
 --- @param size number
 --- @return love.Font
@@ -155,7 +156,6 @@ local get_font = Memoize(function(size)
   return love.graphics.newFont("engine/assets/fonts/clacon2.ttf", size)
 end, get_font_cache)
 
-local get_batch_cache = {}
 local get_batch = Memoize(function(path)
   local image = love.graphics.newImage(path)
   local batch = love.graphics.newSpriteBatch(image)
@@ -819,15 +819,14 @@ ui.image = function(texture, scale, quad)
   end
 end
 
-local get_atlas_cache = {}
+local get_atlas_cache = CompositeMap.new("weak")
+local get_atlas_image_cache = CompositeMap.new("weak")
 
 --- @param path string
 --- @return love.ImageData
 local get_atlas = Memoize(function(path)
   return love.image.newImageData(path)
 end, get_atlas_cache)
-
-local get_atlas_image_cache = {}
 
 --- @param image love.ImageData|string
 --- @param atlas_n integer
@@ -1307,10 +1306,10 @@ ui.handle_update = function(dt)
 end
 
 ui.reset_caches = function()
-  Table.clear(get_batch_cache)
-  Table.clear(get_font_cache)
-  Table.clear(get_atlas_cache)
-  Table.clear(get_atlas_image_cache)
+  Table.clear(get_batch_cache._items)
+  Table.clear(get_font_cache._items)
+  Table.clear(get_atlas_cache._items)
+  Table.clear(get_atlas_image_cache._items)
 end
 
 ----------------------------------------------------------------------------------------------------

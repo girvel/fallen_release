@@ -52,9 +52,7 @@ local wrap = function(modname, fname, memoize)
   end
 
   if memoize then
-    local cache = {}
-    love[modname][fname] = Memoize(love[modname][fname], cache)
-    love[modname][fname.."Cache"] = cache
+    love[modname][fname] = Memoize(love[modname][fname])
   end
 end
 
