@@ -53,18 +53,19 @@ methods.get = function(self, head, ...)
 end
 
 local iter
-iter = function(self, base)
+iter = function(self, keys)
   if self._value then
-    coroutine.yield(base, self._value)
+    coroutine.yield(keys, self._value)
   end
   for k, v in pairs(self._items) do
-    table.insert(base, k)
-    iter(v, base)
-    table.remove(base)
+    table.insert(keys, k)
+    iter(v, keys)
+    table.remove(keys)
   end
 end
 
 --- NOTICE returned keys should not be mutated
+--- @return fun(): any[], any
 methods.iter = function(self)
   return coroutine.wrap(function() iter(self, {}) end)
 end

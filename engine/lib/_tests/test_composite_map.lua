@@ -42,6 +42,21 @@ describe("composite map", function()
     assert.are_equal(nil, keys[1337])
   end)
 
+  it("can have its keys replaced during iteration", function()
+    local map = composite_map.new()
+    map:set(69, "hi", 3)
+    map:set(42, "hi")
+    map:set(1337, 3)
+
+    for keys, v in map:iter() do
+      map:set(v * 2, table.unpack(keys))
+    end
+
+    assert.are_equal(138, map:get("hi", 3))
+    assert.are_equal(84, map:get("hi"))
+    assert.are_equal(2674, map:get(3))
+  end)
+
   it("can have weak keys", function()
     local t = composite_map.new("weak")
     local a = {}
