@@ -12,6 +12,8 @@ local sound = {}
 local methods = {}
 local mt = {__index = methods}
 
+sound.cache = CompositeMap.new("weak")
+
 --- NOTICE immutable (cached)
 --- @param path string
 --- @param volume? number
@@ -26,7 +28,7 @@ sound.new = Memoize(function(path, volume)
     source = source,
     _path = path,
   }, mt)
-end)
+end, sound.cache)
 
 --- @class sound_multiple: { [integer]: sound }
 local multiple_methods = {}

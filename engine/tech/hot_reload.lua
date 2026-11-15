@@ -401,19 +401,61 @@ end
 hot_reload.update = function()
   if not is_available then return end
 
-  local changed_files = {}
-  local modules_changed = false
-  local images_changed = false
+  local changed_modules = {}
+  local changed_sounds = {}
+  local are_modules_changed = false
+  local are_images_changed = false
+  local are_sounds_changed = false
+
   for _, file in ipairs(hot_reload.get_changed_files()) do
     if file:ends_with(".lua") then
-      modules_changed = true
-      changed_files[file] = true
+      are_modules_changed = true
+      changed_modules[file] = true
     elseif file:ends_with(".png") then
-      images_changed = true
+      are_images_changed = true
+    elseif file:ends_with(".mp3") then
+      are_sounds_changed = true
+      changed_sounds[file] = true
     end
   end
 
-  if images_changed then
+  if are_sounds_changed then
+    local sound = require("engine.tech.sound")
+    for _, results in sound.cache:iter() do
+      local this_sound = results[1]
+      --- @cast this_sound sound
+      if changed_sounds[this_sound._path] then
+        local old_source = this_sound.source
+        this_sound.source = love.audio.newSource(this_sound._path, "static")
+        this_sound.source:setVolume(old_source:getVolume())
+        this_sound.source:setLooping(old_source:isLooping())
+
+        local new_channel_count = this_sound.source:getChannelCount()
+        local old_channel_count = old_source:getChannelCount()
+        if new_channel_count ~= old_channel_count then
+          error(("Expected the %s sound to contain %s channels, got %s"):format(
+            this_sound._path, old_channel_count, new_channel_count
+          ))
+        end
+
+        if new_channel_count == 1 then
+          this_sound.source:setRelative(old_source:isRelative())
+          this_sound.source:setPosition(old_source:getPosition())
+          this_sound.source:setRolloff(old_source:getRolloff())
+          this_sound.source:setAttenuationDistances(old_source:getAttenuationDistances())
+        end
+
+        if old_source:isPlaying() then
+          old_source:stop()
+          this_sound.source:play()
+        end
+
+        Log.info("Reloaded %s", this_sound._path)
+      end
+    end
+  end
+
+  if are_images_changed then
     local ui = require("engine.tech.ui")
     hot_reload.is_reloading = true
 
@@ -438,11 +480,11 @@ hot_reload.update = function()
     hot_reload.is_reloading = false
   end
 
-  if modules_changed then
+  if are_modules_changed then
     hot_reload.is_reloading = true
 
     for prev_mod, params in pairs(contained) do
-      if changed_files[Common.posix_path(params.modpath)] then
+      if changed_modules[Common.posix_path(params.modpath)] then
         package.loaded[params.modpath] = nil
         local ok, res = pcall(require, params.modpath)
         if ok then
@@ -458,7 +500,7 @@ hot_reload.update = function()
     end
 
     for modpath, prev_mod in pairs(marked) do
-      if changed_files[Common.posix_path(modpath)] then
+      if changed_modules[Common.posix_path(modpath)] then
         package.loaded[modpath] = nil
         local ok, res = pcall(require, modpath)
         if ok then
