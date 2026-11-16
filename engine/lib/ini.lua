@@ -1,16 +1,59 @@
 local ini = {}
 
---- @param path string
---- @return table<string, string>
-ini.read = function(path)
-  local content do
-    local f = assert(io.open(path, "r"))
-    content = f:read("*a")
-    f:close()
+--- @param str string
+--- @param pat string
+--- @param plain boolean?
+--- @return string[]
+local split = function(str, pat, plain)
+  local t = {}
+
+  while true do
+    local pos1, pos2 = str:find(pat, 1, plain or false)
+
+    if not pos1 or pos1 > pos2 then
+      t[#t + 1] = str
+      return t
+    end
+
+    t[#t + 1] = str:sub(1, pos1 - 1)
+    str = str:sub(pos2 + 1)
   end
+end
+
+--- @param str string
+--- @param prefix string
+--- @return boolean
+local starts_with = function(str, prefix)
+  return str:sub(1, #prefix) == prefix
+end
+
+--- @param str string
+--- @param postfix string
+--- @return boolean
+local ends_with = function(str, postfix)
+  return str:sub(-#postfix, -1) == postfix
+end
+
+ini.read_f = function(path)
+  local f = assert(io.open(path, "r"))
+  local content = f:read("*a")
+  f:close()
+  return content
+end
+
+ini.write_f = function(path, content)
+  local f = assert(io.open(path, "w"))
+  f:write(content)
+  f:close()
+end
+
+--- @param path string
+--- @return table<string, any>
+ini.read = function(path)
+  local content = ini.read_f(path)
 
   local result = {}
-  for i, line in ipairs(content:split("%s*\n%s*")) do
+  for i, line in ipairs(split(content, "%s*\n%s*")) do
     if #line == 0 then goto continue end
     local j = line:find("=")
     if not j then
@@ -21,7 +64,7 @@ ini.read = function(path)
     local value_as_a_number = tonumber(value)
     if value_as_a_number then
       result[key] = value_as_a_number
-    elseif value:starts_with('"') and value:ends_with('"') then
+    elseif starts_with(value, '"') and ends_with(value, '"') then
       result[key] = value:sub(2, -2)
     elseif value == "true" then
       result[key] = true
@@ -63,11 +106,7 @@ ini.write = function(path, obj)
     end
   end
 
-  do
-    local f = assert(io.open(path, "w"))
-    f:write(table.concat(result, "\n"))
-    f:close()
-  end
+  ini.write_f(path, table.concat(result, "\n"))
 end
 
 return ini

@@ -1,4 +1,5 @@
 #!/usr/bin/env luajit
+local ini = require("engine.lib.ini")
 
 local log = require("engine.lib.log")
 local argparse = require("engine.lib.argparse")
@@ -103,6 +104,14 @@ local parse_cli = function()
   exe:option(
     "-n --version-name",
     "Version name to be used instead of git tag"
+  )
+
+  exe:flag(
+    "-i --internal-build",
+    "Set internal_build=true in config.ini, enabling:\n"..
+    "- hot reloading\n"..
+    "- manual checkpoint selection\n"..
+    "- loading sounds from parent directory"
   )
 
   exe:flag(
@@ -277,7 +286,14 @@ cli.exe = function(args)
   end
   run("cp main.lua .build/target/")
   run("cp conf_release.lua .build/target/conf.lua")
-  run("cp config.ini .build/target/")
+
+  if args.internal_build then
+    local configuration = ini.read("config.ini")
+    configuration.internal_build = true
+    ini.write(".build/target/config.ini", configuration)
+  else
+    run("cp config.ini .build/target/")
+  end
 
   -- build .love --
   run("cd .build/target; zip -9 -r%s %s.love ./*", args.verbose and "" or " -q", name)

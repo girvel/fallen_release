@@ -127,12 +127,13 @@ creator.new = function(prev)
   local model do
     model = State.player.creator_model
     if not model then
+      local is_preset = Kernel.debug or Kernel.config.internal_build
       model = {
         [0] = {
-          base_abilities = Kernel.debug
+          base_abilities = is_preset
             and abilities.new(15, 15, 15, 8, 8, 8)
             or abilities.new(8, 8, 8, 8, 8, 8),
-          points = Kernel.debug and 0 or 27,
+          points = is_preset and 0 or 27,
           race = RACES[1],
           skill_1 = SKILLS[1],
           skill_2 = SKILLS[2],

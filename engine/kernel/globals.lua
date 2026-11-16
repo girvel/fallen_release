@@ -30,6 +30,8 @@ Inspect = function(x, opts)
 end
 
 Ini = require("engine.lib.ini")
+Ini.write_f = love.filesystem.write
+Ini.read_f = love.filesystem.read
 
 Iteration = require("engine.lib.iteration")
 
