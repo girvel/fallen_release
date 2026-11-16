@@ -49,7 +49,7 @@ local methods = {}
 rails.mt = {__index = methods}
 
 local init_debug, init_factions, init_audio, init_characters
-local checkpoints = {}
+rails.checkpoints = {}
 
 --- @param checkpoint string?
 --- @return rails
@@ -67,12 +67,12 @@ rails.new = function(checkpoint)
   init_audio()
   init_characters()
   if checkpoint then
-    local init_checkpoint = checkpoints[checkpoint]
+    local init_checkpoint = rails.checkpoints[checkpoint]
     if init_checkpoint then
       init_checkpoint(result)
     else
       Error("No checkpoint %s defined; available: %s", checkpoint, table.concat(
-        Fun.iter(checkpoints):totable(), "\n"
+        Fun.iter(rails.checkpoints):totable(), "\n"
       ))
     end
   end
@@ -130,21 +130,21 @@ local skip_intro = function(self)
 end
 
 --- @param this_rails rails
-checkpoints.cp1 = function(this_rails)
+rails.checkpoints.cp1 = function(this_rails)
   skip_intro(this_rails)
   this_rails:transition_2_warmup()
   level.unsafe_move(State.player, State.level.positions.cp1)
 end
 
 --- @param this_rails rails
-checkpoints.cp2 = function(this_rails)
+rails.checkpoints.cp2 = function(this_rails)
   skip_intro(this_rails)
   this_rails:transition_2_warmup()
   level.unsafe_move(State.player, State.level.positions.officer_room_enter)
 end
 
 --- @param this_rails rails
-checkpoints.cp3 = function(this_rails)
+rails.checkpoints.cp3 = function(this_rails)
   skip_intro(this_rails)
   this_rails:transition_2_warmup()
   this_rails:transition_3_detective()
@@ -157,7 +157,7 @@ checkpoints.cp3 = function(this_rails)
 end
 
 --- @param this_rails rails
-checkpoints.cp4 = function(this_rails)
+rails.checkpoints.cp4 = function(this_rails)
   skip_intro(this_rails)
   this_rails:transition_2_warmup()
   this_rails:transition_3_detective()
@@ -170,7 +170,7 @@ checkpoints.cp4 = function(this_rails)
   item.give(State.player, items.greatsword())
 end
 
-checkpoints.cp5 = function(this_rails)
+rails.checkpoints.cp5 = function(this_rails)
   skip_intro(this_rails)
   this_rails:transition_2_warmup()
   this_rails:transition_3_detective()
@@ -189,7 +189,7 @@ checkpoints.cp5 = function(this_rails)
   ch.bridge_megadoor3:on_interact(State.player)
 end
 
-checkpoints.cp6 = function(this_rails)
+rails.checkpoints.cp6 = function(this_rails)
   skip_intro(this_rails)
   this_rails:transition_2_warmup()
   this_rails:transition_3_detective()
