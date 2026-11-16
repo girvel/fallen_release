@@ -101,6 +101,11 @@ local parse_cli = function()
   )
 
   exe:option(
+    "-n --version-name",
+    "Version name to be used instead of git tag"
+  )
+
+  exe:flag(
     "-v --verbose",
     "Display more output"
   )
@@ -212,12 +217,17 @@ cli.exe = function(args)
     love = nil  --- @diagnostic disable-line
   end
 
-  local version_suffix = read_run("git tag --points-at")
-  if #version_suffix > 0 then
-    log.info("Detected git tag %s", version_suffix)
-    version_suffix = "_" .. version_suffix
+  local version_suffix
+  if args.version_name then
+    version_suffix = "_"..args.version_name
+  else
+    version_suffix = read_run("git tag --points-at")
+    if #version_suffix > 0 then
+      log.info("Detected git tag %s", version_suffix)
+      version_suffix = "_"..version_suffix
+    end
   end
-  local versioned_name = name .. version_suffix
+  local versioned_name = name..version_suffix
 
   -- prep folder --
   run("mkdir -p .build")
