@@ -1,3 +1,4 @@
+local sound = require("engine.tech.sound")
 local discord = require("engine.tech.discord")
 local shadow = require("engine.state.shadow")
 local async = require("engine.tech.async")
@@ -309,7 +310,8 @@ methods.start_combat = function(self, list)
     else
       Log.info("--- Combat starts: %s ---", repr)
       self.combat = combat.new(list)
-      
+      sound.new("engine/assets/sounds/combat_start.mp3", 1, true):play()
+
       local enemy
       for _, e in ipairs(list) do
         if self.hostility:get(e, self.player) == "enemy" then
@@ -317,7 +319,7 @@ methods.start_combat = function(self, list)
           break
         end
       end
-      
+
       if enemy then
         discord.push_status("Сражается с "..Name.game(enemy))
       else

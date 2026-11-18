@@ -111,6 +111,16 @@ string.ends_with = function(str, postfix)
 end
 
 --- @param str string
+--- @param prefix string
+--- @return string
+string.strip_prefix = function(str, prefix)
+  if str:starts_with(prefix) then
+    return str:sub(#prefix + 1)
+  end
+  return str
+end
+
+--- @param str string
 --- @param pat string
 --- @param plain boolean?
 --- @return string[]

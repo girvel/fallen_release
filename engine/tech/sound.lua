@@ -16,8 +16,9 @@ local mt = {__index = methods}
 
 sound.cache = CompositeMap.new("weak")
 
+--- @param path string
 sound._read_source = function(path)
-  local mnt_path = "mnt/"..path
+  local mnt_path = "mnt/"..path:strip_prefix("engine/")
   if not love.filesystem.getInfo(mnt_path, "file") then
     if not love.filesystem.getInfo(path, "file") then
       return nil
@@ -29,12 +30,13 @@ end
 
 -- TODO sound nor sound.multiple should not be immutable
 
---- NOTICE immutable (cached)
+-- NOTICE should not be cached, mutable
+
 --- @param path string
 --- @param volume? number
 --- @param can_be_missing? boolean
 --- @return sound
-sound.new = Memoize(function(path, volume, can_be_missing)
+sound.new = function(path, volume, can_be_missing)
   local source = sound._read_source(path)
   if source then
     if volume then source:setVolume(volume) end
@@ -50,19 +52,17 @@ sound.new = Memoize(function(path, volume, can_be_missing)
     _volume = volume,
     _can_be_missing = can_be_missing,
   }, mt)
-end, sound.cache)
+end
 
 --- @class sound_multiple: { [integer]: sound }
 local multiple_methods = {}
 local multiple_mt = {__index = multiple_methods}
 
 --- Load all sounds from a directory
----
---- NOTICE immutable (cached)
 --- @param dir_path string
 --- @param volume? number
 --- @return sound_multiple
-sound.multiple = Memoize(function(dir_path, volume)
+sound.multiple = function(dir_path, volume)
   if not love.filesystem.getInfo(dir_path) then
     Error("%q doesn't exist", dir_path)
     return setmetatable({}, multiple_mt)
@@ -80,7 +80,7 @@ sound.multiple = Memoize(function(dir_path, volume)
   end
 
   return result
-end)
+end
 
 --- @param path string
 --- @param volume? number
