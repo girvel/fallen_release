@@ -1,60 +1,62 @@
 local ffi = require("ffi")
 local hot_reload = {is_reloading = false}
 
-local get_subdirectories_recursively
-
---- @param base string
---- @param result? string[]
---- @return string[]
-get_subdirectories_recursively = function(base, result)
-  result = result or {}
-  table.insert(result, base)
-
-  local info = {}
-  if base == "." then
-    for _, entry in ipairs(love.filesystem.getDirectoryItems("")) do
-      if not entry:starts_with(".")
-        and love.filesystem.getRealDirectory(entry) ~= love.filesystem.getSaveDirectory()
-        and love.filesystem.getInfo(entry, "directory", info)
-      then
-        get_subdirectories_recursively(entry, result)
-      end
-    end
-  else
-    for _, entry in ipairs(love.filesystem.getDirectoryItems(base)) do
-      local entry_full_path = base.."/"..entry
-      if not entry:starts_with(".")
-        and love.filesystem.getInfo(entry_full_path, "directory", info)
-      then
-        get_subdirectories_recursively(entry_full_path, result)
-      end
-    end
-  end
-  return result
-end
-
 local os_name = love.system.getOS()
 
-local is_available do
+local is_available = Memoize(function()
   local allowed_oses = {
     Linux = true,
     Windows = true,
   }
 
-  is_available = allowed_oses[os_name]
-    and not Common.is_game_built()
+  local result = allowed_oses[os_name]
+    and (not Common.is_game_built() or Kernel.config.internal_build)
     and os.getenv("NO_HOTRELOAD") ~= "1"
 
-  if is_available then
+  if result then
     Log.info("Hot reloading enabled")
   else
     Log.info("Hot reloading unavailable")
   end
-end
+
+  return result
+end)
 
 local is_initialized, init
 if os_name == "Linux" then
   local inotify_fd, fd_to_dir, buffer
+
+  local get_subdirectories_recursively
+
+  --- @param base string
+  --- @param result? string[]
+  --- @return string[]
+  get_subdirectories_recursively = function(base, result)
+    result = result or {}
+    table.insert(result, base)
+
+    local info = {}
+    if base == "." then
+      for _, entry in ipairs(love.filesystem.getDirectoryItems("")) do
+        if not entry:starts_with(".")
+          and love.filesystem.getRealDirectory(entry) ~= love.filesystem.getSaveDirectory()
+          and love.filesystem.getInfo(entry, "directory", info)
+        then
+          get_subdirectories_recursively(entry, result)
+        end
+      end
+    else
+      for _, entry in ipairs(love.filesystem.getDirectoryItems(base)) do
+        local entry_full_path = base.."/"..entry
+        if not entry:starts_with(".")
+          and love.filesystem.getInfo(entry_full_path, "directory", info)
+        then
+          get_subdirectories_recursively(entry_full_path, result)
+        end
+      end
+    end
+    return result
+  end
 
   init = function()
     is_initialized = true
@@ -63,6 +65,7 @@ if os_name == "Linux" then
       int inotify_add_watch(int fd, const char *pathname, uint32_t mask);
       int inotify_rm_watch(int fd, int wd);
       ssize_t read(int fd, void *buf, size_t count);
+      char *strerror(int errnum);
 
       struct inotify_event {
           int      wd;       /* Watch descriptor (matches what add_watch returned) */
@@ -76,17 +79,28 @@ if os_name == "Linux" then
     local IN_NONBLOCK = 2048
     local IN_CLOSE_WRITE = 8
 
+    local get_error = function()
+      return ffi.string(ffi.C.strerror(ffi.errno()))
+    end
+
     inotify_fd = ffi.C.inotify_init1(IN_NONBLOCK)
     if inotify_fd < 0 then
-      error("inotify_init1 failed")
+      error("inotify_init1 failed: "..get_error())
+    end
+
+    local all_directories
+    if Common.is_game_built() then
+      all_directories = {"."}
+    else
+      all_directories = get_subdirectories_recursively(".")
     end
 
     fd_to_dir = {}
-    for _, dir in ipairs(get_subdirectories_recursively(".")) do
+    for _, dir in ipairs(all_directories) do
       if dir == "" then dir = "." end
       local watch_fd = ffi.C.inotify_add_watch(inotify_fd, dir, IN_CLOSE_WRITE)
       if watch_fd < 0 then
-        error("inotify_add_watch failed")
+        error("inotify_add_watch failed: "..get_error())
       end
       fd_to_dir[watch_fd] = dir
     end
@@ -370,7 +384,6 @@ local marked_as_containing_assets = setmetatable({}, {__mode = "v"})
 hot_reload.require = function(modpath, base, key)
   local result = require(modpath)
   assert(type(result) == "function", "hot_reload.require is indended for functions only")
-  if not is_available then return result end
 
   key = key or assert(modpath:match("%.?([^%.]+)$"))
   contained[result] = {
@@ -399,7 +412,7 @@ hot_reload.mark_as_containing_assets = function(value, modpath)
 end
 
 hot_reload.update = function()
-  if not is_available then return end
+  if not is_available() then return end
 
   local changed_modules = {}
   local changed_sounds = {}
@@ -426,28 +439,32 @@ hot_reload.update = function()
       --- @cast this_sound sound
       if changed_sounds[this_sound._path] then
         local old_source = this_sound.source
-        this_sound.source = love.audio.newSource(this_sound._path, "static")
-        this_sound.source:setVolume(old_source:getVolume())
-        this_sound.source:setLooping(old_source:isLooping())
-
-        local new_channel_count = this_sound.source:getChannelCount()
-        local old_channel_count = old_source:getChannelCount()
-        if new_channel_count ~= old_channel_count then
-          error(("Expected the %s sound to contain %s channels, got %s"):format(
-            this_sound._path, old_channel_count, new_channel_count
-          ))
+        this_sound.source = sound._read_source(this_sound._path)
+        if this_sound.source then
+          this_sound.source:setVolume(this_sound._volume)
         end
+        if this_sound.source and old_source then
+          this_sound.source:setLooping(old_source:isLooping())
 
-        if new_channel_count == 1 then
-          this_sound.source:setRelative(old_source:isRelative())
-          this_sound.source:setPosition(old_source:getPosition())
-          this_sound.source:setRolloff(old_source:getRolloff())
-          this_sound.source:setAttenuationDistances(old_source:getAttenuationDistances())
-        end
+          local new_channel_count = this_sound.source:getChannelCount()
+          local old_channel_count = old_source:getChannelCount()
+          if new_channel_count ~= old_channel_count then
+            error(("Expected the %s sound to contain %s channels, got %s"):format(
+              this_sound._path, old_channel_count, new_channel_count
+            ))
+          end
 
-        if old_source:isPlaying() then
-          old_source:stop()
-          this_sound.source:play()
+          if new_channel_count == 1 then
+            this_sound.source:setRelative(old_source:isRelative())
+            this_sound.source:setPosition(old_source:getPosition())
+            this_sound.source:setRolloff(old_source:getRolloff())
+            this_sound.source:setAttenuationDistances(old_source:getAttenuationDistances())
+          end
+
+          if old_source:isPlaying() then
+            old_source:stop()
+            this_sound.source:play()
+          end
         end
 
         Log.info("Reloaded %s", this_sound._path)

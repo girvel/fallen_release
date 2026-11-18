@@ -1,3 +1,4 @@
+local sound = require("engine.tech.sound")
 local discord = require("engine.tech.discord")
 local xp = require("engine.mech.xp")
 local item = require("engine.tech.item")
@@ -183,6 +184,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      sound.new("assets/sounds/dialogue_start.mp3", 1, true):play()
       State.rails:talk_to(1)
       sp:lines()
 
@@ -216,6 +218,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      sound.new("assets/sounds/dialogue_start.mp3", 1, true):play()
       State.rails:talk_to(2)
       local prev_direction = ch.engineer_2.direction
       api.rotate(ch.engineer_2, State.player)
@@ -254,6 +257,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      sound.new("assets/sounds/dialogue_start.mp3", 1, true):play()
       State.rails:talk_to(3)
       sp:lines()
       local options = sp:start_options()
@@ -286,6 +290,7 @@ return {
     end,
 
     _run = function(self, ch, ps, sp)
+      sound.new("assets/sounds/dialogue_start.mp3", 1, true):play()
       State.rails:talk_to(4)
       local prev_direction = ch.engineer_4.direction
       api.rotate(ch.engineer_4, State.player)

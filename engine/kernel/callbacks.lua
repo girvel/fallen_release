@@ -85,8 +85,12 @@ love.load = function(args)
 
   rolling.init()
 
-  -- state = "Работает над 'Discord Rich Presence POC', что бы это ни было",
-  -- details = "Пишет коды для игры",
+  if Kernel.config.internal_build then
+    local ok = love.filesystem.mount(love.filesystem.getSourceBaseDirectory(), "mnt")
+    if not ok then
+      Log.warn("Failed to mount source base directory")
+    end
+  end
 
   if args.playground then
     love.filesystem.load("engine/kernel/playground.lua")()

@@ -301,16 +301,22 @@ cli.exe = function(args)
   run("rm -r .build/target")
 
   -- pack linux
-  run("mkdir -p .build/%s_linux", versioned_name)
-  run("cp .build/%s.love .build/%s_linux", name, versioned_name)
-  run("cp engine/lib/*.so .build/%s_linux", versioned_name)
+  local linux_dir = (".build/%s_linux"):format(versioned_name)
+  run("mkdir -p %s", linux_dir)
+  run("cp .build/%s.love %s", name, linux_dir)
+  run("cp engine/lib/*.so %s", linux_dir)
   write_file(
-    (".build/%s_linux/README.txt"):format(versioned_name),
+    ("%s/README.txt"):format(linux_dir),
     file_read("engine/assets/build/README-linux.txt"):gsub("%%NAME%%", name)
   )
+  if args.internal_build then
+    run("mkdir -p %s/assets/sounds", linux_dir)
+    run("cp assets/sounds/dialogue_start_joke.mp3 %s/assets/sounds/dialogue_start.mp3", linux_dir)
+  end
   run("cd .build; zip -9 -r %s_linux.zip %s_linux", versioned_name, versioned_name)
 
   -- pack win64
+  local win_dir = (".build/%s_win64"):format(versioned_name)
   run("cat '%s/love.exe' .build/%s.love > .build/%s.exe", include, name, name)
   run [[
     convert
@@ -321,14 +327,18 @@ cli.exe = function(args)
       -colorspace sRGB .build/dot.ico
   ]]
   run("wine '%s/rcedit-x64.exe' .build/%s.exe --set-icon .build/dot.ico", include, name)
-  run("mkdir -p .build/%s_win64", versioned_name)
-  run("mv .build/%s.exe .build/%s_win64/%s.exe", name, versioned_name, name)
-  run("cp '%s'/*.dll .build/%s_win64/", include, versioned_name)
-  run("cp engine/lib/*.dll .build/%s_win64/", versioned_name)
+  run("mkdir -p %s", win_dir)
+  run("mv .build/%s.exe %s/%s.exe", name, win_dir, name)
+  run("cp '%s'/*.dll %s/", include, win_dir)
+  run("cp engine/lib/*.dll %s/", win_dir)
   write_file(
-    (".build/%s_win64/README.txt"):format(versioned_name),
+    ("%s/README.txt"):format(win_dir),
     file_read("engine/assets/build/README-windows.txt"):gsub("%%NAME%%", name)
   )
+  if args.internal_build then
+    run("mkdir -p %s/assets/sounds", win_dir)
+    run("cp assets/sounds/dialogue_start_joke.mp3 %s/assets/sounds/dialogue_start.mp3", win_dir)
+  end
   run("cd .build; zip -9 -r %s_win64.zip %s_win64", versioned_name, versioned_name)
 
   -- cleanup

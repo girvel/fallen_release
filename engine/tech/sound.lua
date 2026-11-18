@@ -7,26 +7,48 @@ local sound = {}
 --- @alias sound_event "hit"|"walk"
 
 --- @class sound
---- @field source love.Source
+--- @field source love.Source?
 --- @field _path string
+--- @field _volume number
+--- @field _can_be_missing boolean
 local methods = {}
 local mt = {__index = methods}
 
 sound.cache = CompositeMap.new("weak")
 
+sound._read_source = function(path)
+  local mnt_path = "mnt/"..path
+  if not love.filesystem.getInfo(mnt_path, "file") then
+    if not love.filesystem.getInfo(path, "file") then
+      return nil
+    end
+    return love.audio.newSource(path, "static")
+  end
+  return love.audio.newSource(mnt_path, "static")
+end
+
+-- TODO sound nor sound.multiple should not be immutable
+
 --- NOTICE immutable (cached)
 --- @param path string
 --- @param volume? number
+--- @param can_be_missing? boolean
 --- @return sound
-sound.new = Memoize(function(path, volume)
-  local source = love.audio.newSource(path, "static")
-  if volume then source:setVolume(volume) end
-  if source:getChannelCount() == 1 then
-    source:setRelative(true)
+sound.new = Memoize(function(path, volume, can_be_missing)
+  local source = sound._read_source(path)
+  if source then
+    if volume then source:setVolume(volume) end
+    if source:getChannelCount() == 1 then
+      source:setRelative(true)
+    end
+  elseif not can_be_missing then
+    Error("Missing audio file %s", path)
   end
   return setmetatable({
     source = source,
     _path = path,
+    _volume = volume,
+    _can_be_missing = can_be_missing,
   }, mt)
 end, sound.cache)
 
@@ -87,8 +109,10 @@ sound.sizes = {
 --- @return sound
 methods.clone = function(self)
   return setmetatable({
-    source = self.source:clone(),
+    source = self.source and self.source:clone(),
     _path = self._path,
+    _volume = self._volume,
+    _can_be_missing = self._can_be_missing,
   }, mt)
 end
 
@@ -99,6 +123,8 @@ end
 --- @return T
 methods.place = function(self, position, size)
   --- @cast self sound
+  if not self.source then return self end
+
   local limits = sound.sizes[size or "small"]
   if not limits then
     Error("Incorrect sound size %s; sounds can be small, medium or large", size)
@@ -116,6 +142,7 @@ end
 --- @return T
 methods.play = function(self)
   --- @cast self sound
+  if not self.source then return self end
   if not State.player or not State.model.is_deaf then self.source:play() end
   return self
 end
@@ -125,13 +152,14 @@ end
 --- @return T
 methods.stop = function(self)
   --- @cast self sound
-  self.source:stop()
+  if self.source then self.source:stop() end
   return self
 end
 
 mt.__serialize = function(self)
   local path = self._path
-  local volume = self.source:getVolume()
+  local volume = self._volume
+  local can_be_missing = self._can_be_missing
   local looping = self.source:isLooping()
   local relative, x, y, rolloff, ref, max
   if self.source:getChannelCount() == 1 then
@@ -142,18 +170,19 @@ mt.__serialize = function(self)
   end
 
   return function()
-    local result = sound.new(path, volume)
-    result.source:setLooping(looping or false)
-    if result.source:getChannelCount() == 1 then
-      result.source:setRelative(relative)
-      result.source:setPosition(x, y, 0)
-      result.source:setRolloff(rolloff)
-      result.source:setAttenuationDistances(ref, max)
+    local result = sound.new(path, volume, can_be_missing)
+    if result.source then
+      result.source:setLooping(looping or false)
+      if result.source:getChannelCount() == 1 then
+        result.source:setRelative(relative)
+        result.source:setPosition(x, y, 0)
+        result.source:setRolloff(rolloff)
+        result.source:setAttenuationDistances(ref, max)
+      end
     end
     return result
   end
 end
-
 
 --- @generic T: sound
 --- @param self T
@@ -161,7 +190,7 @@ end
 --- @return T
 methods.set_looping = function(self, value)
   --- @cast self sound
-  self.source:setLooping(value)
+  if self.source then self.source:setLooping(value) end
   return self
 end
 
