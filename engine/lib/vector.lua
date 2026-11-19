@@ -45,6 +45,7 @@ end
 --- @param hex string
 --- @return vector
 vector.hex = function(hex)
+  hex = hex:strip_prefix("#")
   assert(#hex == 6 or #hex == 8)
   local base = {}
   local d = 256

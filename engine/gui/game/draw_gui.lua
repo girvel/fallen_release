@@ -518,10 +518,10 @@ local ICONS = {
 local DEFAULT_ICON = "'"
 
 local COLORS = {
-  actions = Vector.hex("79ad9c"),
+  actions = Vector.hex("#79ad9c"),
   bonus_actions = colors.light_green,
-  reactions = Vector.hex("fcea9b"),
-  movement = Vector.hex("429858"),
+  reactions = Vector.hex("#fcea9b"),
+  movement = Vector.hex("#429858"),
 }
 
 local PRIMITIVE_RESOURCES = {

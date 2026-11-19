@@ -157,11 +157,11 @@ end
 
 --- @alias anchor "parent"|"hand"|"offhand"|"head"|"right_pocket"
 local anchors = {
-  parent       = Vector.hex("ff0000"):mul_mut(256):map(math.floor),
-  hand         = Vector.hex("fb0000"):mul_mut(256):map(math.floor),
-  offhand      = Vector.hex("f70000"):mul_mut(256):map(math.floor),
-  head         = Vector.hex("f30000"):mul_mut(256):map(math.floor),
-  right_pocket = Vector.hex("ef0000"):mul_mut(256):map(math.floor),
+  parent       = Vector.hex("#ff0000"):mul_mut(256):map(math.floor),
+  hand         = Vector.hex("#fb0000"):mul_mut(256):map(math.floor),
+  offhand      = Vector.hex("#f70000"):mul_mut(256):map(math.floor),
+  head         = Vector.hex("#f30000"):mul_mut(256):map(math.floor),
+  right_pocket = Vector.hex("#ef0000"):mul_mut(256):map(math.floor),
 }
 
 local color_eq = function(v, color)

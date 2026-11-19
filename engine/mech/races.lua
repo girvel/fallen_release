@@ -3,7 +3,7 @@ local races = {}
 races.human = {
   codename = "human",
   name = "Разносторонний человек",
-  skin_color = Vector.hex("8ed3dc"),
+  skin_color = Vector.hex("#8ed3dc"),
 
   perk = {
     codename = "ability_bonus_human",
@@ -16,7 +16,7 @@ races.human = {
 races.variant_human = {
   codename = "variant_human",
   name = "Альтернативный человек",
-  skin_color = Vector.hex("8ed3dc"),
+  skin_color = Vector.hex("#8ed3dc"),
 
   perk = Memoize(function(_, ability1, ability2)
     return {
@@ -34,7 +34,7 @@ races.variant_human = {
 races.custom_lineage = {
   codename = "custom_lineage",
   name = "Необычное происхождение",
-  skin_color = Vector.hex("8ed3dc"),
+  skin_color = Vector.hex("#8ed3dc"),
 
   perk = Memoize(function(_, ability1)
     return {
@@ -51,32 +51,32 @@ races.custom_lineage = {
 
 races.half_orc = {
   codename = "half_orc",
-  skin_color = Vector.hex("60b37e"),
+  skin_color = Vector.hex("#60b37e"),
 }
 
 races.half_elf = {
   codename = "half_elf",
-  skin_color = Vector.hex("c9c7ec"),
+  skin_color = Vector.hex("#c9c7ec"),
 }
 
 races.halfling = {
   codename = "halfling",
-  skin_color = Vector.hex("d2d2ba"),
+  skin_color = Vector.hex("#d2d2ba"),
 }
 
 races.dwarf = {
   codename = "dwarf",
-  skin_color = Vector.hex("dd8a5b"),
+  skin_color = Vector.hex("#dd8a5b"),
 }
 
 races.furry = {
   codename = "furry",
-  skin_color = Vector.hex("3f5d92"),
+  skin_color = Vector.hex("#3f5d92"),
 }
 
 races.phantom = {
   codename = "phantom",
-  skin_color = Vector.hex("c9c7ec"),
+  skin_color = Vector.hex("#c9c7ec"),
 }
 
 Ldump.mark(races, "const", ...)
