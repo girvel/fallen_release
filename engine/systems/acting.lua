@@ -1,3 +1,4 @@
+local sound = require("engine.tech.sound")
 local discord = require("engine.tech.discord")
 local async = require "engine.tech.async"
 local animated = require "engine.tech.animated"
@@ -62,6 +63,7 @@ return Tiny.processingSystem {
         :all(function(b) return a == b or State.hostility:get(a, b) ~= "enemy" end)
       end)
     then
+      sound.new("engine/assets/sounds/combat_end.mp3", 1, true):play()
       Log.info(
         "--- Combat ends as only %s are left standing ---",
         table.concat(Fun.iter(State.combat.list)

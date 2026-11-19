@@ -39,6 +39,7 @@ return {
     _seen = {},
     _run = function(self, ch, ps, sp)
       State.rails.met_markiss = true
+      sound.new("assets/sounds/markiss_dialogue_start.mp3", 1, true):play()
 
       self._run_i = self._run_i + 1
       sp:start_branches()
@@ -484,6 +485,8 @@ return {
 
     _first_time = true,
     _run = function(self, ch, ps, sp)
+      sound.new("assets/sounds/son_mary_dialogue_start.mp3", 1, true):play()
+
       State.model.popups = {}
       sp:start_single_branch()
       if self._first_time then
@@ -1570,6 +1573,7 @@ return {
 
     _disadvantage = false,
     _run = function(self, ch, ps, sp)
+      sound.new("assets/sounds/half_elf_dialogue_start.mp3", 1, true):play()
       sp:lines()
 
       local options = sp:start_options()
