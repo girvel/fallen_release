@@ -17,6 +17,7 @@ local kernel = {}
 --- @field cpu_time number
 --- @field start_time number
 --- @field screenshot love.Canvas
+--- @field probes_this_frame integer
 --- @field _save? string
 --- @field _specific_key_rates table<love.KeyConstant, number>
 --- @field _delays table<love.KeyConstant, number>
@@ -36,6 +37,7 @@ kernel.new = function(args)
     frame_n = 0,
     cpu_time = 0,
     start_time = 0,
+    probes_this_frame = 0,
     _specific_key_rates = {},
     _delays = {},
     _is_active = false,

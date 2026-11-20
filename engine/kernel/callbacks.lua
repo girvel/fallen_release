@@ -150,6 +150,10 @@ love.run = function()
   local coroutine_type
   local prev_size = Vector.zero
 
+  -- debug.sethook(function()
+  --   Log.trace("Probe hook triggered")
+  -- end, "", 1000000)
+
   Kernel.start_time = love.timer.getTime()
   return function()
     if Kernel._save then
@@ -221,6 +225,7 @@ love.run = function()
     dt = love.timer.step()
     Kernel.cpu_time = Kernel.cpu_time + dt
     Kernel.frame_n = Kernel.frame_n + 1
+    Kernel.probes_this_frame = 0
 
     for k, v in pairs(Kernel._delays) do
       Kernel._delays[k] = math.max(0, v - dt)
