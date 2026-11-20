@@ -255,12 +255,15 @@ map_methods.find_path = function(self, origin, destination)
   end
 
   local raw_path = tcod._c.TCOD_path_new_using_map(self._map, 0)
-  local ox, oy = unpack(origin - Vector.one)
-  local dx, dy = unpack(destination - Vector.one)
+  local ox = origin[1] - 1
+  local oy = origin[2] - 1
+  local dx = destination[1] - 1
+  local dy = destination[2] - 1
   tcod._c.TCOD_path_compute(raw_path, ox, oy, dx, dy)
 
-  local result = {}
-  for i = 0, tcod._c.TCOD_path_size(raw_path) - 1 do
+  local len = tcod._c.TCOD_path_size(raw_path)
+  local result = Table.new(len, 0)
+  for i = 0, len - 1 do
     local xp = ffi.new("int[1]")
     local yp = ffi.new("int[1]")
     tcod._c.TCOD_path_get(raw_path, i, xp, yp)
